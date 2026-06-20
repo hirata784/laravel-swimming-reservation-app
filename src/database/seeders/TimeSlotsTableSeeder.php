@@ -17,9 +17,17 @@ class TimeSlotsTableSeeder extends Seeder
     {
         for ($i = 0; $i <= 6; $i++) {
             for ($j = 9; $j <= 18; $j++) {
+                // 00分
                 $param = [
                     'date' => Carbon::now()->addDays($i),
                     'start_time' => $j . ':00:00',
+                    'capacity' => '25'
+                ];
+                DB::table('time_slots')->insert($param);
+                // 30分
+                $param = [
+                    'date' => Carbon::now()->addDays($i),
+                    'start_time' => $j . ':30:00',
                     'capacity' => '25'
                 ];
                 DB::table('time_slots')->insert($param);
