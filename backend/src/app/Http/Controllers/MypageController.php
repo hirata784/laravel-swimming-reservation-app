@@ -18,15 +18,9 @@ class MypageController extends Controller
         // 認証中のユーザーidを取得
         $id = Auth::id();
         $item = Reservation::where('user_id', $id)->get();
-        if ($item) {
-            return response()->json([
-                'data' => $item
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => 'Not found',
-            ], 404);
-        }
+        return response()->json([
+            'data' => $item
+        ], 200);
     }
 
     /**
