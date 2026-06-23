@@ -10,4 +10,9 @@ class TimeSlot extends Model
     use HasFactory;
 
     protected $fillable = ['date', 'start_time', 'capacity'];
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
 }
