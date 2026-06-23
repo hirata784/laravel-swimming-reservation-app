@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\MypageController;
+use App\Http\Controllers\TimeSlotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +23,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('/reservation', ReservationController::class);
 Route::apiResource('/mypage', MypageController::class);
+Route::apiResource('/timeslot', TimeSlotController::class);
