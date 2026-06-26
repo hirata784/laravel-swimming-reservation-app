@@ -22,7 +22,7 @@ body {
     justify-content: space-between;
     align-items: center;
     background-color: #3cabe3;
-    height: 9dvh;
+    height: 10vh;
 }
 
 .header-str {
