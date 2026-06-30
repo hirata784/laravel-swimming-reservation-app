@@ -2,10 +2,11 @@
     <div class="register">
         <div class="register-content">
             <h2 class="title">会員登録</h2>
-            <form class="register-form">
+            <form class="register-form" @submit.prevent="addRegister">
                 <div class="group">
                     <p class="item">名前</p>
                     <input
+                        v-model="name"
                         class="txt"
                         type="text"
                         placeholder="例：テスト太郎"
@@ -14,6 +15,7 @@
                 <div class="group">
                     <p class="item">メールアドレス</p>
                     <input
+                        v-model="email"
                         class="txt"
                         type="text"
                         placeholder="例：test@example.com"
@@ -21,13 +23,43 @@
                 </div>
                 <div class="group">
                     <p class="item">パスワード</p>
-                    <input class="txt" type="text" placeholder="例：test1234" />
+                    <input
+                        v-model="password"
+                        class="txt"
+                        type="text"
+                        placeholder="例：test1234"
+                    />
                 </div>
                 <button class="register-btn">登録する</button>
             </form>
         </div>
     </div>
 </template>
+
+<script setup>
+// 入力値を定義
+import { ref } from "vue";
+const name = ref("");
+const email = ref("");
+const password = ref("");
+
+// 登録
+const addRegister = async () => {
+    await $fetch("http://localhost/api/auth/register", {
+        method: "POST",
+        body: {
+            name: name.value,
+            email: email.value,
+            password: password.value,
+        },
+    });
+
+    // 入力値を空白にする
+    name.value = "";
+    email.value = "";
+    password.value = "";
+};
+</script>
 
 <style scoped>
 p {
