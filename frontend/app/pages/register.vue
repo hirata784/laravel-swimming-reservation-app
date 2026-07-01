@@ -11,7 +11,9 @@
                         type="text"
                         placeholder="例：テスト太郎"
                     />
+                    <p class="error">{{ errors.name }}</p>
                 </div>
+
                 <div class="group">
                     <p class="item">メールアドレス</p>
                     <input
@@ -20,7 +22,9 @@
                         type="text"
                         placeholder="例：test@example.com"
                     />
+                    <p class="error">{{ errors.email }}</p>
                 </div>
+
                 <div class="group">
                     <p class="item">パスワード</p>
                     <input
@@ -29,7 +33,9 @@
                         type="text"
                         placeholder="例：test1234"
                     />
+                    <p class="error">{{ errors.password }}</p>
                 </div>
+
                 <button class="register-btn">登録する</button>
             </form>
         </div>
@@ -37,11 +43,33 @@
 </template>
 
 <script setup>
-// 入力値を定義
-import { ref } from "vue";
-const name = ref("");
-const email = ref("");
-const password = ref("");
+// インポート
+import { useForm, useField } from "vee-validate";
+import * as yup from "yup";
+
+// バリデーションのルールを設定
+const schema = yup.object({
+    name: yup
+        .string()
+        .required("この項目は必須です")
+        .max(20, "20文字以下で入力してください"),
+    email: yup
+        .string()
+        .required("この項目は必須です")
+        .email("メールアドレスの形式で入力してください"),
+    password: yup
+        .string()
+        .required("この項目は必須です")
+        .min(6, "6文字以上入力してください"),
+});
+
+const { errors } = useForm({
+    validationSchema: schema,
+});
+
+const { value: name } = useField("name");
+const { value: email } = useField("email");
+const { value: password } = useField("password");
 
 // 登録
 const addRegister = async () => {
@@ -93,7 +121,6 @@ p {
 }
 
 .group {
-    /* padding: 10px; */
     margin: 60px 0;
     width: 100%;
     display: flex;
@@ -109,6 +136,12 @@ p {
 .txt {
     font-size: 18px;
     padding: 10px;
+}
+
+.error {
+    color: #da251d;
+    text-align: left;
+    margin-top: 10px;
 }
 
 .register-btn {
