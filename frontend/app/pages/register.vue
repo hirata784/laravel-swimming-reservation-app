@@ -11,7 +11,12 @@
                         type="text"
                         placeholder="例：テスト太郎"
                     />
+                    <!-- vee-validateのバリデーション -->
                     <p class="error">{{ errors.name }}</p>
+                    <!-- FormRequestのバリデーション -->
+                    <p v-if="backErrors.name" class="error">
+                        {{ backErrors.name[0] }}
+                    </p>
                 </div>
                 <div class="group">
                     <p class="item">メールアドレス</p>
@@ -21,7 +26,12 @@
                         type="text"
                         placeholder="例：test@example.com"
                     />
+                    <!-- vee-validateのバリデーション -->
                     <p class="error">{{ errors.email }}</p>
+                    <!-- FormRequestのバリデーション -->
+                    <p v-if="backErrors.email" class="error">
+                        {{ backErrors.email[0] }}
+                    </p>
                 </div>
                 <div class="group">
                     <p class="item">パスワード</p>
@@ -31,15 +41,20 @@
                         type="text"
                         placeholder="例：test1234"
                     />
+                    <!-- vee-validateのバリデーション -->
                     <p class="error">{{ errors.password }}</p>
+                    <!-- FormRequestのバリデーション -->
+                    <p v-if="backErrors.password" class="error">
+                        {{ backErrors.password[0] }}
+                    </p>
                 </div>
                 <!-- バリデーションの表示中はclass変更 & クリック不可 -->
                 <button
                     class="register-btn"
                     v-bind:class="{
-                        'is-disabled-btn': Object.keys(errors).length > 0,
+                        'is-disabled-btn': btnIsInvalid,
                     }"
-                    :disabled="Object.keys(errors).length > 0"
+                    :disabled="btnIsInvalid"
                 >
                     登録する
                 </button>
@@ -52,20 +67,21 @@
 // インポート
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
+import { ref, watch } from "vue";
 
 // バリデーションのルールを設定
 const schema = yup.object({
     name: yup
         .string()
-        .required("この項目は必須です")
+        .required("名前を入力してください")
         .max(20, "20文字以下で入力してください"),
     email: yup
         .string()
-        .required("この項目は必須です")
+        .required("メールアドレスを入力してください")
         .email("メールアドレスの形式で入力してください"),
     password: yup
         .string()
-        .required("この項目は必須です")
+        .required("パスワードを入力してください")
         .min(6, "6文字以上入力してください"),
 });
 
@@ -76,22 +92,45 @@ const { errors } = useForm({
 const { value: name } = useField("name");
 const { value: email } = useField("email");
 const { value: password } = useField("password");
+// エラーを格納するオブジェクト
+const backErrors = ref({});
+
+// 入力したらFormRequestのバリデーションを削除する
+watch([name, email, password], () => {
+    backErrors.value = {};
+});
+
+// バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
+const btnIsInvalid = computed(() => {
+    return (
+        Object.keys(errors.value).length > 0 ||
+        Object.keys(backErrors.value).length > 0
+    );
+});
 
 // 登録
 const addRegister = async () => {
-    await $fetch("http://localhost/api/auth/register", {
-        method: "POST",
-        body: {
-            name: name.value,
-            email: email.value,
-            password: password.value,
-        },
-    });
-
-    // 入力値を空白にする
-    name.value = "";
-    email.value = "";
-    password.value = "";
+    // 初期化
+    backErrors.value = {};
+    try {
+        await $fetch("http://localhost/api/auth/register", {
+            method: "POST",
+            body: {
+                name: name.value,
+                email: email.value,
+                password: password.value,
+            },
+        });
+        // 入力値を空白にする
+        name.value = "";
+        email.value = "";
+        password.value = "";
+    } catch (error) {
+        // ステータスコード422の場合はエラーメッセージをセット
+        if (error.response && error.response.status === 422) {
+            backErrors.value = error.response._data.errors;
+        }
+    }
 };
 </script>
 
