@@ -13,7 +13,6 @@
                     />
                     <p class="error">{{ errors.name }}</p>
                 </div>
-
                 <div class="group">
                     <p class="item">メールアドレス</p>
                     <input
@@ -24,7 +23,6 @@
                     />
                     <p class="error">{{ errors.email }}</p>
                 </div>
-
                 <div class="group">
                     <p class="item">パスワード</p>
                     <input
@@ -35,8 +33,16 @@
                     />
                     <p class="error">{{ errors.password }}</p>
                 </div>
-
-                <button class="register-btn">登録する</button>
+                <!-- バリデーションの表示中はclass変更 & クリック不可 -->
+                <button
+                    class="register-btn"
+                    v-bind:class="{
+                        'is-disabled-btn': Object.keys(errors).length > 0,
+                    }"
+                    :disabled="Object.keys(errors).length > 0"
+                >
+                    登録する
+                </button>
             </form>
         </div>
     </div>
@@ -153,5 +159,11 @@ p {
     cursor: pointer;
     width: 70%;
     margin-bottom: 60px;
+}
+
+.is-disabled-btn {
+    background-color: #666666;
+    opacity: 0.5;
+    cursor: auto;
 }
 </style>
