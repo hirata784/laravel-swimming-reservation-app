@@ -2,10 +2,11 @@
     <div class="login">
         <div class="login-content">
             <h2 class="title">ログイン</h2>
-            <form class="login-form">
+            <form class="login-form" @submit.prevent="isLogin">
                 <div class="group">
                     <p class="item">メールアドレス</p>
                     <input
+                        v-model="email"
                         class="txt"
                         type="text"
                         placeholder="例：test@example.com"
@@ -13,13 +14,54 @@
                 </div>
                 <div class="group">
                     <p class="item">パスワード</p>
-                    <input class="txt" type="text" placeholder="例：test1234" />
+                    <input
+                        v-model="password"
+                        class="txt"
+                        type="text"
+                        placeholder="例：test1234"
+                    />
                 </div>
                 <button class="login-btn">ログインする</button>
             </form>
         </div>
     </div>
 </template>
+
+<script setup>
+// インポート
+import { ref } from "vue";
+
+const email = ref("");
+const password = ref("");
+const isLoggedIn = ref(false);
+
+// 画面構成後に処理
+onMounted(() => {
+    const token = localStorage.getItem("token");
+    // tokenがあればtrue, なければfalse
+    isLoggedIn.value = !!token;
+});
+
+// ログイン
+const isLogin = async () => {
+    const res = await $fetch("http://localhost/api/auth/login", {
+        method: "POST",
+        body: {
+            email: email.value,
+            password: password.value,
+        },
+    });
+
+    // トークンを保存
+    localStorage.setItem("token", res.access_token);
+    const token = localStorage.getItem("token");
+    isLoggedIn.value = !!token;
+
+    // 入力値を空白にする
+    email.value = "";
+    password.value = "";
+};
+</script>
 
 <style scoped>
 p {
