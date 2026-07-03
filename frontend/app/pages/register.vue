@@ -113,7 +113,7 @@ const addRegister = async () => {
     // 初期化
     backErrors.value = {};
     try {
-        await $fetch("http://localhost/api/auth/register", {
+        await $fetch("http://localhost/api/auth/registers", {
             method: "POST",
             body: {
                 name: name.value,
@@ -129,6 +129,10 @@ const addRegister = async () => {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {
             backErrors.value = error.response._data.errors;
+        } else {
+            // その他のエラー
+            console.error("予期せぬエラーが発生しました：", error);
+            alert(`予期せぬエラーが発生しました： ${error}`);
         }
     }
 };
