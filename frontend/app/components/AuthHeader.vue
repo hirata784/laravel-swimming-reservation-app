@@ -3,10 +3,30 @@
         <h1 class="header-str">▼●▲水泳クラブ</h1>
         <nav class="header-nav">
             <button class="btn">マイページ</button>
-            <button class="btn">ログイン</button>
+            <div v-if="route.name === 'register'">
+                <button class="btn" @click="login">ログイン</button>
+            </div>
+            <div v-else="route.name === 'login'">
+                <button class="btn" @click="register">会員登録</button>
+            </div>
         </nav>
     </div>
 </template>
+
+<script setup>
+// ページのURLを取得
+const route = useRoute();
+
+// ログイン画面へ遷移
+const login = () => {
+    navigateTo("/login");
+};
+
+// 会員登録画面へ遷移
+const register = () => {
+    navigateTo("/register");
+};
+</script>
 
 <style scoped>
 p {
