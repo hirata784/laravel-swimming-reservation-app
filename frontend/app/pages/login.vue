@@ -120,6 +120,10 @@ const isLogin = async () => {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {
             backErrors.value = error.response._data.errors;
+        } else {
+            // その他のエラー
+            console.error("予期せぬエラーが発生しました：", error);
+            alert(`予期せぬエラーが発生しました： ${error}`);
         }
     }
 };
