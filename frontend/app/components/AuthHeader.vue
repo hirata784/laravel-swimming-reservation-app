@@ -50,10 +50,20 @@ const register = () => {
 };
 
 // ログアウト
-const logout = () => {
+const logout = async () => {
+    const token = localStorage.getItem("token");
+    await $fetch("http://localhost/api/auth/logout", {
+        method: "POST",
+        headers: {
+            // JWT等を使用している場合はここでAuthorizationヘッダーを渡す
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
     // ログイン取消コード
     localStorage.removeItem("token");
     isLoggedIn.value = false;
+    // ログイン画面へ遷移する
     navigateTo("/login");
 };
 </script>
