@@ -13,6 +13,10 @@
                     />
                     <!-- vee-validateのバリデーション -->
                     <p class="error">{{ errors.email }}</p>
+                    <!-- FormRequestのバリデーション -->
+                    <p v-if="backErrors.email" class="error">
+                        {{ backErrors.email[0] }}
+                    </p>
                 </div>
                 <div class="group">
                     <p class="item">パスワード</p>
@@ -24,6 +28,10 @@
                     />
                     <!-- vee-validateのバリデーション -->
                     <p class="error">{{ errors.password }}</p>
+                    <!-- FormRequestのバリデーション -->
+                    <p v-if="backErrors.password" class="error">
+                        {{ backErrors.password[0] }}
+                    </p>
                 </div>
                 <!-- バリデーションの表示中はclass変更 & クリック不可 -->
                 <button
@@ -64,11 +72,21 @@ const { errors } = useForm({
 
 const { value: email } = useField("email");
 const { value: password } = useField("password");
+// エラーを格納するオブジェクト
+const backErrors = ref({});
 const isLoggedIn = ref(false);
+
+// 入力したらFormRequestのバリデーションを削除する
+watch([email, password], () => {
+    backErrors.value = {};
+});
 
 // バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
 const btnIsInvalid = computed(() => {
-    return Object.keys(errors.value).length > 0;
+    return (
+        Object.keys(errors.value).length > 0 ||
+        Object.keys(backErrors.value).length > 0
+    );
 });
 
 // 画面構成後に処理
@@ -80,22 +98,30 @@ onMounted(() => {
 
 // ログイン
 const isLogin = async () => {
-    const res = await $fetch("http://localhost/api/auth/login", {
-        method: "POST",
-        body: {
-            email: email.value,
-            password: password.value,
-        },
-    });
+    // 初期化
+    backErrors.value = {};
+    try {
+        const res = await $fetch("http://localhost/api/auth/login", {
+            method: "POST",
+            body: {
+                email: email.value,
+                password: password.value,
+            },
+        });
+        // トークンを保存
+        localStorage.setItem("token", res.access_token);
+        const token = localStorage.getItem("token");
+        isLoggedIn.value = !!token;
 
-    // トークンを保存
-    localStorage.setItem("token", res.access_token);
-    const token = localStorage.getItem("token");
-    isLoggedIn.value = !!token;
-
-    // 入力値を空白にする
-    email.value = "";
-    password.value = "";
+        // 入力値を空白にする
+        email.value = "";
+        password.value = "";
+    } catch (error) {
+        // ステータスコード422の場合はエラーメッセージをセット
+        if (error.response && error.response.status === 422) {
+            backErrors.value = error.response._data.errors;
+        }
+    }
 };
 </script>
 

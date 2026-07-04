@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\LoginRequest;
 
 class AuthController extends Controller
 {
@@ -28,13 +29,9 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully user created']);
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->only('email', 'password');
-
-        if (! $token = Auth::guard('api')->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        $token = $request->input('_api_token');
 
         return $this->respondWithToken($token);
     }
