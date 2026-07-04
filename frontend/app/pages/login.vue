@@ -112,10 +112,8 @@ const isLogin = async () => {
         localStorage.setItem("token", res.access_token);
         const token = localStorage.getItem("token");
         isLoggedIn.value = !!token;
-
-        // 入力値を空白にする
-        email.value = "";
-        password.value = "";
+        // 予約一覧画面へ移動
+        navigateTo("list");
     } catch (error) {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {
