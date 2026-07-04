@@ -11,6 +11,8 @@
                         type="text"
                         placeholder="例：test@example.com"
                     />
+                    <!-- vee-validateのバリデーション -->
+                    <p class="error">{{ errors.email }}</p>
                 </div>
                 <div class="group">
                     <p class="item">パスワード</p>
@@ -20,8 +22,19 @@
                         type="text"
                         placeholder="例：test1234"
                     />
+                    <!-- vee-validateのバリデーション -->
+                    <p class="error">{{ errors.password }}</p>
                 </div>
-                <button class="login-btn">ログインする</button>
+                <!-- バリデーションの表示中はclass変更 & クリック不可 -->
+                <button
+                    class="login-btn"
+                    v-bind:class="{
+                        'is-disabled-btn': btnIsInvalid,
+                    }"
+                    :disabled="btnIsInvalid"
+                >
+                    ログインする
+                </button>
             </form>
         </div>
     </div>
@@ -29,11 +42,34 @@
 
 <script setup>
 // インポート
+import { useForm, useField } from "vee-validate";
+import * as yup from "yup";
 import { ref } from "vue";
 
-const email = ref("");
-const password = ref("");
+// バリデーションのルールを設定
+const schema = yup.object({
+    email: yup
+        .string()
+        .required("メールアドレスを入力してください")
+        .email("メールアドレスの形式で入力してください"),
+    password: yup
+        .string()
+        .required("パスワードを入力してください")
+        .min(6, "6文字以上入力してください"),
+});
+
+const { errors } = useForm({
+    validationSchema: schema,
+});
+
+const { value: email } = useField("email");
+const { value: password } = useField("password");
 const isLoggedIn = ref(false);
+
+// バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
+const btnIsInvalid = computed(() => {
+    return Object.keys(errors.value).length > 0;
+});
 
 // 画面構成後に処理
 onMounted(() => {
@@ -112,6 +148,12 @@ p {
     padding: 10px;
 }
 
+.error {
+    color: #da251d;
+    text-align: left;
+    margin-top: 10px;
+}
+
 .login-btn {
     border: none;
     background-color: #da251d;
@@ -121,5 +163,11 @@ p {
     cursor: pointer;
     width: 70%;
     margin-bottom: 60px;
+}
+
+.is-disabled-btn {
+    background-color: #666666;
+    opacity: 0.5;
+    cursor: auto;
 }
 </style>
