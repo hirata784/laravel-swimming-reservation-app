@@ -113,7 +113,7 @@ const addRegister = async () => {
     // 初期化
     backErrors.value = {};
     try {
-        await $fetch("http://localhost/api/auth/registers", {
+        await $fetch("http://localhost/api/auth/register", {
             method: "POST",
             body: {
                 name: name.value,
