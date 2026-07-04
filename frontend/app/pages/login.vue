@@ -89,13 +89,6 @@ const btnIsInvalid = computed(() => {
     );
 });
 
-// 画面構成後に処理
-onMounted(() => {
-    const token = localStorage.getItem("token");
-    // tokenがあればtrue, なければfalse
-    isLoggedIn.value = !!token;
-});
-
 // ログイン
 const isLogin = async () => {
     // 初期化

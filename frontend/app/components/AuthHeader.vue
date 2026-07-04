@@ -6,16 +6,38 @@
             <div v-if="route.name === 'register'">
                 <button class="btn" @click="login">ログイン</button>
             </div>
-            <div v-else="route.name === 'login'">
+            <div v-else-if="route.name === 'login'">
                 <button class="btn" @click="register">会員登録</button>
+            </div>
+            <div v-else="isLoggedIn">
+                <button class="btn" @click="logout">ログアウト</button>
             </div>
         </nav>
     </div>
 </template>
 
 <script setup>
+// インポート
+import { watch } from "vue";
+
 // ページのURLを取得
 const route = useRoute();
+const isLoggedIn = ref(false);
+
+// 画面構成後に処理
+onMounted(() => {
+    const token = localStorage.getItem("token");
+    // tokenがあればtrue, なければfalse
+    isLoggedIn.value = !!token;
+});
+
+// ルートの変更を検知してリロード
+watch(
+    () => route.path,
+    () => {
+        window.location.reload();
+    },
+);
 
 // ログイン画面へ遷移
 const login = () => {
@@ -25,6 +47,14 @@ const login = () => {
 // 会員登録画面へ遷移
 const register = () => {
     navigateTo("/register");
+};
+
+// ログアウト
+const logout = () => {
+    // ログイン取消コード
+    localStorage.removeItem("token");
+    isLoggedIn.value = false;
+    navigateTo("/login");
 };
 </script>
 
