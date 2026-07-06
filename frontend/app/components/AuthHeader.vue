@@ -1,16 +1,30 @@
 <template>
     <div class="header">
         <h1 class="header-str">▼●▲水泳クラブ</h1>
-        <nav class="header-nav">
-            <button class="btn">マイページ</button>
+        <!-- ログイン中 -->
+        <nav v-if="isLoggedIn" class="header-nav">
+            <div>
+                <button class="btn">マイページ</button>
+            </div>
+            <div>
+                <button class="btn" @click="logout">ログアウト</button>
+            </div>
+        </nav>
+        <!-- ログアウト中 -->
+        <nav v-else class="header-nav">
+            <div>
+                <!-- レイアウト調整用(削除不可) -->
+                <div></div>
+            </div>
             <div v-if="route.name === 'register'">
                 <button class="btn" @click="login">ログイン</button>
             </div>
             <div v-else-if="route.name === 'login'">
                 <button class="btn" @click="register">会員登録</button>
             </div>
-            <div v-else="isLoggedIn">
-                <button class="btn" @click="logout">ログアウト</button>
+            <!-- ログアウト中の予約一覧画面の場合、表示なし -->
+            <div v-else>
+                <div></div>
             </div>
         </nav>
     </div>
