@@ -69,6 +69,10 @@ import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { ref, watch } from "vue";
 
+definePageMeta({
+    middleware: "auth",
+});
+
 // バリデーションのルールを設定
 const schema = yup.object({
     name: yup
