@@ -52,8 +52,9 @@
 // インポート
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
+// 未認証時のみアクセス可能にする
 definePageMeta({
     middleware: "auth",
 });
@@ -70,15 +71,14 @@ const schema = yup.object({
         .min(6, "6文字以上入力してください"),
 });
 
+// クライアントエラーを格納するオブジェクト
 const { errors } = useForm({
     validationSchema: schema,
 });
-
+// サーバーエラーを格納するオブジェクト
+const backErrors = ref({});
 const { value: email } = useField("email");
 const { value: password } = useField("password");
-// エラーを格納するオブジェクト
-const backErrors = ref({});
-const isLoggedIn = ref(false);
 
 // 入力したらFormRequestのバリデーションを削除する
 watch([email, password], () => {
@@ -107,8 +107,6 @@ const isLogin = async () => {
         });
         // トークンを保存
         localStorage.setItem("token", res.access_token);
-        const token = localStorage.getItem("token");
-        isLoggedIn.value = !!token;
         // 予約一覧画面へ移動
         navigateTo("list");
     } catch (error) {

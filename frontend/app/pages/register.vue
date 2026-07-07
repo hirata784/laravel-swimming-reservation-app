@@ -69,6 +69,7 @@ import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { ref, watch } from "vue";
 
+// 未認証時のみアクセス可能にする
 definePageMeta({
     middleware: "auth",
 });
@@ -88,16 +89,15 @@ const schema = yup.object({
         .required("パスワードを入力してください")
         .min(6, "6文字以上入力してください"),
 });
-
+// クライアントエラーを格納するオブジェクト
 const { errors } = useForm({
     validationSchema: schema,
 });
-
+// エラーを格納するオブジェクト
+const backErrors = ref({});
 const { value: name } = useField("name");
 const { value: email } = useField("email");
 const { value: password } = useField("password");
-// エラーを格納するオブジェクト
-const backErrors = ref({});
 
 // 入力したらFormRequestのバリデーションを削除する
 watch([name, email, password], () => {
