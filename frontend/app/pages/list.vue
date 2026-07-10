@@ -1,18 +1,14 @@
 <template>
     <div class="reservation">
         <div class="reservation-content">
-            <h2 class="title">2026年7月</h2>
+            <h2 class="title">{{ year }}年{{ month }}月</h2>
             <table class="reservation-list">
                 <tbody>
                     <tr>
                         <th>受付時刻</th>
-                        <th>1(水)</th>
-                        <th>2(木)</th>
-                        <th>3(金)</th>
-                        <th>4(土)</th>
-                        <th>5(日)</th>
-                        <th>6(月)</th>
-                        <th>7(火)</th>
+                        <template v-for="i in 7">
+                            <th>{{ dates[i - 1] }}({{ days[i - 1] }})</th>
+                        </template>
                     </tr>
                     <template v-for="i in 10">
                         <tr>
@@ -36,21 +32,37 @@
                             <td>⚪︎</td>
                         </tr>
                     </template>
-                    <tr>
-                        <th></th>
-                        <th>1(水)</th>
-                        <th>2(木)</th>
-                        <th>3(金)</th>
-                        <th>4(土)</th>
-                        <th>5(日)</th>
-                        <th>6(月)</th>
-                        <th>7(火)</th>
-                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </template>
+
+<script setup>
+// 今日の日付を取得
+const today = new Date();
+// 年
+const year = today.getFullYear();
+// 月
+const month = today.getMonth() + 1;
+// 日にち
+const dates = ref([]);
+// 曜日
+const days = ref([]);
+// 曜日のテキスト
+const weekday = ["日", "月", "火", "水", "木", "金", "土"];
+
+// 7日分用意する
+for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    // 月末日に+1した場合、自動的に翌月の1日に進む
+    d.setDate(today.getDate() + i);
+    // 日にちを取得
+    dates.value.push(d.getDate());
+    // 曜日を取得
+    days.value.push(weekday[d.getDay()]);
+}
+</script>
 
 <style scoped>
 .reservation {
