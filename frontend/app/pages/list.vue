@@ -12,24 +12,42 @@
                     </tr>
                     <template v-for="i in 10">
                         <tr>
-                            <th>{{ i + 8 }}:00</th>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
+                            <!-- 9時は頭を0で埋める(09:00) -->
+                            <th>
+                                {{ (i + 8).toString().padStart(2, "0") }}:00
+                            </th>
+                            <template v-for="j in 7">
+                                <!-- 9時は頭を0で埋める(09:00) -->
+                                <td>
+                                    {{
+                                        getStatus(
+                                            countReservations(
+                                                `${year}-${month}-${dates[j - 1]}`,
+                                                `${(i + 8).toString().padStart(2, "0")}:00`,
+                                            ),
+                                        )
+                                    }}
+                                </td>
+                            </template>
                         </tr>
                         <tr>
-                            <th>{{ i + 8 }}:30</th>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
-                            <td>⚪︎</td>
+                            <!-- 9時は頭を0で埋める(09:00) -->
+                            <th>
+                                {{ (i + 8).toString().padStart(2, "0") }}:30
+                            </th>
+                            <template v-for="j in 7">
+                                <!-- 9時は頭を0で埋める(09:00) -->
+                                <td>
+                                    {{
+                                        getStatus(
+                                            countReservations(
+                                                `${year}-${month}-${dates[j - 1]}`,
+                                                `${(i + 8).toString().padStart(2, "0")}:30`,
+                                            ),
+                                        )
+                                    }}
+                                </td>
+                            </template>
                         </tr>
                     </template>
                 </tbody>
@@ -43,8 +61,8 @@
 const today = new Date();
 // 年
 const year = today.getFullYear();
-// 月
-const month = today.getMonth() + 1;
+// 月(1~9月は頭を0で埋める(例：01月))
+const month = (today.getMonth() + 1).toString().padStart(2, "0");
 // 日にち
 const dates = ref([]);
 // 曜日
@@ -57,10 +75,30 @@ for (let i = 0; i < 7; i++) {
     const d = new Date(today);
     // 月末日に+1した場合、自動的に翌月の1日に進む
     d.setDate(today.getDate() + i);
-    // 日にちを取得
-    dates.value.push(d.getDate());
+    // 日にちを取得(1~9日は頭を0で埋める(例：01日))
+    dates.value.push(d.getDate().toString().padStart(2, "0"));
     // 曜日を取得
     days.value.push(weekday[d.getDay()]);
+}
+
+// 予約データの作成
+const reservations = [
+    { date: "2026-07-11", time: "10:00" },
+    { date: "2026-07-11", time: "10:00" },
+    { date: "2026-07-11", time: "11:00" },
+];
+
+// 予約のカウント
+function countReservations(date, time) {
+    return reservations.filter((r) => r.date === date && r.time === time)
+        .length;
+}
+
+// 予約状況の表示
+function getStatus(count) {
+    if (count >= 2) return "×";
+    if (count >= 1) return "△";
+    return "⚪︎";
 }
 </script>
 
