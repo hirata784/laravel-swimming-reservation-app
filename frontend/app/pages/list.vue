@@ -18,14 +18,19 @@
                             </th>
                             <template v-for="j in 7">
                                 <!-- 9時は頭を0で埋める(09:00) -->
-                                <td>
+                                <td
+                                    :class="
+                                        getStatusInfo(
+                                            `${year}-${month}-${dates[j - 1]}`,
+                                            `${(i + 8).toString().padStart(2, 0)}:00`,
+                                        ).class
+                                    "
+                                >
                                     {{
-                                        getStatus(
-                                            countReservations(
-                                                `${year}-${month}-${dates[j - 1]}`,
-                                                `${(i + 8).toString().padStart(2, "0")}:00`,
-                                            ),
-                                        )
+                                        getStatusInfo(
+                                            `${year}-${month}-${dates[j - 1]}`,
+                                            `${(i + 8).toString().padStart(2, 0)}:00`,
+                                        ).text
                                     }}
                                 </td>
                             </template>
@@ -37,14 +42,19 @@
                             </th>
                             <template v-for="j in 7">
                                 <!-- 9時は頭を0で埋める(09:00) -->
-                                <td>
+                                <td
+                                    :class="
+                                        getStatusInfo(
+                                            `${year}-${month}-${dates[j - 1]}`,
+                                            `${(i + 8).toString().padStart(2, 0)}:30`,
+                                        ).class
+                                    "
+                                >
                                     {{
-                                        getStatus(
-                                            countReservations(
-                                                `${year}-${month}-${dates[j - 1]}`,
-                                                `${(i + 8).toString().padStart(2, "0")}:30`,
-                                            ),
-                                        )
+                                        getStatusInfo(
+                                            `${year}-${month}-${dates[j - 1]}`,
+                                            `${(i + 8).toString().padStart(2, 0)}:30`,
+                                        ).text
                                     }}
                                 </td>
                             </template>
@@ -83,22 +93,21 @@ for (let i = 0; i < 7; i++) {
 
 // 予約データの作成
 const reservations = [
-    { date: "2026-07-11", time: "10:00" },
-    { date: "2026-07-11", time: "10:00" },
-    { date: "2026-07-11", time: "11:00" },
+    { date: "2026-07-14", time: "10:00" },
+    { date: "2026-07-14", time: "10:00" },
+    { date: "2026-07-14", time: "11:00" },
+    { date: "2026-07-16", time: "13:00" },
 ];
 
-// 予約のカウント
-function countReservations(date, time) {
-    return reservations.filter((r) => r.date === date && r.time === time)
-        .length;
-}
+// 予約のカウントと予約状況の表示
+function getStatusInfo(date, time) {
+    const count = reservations.filter(
+        (r) => r.date === date && r.time === time,
+    ).length;
 
-// 予約状況の表示
-function getStatus(count) {
-    if (count >= 2) return "×";
-    if (count >= 1) return "△";
-    return "⚪︎";
+    if (count >= 2) return { text: "×", class: "bg-gray" };
+    if (count >= 1) return { text: "△", class: "bg-yellow" };
+    return { text: "⚪︎", class: "bg-green" };
 }
 </script>
 
@@ -135,5 +144,17 @@ tr,
 th,
 td {
     border: 1px solid #304654;
+}
+
+.bg-green {
+    background-color: #55c6a9;
+}
+
+.bg-yellow {
+    background-color: #fce77c;
+}
+
+.bg-gray {
+    background-color: #7f8c8d;
 }
 </style>
