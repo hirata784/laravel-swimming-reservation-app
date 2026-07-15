@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TimeSlot;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,16 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $item = Reservation::all();
+        $reservations = Reservation::all();
+        // テーブルデータ数を取得
+        $count = Reservation::count();
+        // 各予約日と時間を取得
+        for ($i = 0; $i < $count; $i++) {
+            $id =  $reservations->find($i + 1)->time_slot_id;
+            $item['date'][$i] = TimeSlot::find($id)->date;
+            $item['start_time'][$i] = TimeSlot::find($id)->start_time;
+        }
+
         return response()->json([
             'data' => $item
         ], 200);

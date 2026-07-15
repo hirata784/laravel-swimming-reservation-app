@@ -79,6 +79,8 @@ const dates = ref([]);
 const days = ref([]);
 // 曜日のテキスト
 const weekday = ["日", "月", "火", "水", "木", "金", "土"];
+// 予約データ(年月日と時間)
+const reservations = ref([]);
 
 // 7日分用意する
 for (let i = 0; i < 7; i++) {
@@ -92,16 +94,21 @@ for (let i = 0; i < 7; i++) {
 }
 
 // 予約データの作成
-const reservations = [
-    { date: "2026-07-14", time: "10:00" },
-    { date: "2026-07-14", time: "10:00" },
-    { date: "2026-07-14", time: "11:00" },
-    { date: "2026-07-16", time: "13:00" },
-];
+const makeReservations = async () => {
+    const res = await $fetch("http://localhost/api/reservation", {
+        method: "GET",
+    });
+    for (let i = 0; i < res.data.start_time.length; i++) {
+        reservations.value.push({
+            date: res.data.date[i],
+            time: res.data.start_time[i].substring(0, 5),
+        });
+    }
+};
 
 // 予約のカウントと予約状況の表示
 function getStatusInfo(date, time) {
-    const count = reservations.filter(
+    const count = reservations.value.filter(
         (r) => r.date === date && r.time === time,
     ).length;
 
@@ -109,6 +116,8 @@ function getStatusInfo(date, time) {
     if (count >= 1) return { text: "△", class: "bg-yellow" };
     return { text: "⚪︎", class: "bg-green" };
 }
+
+makeReservations();
 </script>
 
 <style scoped>
