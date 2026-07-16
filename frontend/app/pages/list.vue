@@ -20,17 +20,15 @@
                                 <!-- 9時は頭を0で埋める(09:00) -->
                                 <td
                                     :class="
-                                        getStatusInfo(
-                                            `${year}-${month}-${dates[j - 1]}`,
-                                            `${(i + 8).toString().padStart(2, 0)}:00`,
-                                        ).class
+                                        statusMap[
+                                            `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
+                                        ].class
                                     "
                                 >
                                     {{
-                                        getStatusInfo(
-                                            `${year}-${month}-${dates[j - 1]}`,
-                                            `${(i + 8).toString().padStart(2, 0)}:00`,
-                                        ).text
+                                        statusMap[
+                                            `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:00`
+                                        ].text
                                     }}
                                 </td>
                             </template>
@@ -44,17 +42,15 @@
                                 <!-- 9時は頭を0で埋める(09:00) -->
                                 <td
                                     :class="
-                                        getStatusInfo(
-                                            `${year}-${month}-${dates[j - 1]}`,
-                                            `${(i + 8).toString().padStart(2, 0)}:30`,
-                                        ).class
+                                        statusMap[
+                                            `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
+                                        ].class
                                     "
                                 >
                                     {{
-                                        getStatusInfo(
-                                            `${year}-${month}-${dates[j - 1]}`,
-                                            `${(i + 8).toString().padStart(2, 0)}:30`,
-                                        ).text
+                                        statusMap[
+                                            `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:30`
+                                        ].text
                                     }}
                                 </td>
                             </template>
@@ -79,7 +75,8 @@ const dates = ref([]);
 const days = ref([]);
 // 曜日のテキスト
 const weekday = ["日", "月", "火", "水", "木", "金", "土"];
-// 予約データ(年月日と時間)
+// 予約一覧
+// 例: [{ date: "2026-07-15", time: "09:00" }]
 const reservations = ref([]);
 
 // 7日分用意する
@@ -98,6 +95,7 @@ const makeReservations = async () => {
     const res = await $fetch("http://localhost/api/reservation", {
         method: "GET",
     });
+    // APIの配列を1つずつ整形
     for (let i = 0; i < res.data.start_time.length; i++) {
         reservations.value.push({
             date: res.data.date[i],
@@ -106,17 +104,54 @@ const makeReservations = async () => {
     }
 };
 
-// 予約のカウントと予約状況の表示
-function getStatusInfo(date, time) {
-    const count = reservations.value.filter(
-        (r) => r.date === date && r.time === time,
-    ).length;
+// 予約数を集計する
+const reservationMap = computed(() => {
+    const map = {};
 
-    if (count >= 2) return { text: "×", class: "bg-gray" };
-    if (count >= 1) return { text: "△", class: "bg-yellow" };
-    return { text: "⚪︎", class: "bg-green" };
-}
+    reservations.value.forEach((r) => {
+        const key = `${r.date}_${r.time}`;
+        // map[key]が存在しない場合、0に1をプラス
+        map[key] = (map[key] || 0) + 1;
+    });
 
+    return map;
+});
+
+// 表示用データをすべて作成する
+const statusMap = computed(() => {
+    const result = {};
+
+    // 各日付
+    for (let d of dates.value) {
+        // 各時間
+        for (let h = 9; h <= 18; h++) {
+            // 00分or30分
+            for (let m of ["00", "30"]) {
+                // 時間
+                const time = `${h.toString().padStart(2, "0")}:${m}`;
+                // 日付
+                const date = `${year}-${month}-${d}`;
+                // キー
+                const key = `${date}_${time}`;
+                // 予約取得数(reservationMap.value[key]が存在しない場合、0を取得)
+                const count = reservationMap.value[key] || 0;
+
+                // 状態決定
+                if (count >= 2) {
+                    result[key] = { text: "×", class: "bg-gray" };
+                } else if (count >= 1) {
+                    result[key] = { text: "△", class: "bg-yellow" };
+                } else {
+                    result[key] = { text: "⚪︎", class: "bg-green" };
+                }
+            }
+        }
+    }
+
+    return result;
+});
+
+// 初回実行
 makeReservations();
 </script>
 
