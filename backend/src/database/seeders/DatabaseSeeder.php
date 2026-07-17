@@ -17,5 +17,6 @@ class DatabaseSeeder extends Seeder
         $this->call(UsersTableSeeder::class);
         User::factory()->count(25)->create();
         $this->call(TimeSlotsTableSeeder::class);
+        $this->call(ReservationsTableSeeder::class);
     }
 }
