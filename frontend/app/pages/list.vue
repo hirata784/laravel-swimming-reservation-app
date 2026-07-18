@@ -65,10 +65,16 @@
 <script setup>
 // 今日の日付を取得
 const today = new Date();
-// 年
+// 今年
 const year = today.getFullYear();
-// 月(1~9月は頭を0で埋める(例：01月))
+// 今月(1~9月は頭を0で埋める(例：01月))
 const month = (today.getMonth() + 1).toString().padStart(2, "0");
+// 現在の時間
+const hour = today.getHours();
+// 現在の分
+const minute = today.getMinutes().toString().padStart(2, "0");
+// 現在の時刻
+const currentTime = `${hour}:${minute}`;
 // 日にち
 const dates = ref([]);
 // 曜日
@@ -137,7 +143,11 @@ const statusMap = computed(() => {
                 const count = reservationMap.value[key] || 0;
 
                 // 状態決定
-                if (count >= 2) {
+                // 過去の日時の場合、予約0でも予約不可能とする
+                if (dates.value[0] == d && currentTime > time) {
+                    result[key] = { text: "×", class: "bg-gray" };
+                    // 予約人数によって、表示を変更する
+                } else if (count >= 2) {
                     result[key] = { text: "×", class: "bg-gray" };
                 } else if (count >= 1) {
                     result[key] = { text: "△", class: "bg-yellow" };
