@@ -2,6 +2,12 @@
     <div class="header">
         <h1 class="header-str">▼●▲水泳クラブ</h1>
         <!-- ログイン中 -->
+        <nav v-if="isLoggedIn">
+            <div class="login-user">
+                {{ user.name }}さんがログインしています
+            </div>
+        </nav>
+        <!-- ログイン中 -->
         <nav v-if="isLoggedIn" class="header-nav">
             <div>
                 <button class="btn">マイページ</button>
@@ -37,12 +43,23 @@ import { watch } from "vue";
 // ページのURLを取得
 const route = useRoute();
 const isLoggedIn = ref(false);
+// ユーザー情報取得
+const user = ref("");
 
 // 画面構成後に処理
-onMounted(() => {
+onMounted(async () => {
     const token = localStorage.getItem("token");
     // tokenがあればtrue, なければfalse
     isLoggedIn.value = !!token;
+    // tokenがある場合、ユーザー名を取得する
+    if (isLoggedIn.value == true) {
+        const userRes = await $fetch("http://localhost/api/auth/user", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        user.value = userRes;
+    }
 });
 
 // ルートの変更を検知してリロード
@@ -103,6 +120,11 @@ body {
     color: #eef9ff;
     padding-left: 20px;
     margin: 0;
+}
+
+.login-user {
+    color: #eef9ff;
+    font-size: 20px;
 }
 
 .header-nav {
