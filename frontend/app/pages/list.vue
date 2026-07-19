@@ -2,62 +2,66 @@
     <div class="reservation">
         <div class="reservation-content">
             <h2 class="title">{{ year }}年{{ month }}月</h2>
-            <table class="reservation-list">
-                <tbody>
-                    <tr>
-                        <th>受付時刻</th>
-                        <template v-for="i in 7">
-                            <th>{{ dates[i - 1] }}({{ days[i - 1] }})</th>
+            <div class="table-scroll-wrapper">
+                <table class="reservation-list">
+                    <tbody>
+                        <tr>
+                            <th class="fix-th">受付時刻</th>
+                            <template v-for="i in 7">
+                                <th class="fix-th">
+                                    {{ dates[i - 1] }}({{ days[i - 1] }})
+                                </th>
+                            </template>
+                        </tr>
+                        <template v-for="i in 10">
+                            <tr>
+                                <!-- 9時は頭を0で埋める(09:00) -->
+                                <th>
+                                    {{ (i + 8).toString().padStart(2, "0") }}:00
+                                </th>
+                                <template v-for="j in 7">
+                                    <!-- 9時は頭を0で埋める(09:00) -->
+                                    <td
+                                        :class="
+                                            statusMap[
+                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
+                                            ].class
+                                        "
+                                    >
+                                        {{
+                                            statusMap[
+                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:00`
+                                            ].text
+                                        }}
+                                    </td>
+                                </template>
+                            </tr>
+                            <tr>
+                                <!-- 9時は頭を0で埋める(09:00) -->
+                                <th>
+                                    {{ (i + 8).toString().padStart(2, "0") }}:30
+                                </th>
+                                <template v-for="j in 7">
+                                    <!-- 9時は頭を0で埋める(09:00) -->
+                                    <td
+                                        :class="
+                                            statusMap[
+                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
+                                            ].class
+                                        "
+                                    >
+                                        {{
+                                            statusMap[
+                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:30`
+                                            ].text
+                                        }}
+                                    </td>
+                                </template>
+                            </tr>
                         </template>
-                    </tr>
-                    <template v-for="i in 10">
-                        <tr>
-                            <!-- 9時は頭を0で埋める(09:00) -->
-                            <th>
-                                {{ (i + 8).toString().padStart(2, "0") }}:00
-                            </th>
-                            <template v-for="j in 7">
-                                <!-- 9時は頭を0で埋める(09:00) -->
-                                <td
-                                    :class="
-                                        statusMap[
-                                            `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
-                                        ].class
-                                    "
-                                >
-                                    {{
-                                        statusMap[
-                                            `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:00`
-                                        ].text
-                                    }}
-                                </td>
-                            </template>
-                        </tr>
-                        <tr>
-                            <!-- 9時は頭を0で埋める(09:00) -->
-                            <th>
-                                {{ (i + 8).toString().padStart(2, "0") }}:30
-                            </th>
-                            <template v-for="j in 7">
-                                <!-- 9時は頭を0で埋める(09:00) -->
-                                <td
-                                    :class="
-                                        statusMap[
-                                            `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
-                                        ].class
-                                    "
-                                >
-                                    {{
-                                        statusMap[
-                                            `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:30`
-                                        ].text
-                                    }}
-                                </td>
-                            </template>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </template>
@@ -169,7 +173,7 @@ makeReservations();
 .reservation {
     background-color: #cce9fa;
     width: 100%;
-    height: 110vh;
+    height: 90vh;
     text-align: center;
 }
 
@@ -183,15 +187,30 @@ makeReservations();
     color: #304654;
 }
 
+.table-scroll-wrapper {
+    overflow: auto;
+    width: 100%;
+    height: 650px;
+    margin-top: 80px;
+}
+
 .reservation-list {
     width: 90%;
     height: 80vh;
-    margin: 80px auto 0;
+    margin: 0 auto;
     text-align: center;
     align-items: center;
     border-collapse: collapse;
     border: 1px solid #304654;
     color: #304654;
+}
+
+.fix-th {
+    white-space: nowrap;
+    background-color: #cce9fa;
+    position: sticky;
+    top: 0;
+    left: 0;
 }
 
 tr,
