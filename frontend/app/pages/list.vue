@@ -30,7 +30,10 @@
                                         "
                                     >
                                         <!-- ログイン：ボタン表示 -->
-                                        <button class="table-cell-btn">
+                                        <button
+                                            class="table-cell-btn"
+                                            @click="confirm"
+                                        >
                                             {{
                                                 statusMap[
                                                     `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:00`
@@ -71,7 +74,10 @@
                                         "
                                     >
                                         <!-- ログイン：ボタン表示 -->
-                                        <button class="table-cell-btn">
+                                        <button
+                                            class="table-cell-btn"
+                                            @click="confirm"
+                                        >
                                             {{
                                                 statusMap[
                                                     `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:30`
@@ -207,6 +213,11 @@ const statusMap = computed(() => {
 
     return result;
 });
+
+// 確認画面へ遷移
+const confirm = () => {
+    navigateTo("/confirm");
+};
 
 // 初回実行
 makeReservations();
