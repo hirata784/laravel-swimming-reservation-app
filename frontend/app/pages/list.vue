@@ -22,12 +22,31 @@
                                 <template v-for="j in 7">
                                     <!-- 9時は頭を0で埋める(09:00) -->
                                     <td
+                                        v-if="isLoggedIn"
                                         :class="
                                             statusMap[
                                                 `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
                                             ].class
                                         "
                                     >
+                                        <!-- ログイン：ボタン表示 -->
+                                        <button class="table-cell-btn">
+                                            {{
+                                                statusMap[
+                                                    `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:00`
+                                                ].text
+                                            }}
+                                        </button>
+                                    </td>
+                                    <td
+                                        v-else
+                                        :class="
+                                            statusMap[
+                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
+                                            ].class
+                                        "
+                                    >
+                                        <!-- ログアウト：テキスト表示 -->
                                         {{
                                             statusMap[
                                                 `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:00`
@@ -44,12 +63,31 @@
                                 <template v-for="j in 7">
                                     <!-- 9時は頭を0で埋める(09:00) -->
                                     <td
+                                        v-if="isLoggedIn"
                                         :class="
                                             statusMap[
                                                 `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
                                             ].class
                                         "
                                     >
+                                        <!-- ログイン：ボタン表示 -->
+                                        <button class="table-cell-btn">
+                                            {{
+                                                statusMap[
+                                                    `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:30`
+                                                ].text
+                                            }}
+                                        </button>
+                                    </td>
+                                    <td
+                                        v-else
+                                        :class="
+                                            statusMap[
+                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
+                                            ].class
+                                        "
+                                    >
+                                        <!-- ログアウト：テキスト表示 -->
                                         {{
                                             statusMap[
                                                 `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:30`
@@ -88,6 +126,11 @@ const weekday = ["日", "月", "火", "水", "木", "金", "土"];
 // 予約一覧
 // 例: [{ date: "2026-07-15", time: "09:00" }]
 const reservations = ref([]);
+// ログイン状態
+const token = useCookie("token");
+const isLoggedIn = computed(() => {
+    return !!token.value;
+});
 
 // 7日分用意する
 for (let i = 0; i < 7; i++) {
@@ -211,6 +254,18 @@ makeReservations();
     position: sticky;
     top: 0;
     left: 0;
+}
+
+.table-cell-btn {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    background-color: transparent;
+    color: #304654;
+    font-family: "Hiragino Kaku Gothic ProN";
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
 }
 
 tr,

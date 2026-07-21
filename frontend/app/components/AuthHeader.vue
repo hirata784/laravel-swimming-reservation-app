@@ -42,20 +42,22 @@ import { watch } from "vue";
 
 // ページのURLを取得
 const route = useRoute();
-const isLoggedIn = ref(false);
 // ユーザー情報取得
 const user = ref("");
 
+// ログイン状態
+const token = useCookie("token");
+const isLoggedIn = computed(() => {
+    return !!token.value;
+});
+
 // 画面構成後に処理
 onMounted(async () => {
-    const token = localStorage.getItem("token");
-    // tokenがあればtrue, なければfalse
-    isLoggedIn.value = !!token;
     // tokenがある場合、ユーザー名を取得する
     if (isLoggedIn.value == true) {
         const userRes = await $fetch("http://localhost/api/auth/user", {
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token.value}`,
             },
         });
         user.value = userRes;
@@ -82,18 +84,17 @@ const register = () => {
 
 // ログアウト
 const logout = async () => {
-    const token = localStorage.getItem("token");
+    // サーバー側ログアウト
     await $fetch("http://localhost/api/auth/logout", {
         method: "POST",
         headers: {
             // JWT等を使用している場合はここでAuthorizationヘッダーを渡す
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.value}`,
         },
     });
 
-    // ログイン取消コード
-    localStorage.removeItem("token");
-    isLoggedIn.value = false;
+    // クライアント側ログアウト
+    token.value = null;
     // ログイン画面へ遷移する
     navigateTo("/login");
 };

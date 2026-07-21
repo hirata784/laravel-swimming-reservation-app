@@ -106,7 +106,8 @@ const isLogin = async () => {
             },
         });
         // トークンを保存
-        localStorage.setItem("token", res.access_token);
+        const token = useCookie("token");
+        token.value = res.access_token;
         // 予約一覧画面へ移動
         navigateTo("list");
     } catch (error) {
