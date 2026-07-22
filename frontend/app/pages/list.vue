@@ -29,10 +29,15 @@
                                             ].class
                                         "
                                     >
-                                        <!-- ログイン：ボタン表示 -->
+                                        <!-- ログイン：ボタン表示 クリックした日時をconfirmへ渡す -->
                                         <button
                                             class="table-cell-btn"
-                                            @click="confirm"
+                                            @click="
+                                                confirm(
+                                                    `${year}-${month}-${dates[j - 1]}`,
+                                                    `${(i + 8).toString().padStart(2, '0')}:00`,
+                                                )
+                                            "
                                         >
                                             {{
                                                 statusMap[
@@ -73,10 +78,15 @@
                                             ].class
                                         "
                                     >
-                                        <!-- ログイン：ボタン表示 -->
+                                        <!-- ログイン：ボタン表示 クリックした日時をconfirmへ渡す -->
                                         <button
                                             class="table-cell-btn"
-                                            @click="confirm"
+                                            @click="
+                                                confirm(
+                                                    `${year}-${month}-${dates[j - 1]}`,
+                                                    `${(i + 8).toString().padStart(2, '0')}:30`,
+                                                )
+                                            "
                                         >
                                             {{
                                                 statusMap[
@@ -214,9 +224,9 @@ const statusMap = computed(() => {
     return result;
 });
 
-// 確認画面へ遷移
-const confirm = () => {
-    navigateTo("/confirm");
+// 予約日時を持たせて確認画面へ遷移
+const confirm = (confirmDate, confirmTime) => {
+    navigateTo(`/confirm/${confirmDate}/${confirmTime}`);
 };
 
 // 初回実行
