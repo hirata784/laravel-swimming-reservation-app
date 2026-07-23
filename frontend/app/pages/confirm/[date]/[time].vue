@@ -2,7 +2,10 @@
     <div class="confirm">
         <div class="confirm-content">
             <h2 class="title">予約内容の確認</h2>
-            <form class="confirm-form" @submit.prevent="addReservation">
+            <form
+                class="confirm-form"
+                @submit.prevent="addReservation(user, date, time)"
+            >
                 <p class="section-title">【ご予約者情報】</p>
                 <div class="group">
                     <div class="item-group">
@@ -70,8 +73,17 @@ const list = () => {
 };
 
 // 予約の処理を行う
-const addReservation = () => {
-    console.log("予約する");
+const addReservation = async (user, date, time) => {
+    await $fetch("http://localhost/api/reservation", {
+        method: "POST",
+        body: {
+            user_id: user.id,
+            date: date,
+            start_time: time,
+        },
+    });
+    // 予約一覧画面へ遷移
+    navigateTo("/list");
 };
 </script>
 

@@ -38,7 +38,19 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        $item = Reservation::create($request->all());
+        // ユーザーidを取得
+        $user_id = $request->user_id;
+        // 予約枠idを検索してから取得
+        $time_slot = TimeSlot::where('date', $request->date)->where('start_time', $request->start_time)->first();
+        $time_slot_id = $time_slot->id;
+        // 予約データを作成
+        $item = Reservation::create(
+            [
+                'user_id' => $user_id,
+                'time_slot_id' => $time_slot_id,
+            ]
+        );
+
         return response()->json([
             'data' => $item
         ], 201);
