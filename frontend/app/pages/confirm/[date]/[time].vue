@@ -2,7 +2,7 @@
     <div class="confirm">
         <div class="confirm-content">
             <h2 class="title">予約内容の確認</h2>
-            <form class="confirm-form">
+            <form class="confirm-form" @submit.prevent="addReservation">
                 <p class="section-title">【ご予約者情報】</p>
                 <div class="group">
                     <div class="item-group">
@@ -26,7 +26,9 @@
                     </div>
                 </div>
                 <div class="btn-area">
-                    <button class="reservation-btn">予約する</button>
+                    <button class="reservation-btn" type="submit">
+                        予約する
+                    </button>
                     <button class="return-btn" type="button" @click="list">
                         予約一覧へ戻る
                     </button>
@@ -65,6 +67,11 @@ onMounted(async () => {
 // 予約一覧画面へ遷移
 const list = () => {
     navigateTo("/list");
+};
+
+// 予約の処理を行う
+const addReservation = () => {
+    console.log("予約する");
 };
 </script>
 

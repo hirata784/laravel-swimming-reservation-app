@@ -36,6 +36,7 @@
                 <!-- バリデーションの表示中はclass変更 & クリック不可 -->
                 <button
                     class="login-btn"
+                    type="submit"
                     v-bind:class="{
                         'is-disabled-btn': btnIsInvalid,
                     }"

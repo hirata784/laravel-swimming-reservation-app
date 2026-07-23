@@ -32,6 +32,7 @@
                                         <!-- ログイン：ボタン表示 クリックした日時をconfirmへ渡す -->
                                         <button
                                             class="table-cell-btn"
+                                            type="button"
                                             @click="
                                                 confirm(
                                                     `${year}-${month}-${dates[j - 1]}`,
@@ -81,6 +82,7 @@
                                         <!-- ログイン：ボタン表示 クリックした日時をconfirmへ渡す -->
                                         <button
                                             class="table-cell-btn"
+                                            type="button"
                                             @click="
                                                 confirm(
                                                     `${year}-${month}-${dates[j - 1]}`,
