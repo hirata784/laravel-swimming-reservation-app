@@ -10,10 +10,33 @@
         <!-- ログイン中 -->
         <nav v-if="isLoggedIn" class="header-nav">
             <div>
-                <button class="btn">マイページ</button>
+                <!-- レイアウト調整用(削除不可) -->
+                <div></div>
             </div>
-            <div>
-                <button class="btn" @click="logout">ログアウト</button>
+            <!-- 予約一覧画面(ログイン) -->
+            <div v-if="route.name === 'list'">
+                <button class="btn" type="button">マイページ</button>
+                <button class="btn" type="button" @click="logout">
+                    ログアウト
+                </button>
+            </div>
+            <!-- マイページ画面 -->
+            <div v-else-if="route.name === 'mypage'">
+                <button class="btn" type="button" @click="list">
+                    予約一覧
+                </button>
+                <button class="btn" type="button" @click="logout">
+                    ログアウト
+                </button>
+            </div>
+            <div v-else>
+                <button class="btn" type="button" @click="list">
+                    予約一覧
+                </button>
+                <button class="btn" type="button">マイページ</button>
+                <button class="btn" type="button" @click="logout">
+                    ログアウト
+                </button>
             </div>
         </nav>
         <!-- ログアウト中 -->
@@ -22,15 +45,32 @@
                 <!-- レイアウト調整用(削除不可) -->
                 <div></div>
             </div>
+            <!-- 会員登録画面 -->
             <div v-if="route.name === 'register'">
-                <button class="btn" @click="login">ログイン</button>
+                <button class="btn" type="button" @click="list">
+                    予約一覧
+                </button>
+                <button class="btn" type="button" @click="login">
+                    ログイン
+                </button>
             </div>
+            <!-- ログイン画面 -->
             <div v-else-if="route.name === 'login'">
-                <button class="btn" @click="register">会員登録</button>
+                <button class="btn" type="button" @click="list">
+                    予約一覧
+                </button>
+                <button class="btn" type="button" @click="register">
+                    会員登録
+                </button>
             </div>
-            <!-- ログアウト中の予約一覧画面の場合、表示なし -->
+            <!-- 予約一覧画面(ログアウト) -->
             <div v-else>
-                <div></div>
+                <button class="btn" type="button" @click="register">
+                    会員登録
+                </button>
+                <button class="btn" type="button" @click="login">
+                    ログイン
+                </button>
             </div>
         </nav>
     </div>
@@ -98,6 +138,11 @@ const logout = async () => {
     // ログイン画面へ遷移する
     navigateTo("/login");
 };
+
+// 予約一覧画面へ遷移
+const list = () => {
+    navigateTo("/list");
+};
 </script>
 
 <style scoped>
@@ -129,7 +174,7 @@ body {
 }
 
 .header-nav {
-    width: 20%;
+    width: 25%;
     padding-right: 20px;
     display: flex;
     justify-content: space-between;
