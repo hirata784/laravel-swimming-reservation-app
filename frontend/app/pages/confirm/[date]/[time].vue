@@ -27,7 +27,9 @@
                 </div>
                 <div class="btn-area">
                     <button class="reservation-btn">予約する</button>
-                    <button class="return-btn">予約一覧へ戻る</button>
+                    <button class="return-btn" type="button" @click="list">
+                        予約一覧へ戻る
+                    </button>
                 </div>
             </form>
         </div>
@@ -59,6 +61,11 @@ onMounted(async () => {
     });
     user.value = userRes;
 });
+
+// 予約一覧画面へ遷移
+const list = () => {
+    navigateTo("/list");
+};
 </script>
 
 <style scoped>
