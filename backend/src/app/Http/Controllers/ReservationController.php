@@ -16,13 +16,11 @@ class ReservationController extends Controller
     public function index()
     {
         $reservations = Reservation::all();
-        // テーブルデータ数を取得
-        $count = Reservation::count();
         // 各予約日と時間を取得
-        for ($i = 0; $i < $count; $i++) {
-            $id =  $reservations->find($i + 1)->time_slot_id;
-            $item['date'][$i] = TimeSlot::find($id)->date;
-            $item['start_time'][$i] = TimeSlot::find($id)->start_time;
+        foreach ($reservations as $index => $reservation) {
+            $id =  $reservation->time_slot_id;
+            $item['date'][$index] = TimeSlot::find($id)->date;
+            $item['start_time'][$index] = TimeSlot::find($id)->start_time;
         }
 
         return response()->json([
