@@ -142,12 +142,27 @@ const days = ref([]);
 // 曜日のテキスト
 const weekday = ["日", "月", "火", "水", "木", "金", "土"];
 // 予約一覧
-// 例: [{ date: "2026-07-15", time: "09:00" }]
+// 例: [{ user_id: "1", date: "2026-07-15", time: "09:00" }]
 const reservations = ref([]);
+// ユーザー情報取得
+const user = ref("");
 // ログイン状態
 const token = useCookie("token");
 const isLoggedIn = computed(() => {
     return !!token.value;
+});
+
+// 画面構成後に処理
+onMounted(async () => {
+    // tokenがある場合、ユーザー名を取得する
+    if (isLoggedIn.value) {
+        const userRes = await $fetch("http://localhost/api/auth/user", {
+            headers: {
+                Authorization: `Bearer ${token.value}`,
+            },
+        });
+        user.value = userRes;
+    }
 });
 
 // 7日分用意する
@@ -169,6 +184,7 @@ const makeReservations = async () => {
     // APIの配列を1つずつ整形
     for (let i = 0; i < res.data.start_time.length; i++) {
         reservations.value.push({
+            user_id: res.data.user_id[i],
             date: res.data.date[i],
             time: res.data.start_time[i].substring(0, 5),
         });
@@ -184,7 +200,22 @@ const reservationMap = computed(() => {
         // map[key]が存在しない場合、0に1をプラス
         map[key] = (map[key] || 0) + 1;
     });
+    return map;
+});
 
+// ユーザー予約判定
+const userMap = computed(() => {
+    const map = {};
+
+    reservations.value.forEach((r) => {
+        const key = `${r.date}_${r.time}`;
+        // map[key]がまだ無ければ、先に空の配列[]を作る
+        if (!map[key]) {
+            map[key] = [];
+        }
+        // map[key]にuser_idを追加
+        map[key].push(r.user_id);
+    });
     return map;
 });
 
@@ -206,11 +237,20 @@ const statusMap = computed(() => {
                 const key = `${date}_${time}`;
                 // 予約取得数(reservationMap.value[key]が存在しない場合、0を取得)
                 const count = reservationMap.value[key] || 0;
+                // 予約ユーザーを全て取得
+                const userReservation = userMap.value[key] || [];
+                // 予約ユーザーの中に、ログインユーザーが含まれている場合trueを取得
+                const isLoginUserReserved = userReservation.includes(
+                    user.value.id,
+                );
 
                 // 状態決定
                 // 過去の日時の場合、予約0でも予約不可能とする
                 if (dates.value[0] == d && currentTime > time) {
                     result[key] = { text: "×", class: "bg-gray" };
+                    // ログインユーザーが予約済みの場合
+                } else if (isLoginUserReserved === true) {
+                    result[key] = { text: "◎", class: "bg-red" };
                     // 予約人数によって、表示を変更する
                 } else if (count >= 2) {
                     result[key] = { text: "×", class: "bg-gray" };
@@ -307,5 +347,9 @@ td {
 
 .bg-gray {
     background-color: #7f8c8d;
+}
+
+.bg-red {
+    background-color: #e25c5c;
 }
 </style>
