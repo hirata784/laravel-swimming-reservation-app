@@ -1,6 +1,9 @@
 <template>
     <div class="reservation">
-        <p v-if="message" class="header-message">{{ message }}</p>
+        <p v-if="message" class="header-success-message">{{ message }}</p>
+        <p v-if="errorMessage" class="header-error-message">
+            {{ errorMessage }}
+        </p>
         <div class="reservation-content">
             <h2 class="title">{{ year }}年{{ month }}月</h2>
             <div class="table-scroll-wrapper">
@@ -38,6 +41,9 @@
                                                 confirm(
                                                     `${year}-${month}-${dates[j - 1]}`,
                                                     `${(i + 8).toString().padStart(2, '0')}:00`,
+                                                    statusMap[
+                                                        `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
+                                                    ].text,
                                                 )
                                             "
                                         >
@@ -88,6 +94,9 @@
                                                 confirm(
                                                     `${year}-${month}-${dates[j - 1]}`,
                                                     `${(i + 8).toString().padStart(2, '0')}:30`,
+                                                    statusMap[
+                                                        `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
+                                                    ].text,
                                                 )
                                             "
                                         >
@@ -162,6 +171,8 @@ const messageMap = {
 const message = ref(messageMap[messageKey] || "");
 // 画面リロード時にメッセージが再表示されるのを防ぐため、URLを書き換える目的で使用
 const router = useRouter();
+// エラーメッセージ
+const errorMessage = ref("");
 
 // 画面構成後に処理
 onMounted(async () => {
@@ -283,8 +294,17 @@ const statusMap = computed(() => {
 });
 
 // 予約日時を持たせて確認画面へ遷移
-const confirm = (confirmDate, confirmTime) => {
-    navigateTo(`/confirm/${confirmDate}/${confirmTime}`);
+const confirm = (confirmDate, confirmTime, text) => {
+    // ボタンテキストが[×]の場合、確認画面へ遷移しない
+    if (text === "×") {
+        errorMessage.value = "エラー：満員か、過去日時のため予約ができません";
+        // 3秒後にメッセージが非表示になる
+        setTimeout(() => {
+            errorMessage.value = "";
+        }, 3000);
+    } else {
+        navigateTo(`/confirm/${confirmDate}/${confirmTime}`);
+    }
 };
 
 // 初回実行
@@ -303,9 +323,16 @@ p {
     text-align: center;
 }
 
-.header-message {
+.header-success-message {
     background-color: #55c6a9;
     color: #304654;
+    padding: 10px 20px;
+    text-align: left;
+}
+
+.header-error-message {
+    background-color: #e25c5c;
+    color: #f5f5f5;
     padding: 10px 20px;
     text-align: left;
 }
