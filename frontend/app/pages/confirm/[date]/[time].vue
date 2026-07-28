@@ -83,7 +83,10 @@ const addReservation = async (user, date, time) => {
         },
     });
     // 予約一覧画面へ遷移
-    navigateTo("/list");
+    navigateTo({
+        path: "/list",
+        query: { message: "success" },
+    });
 };
 </script>
 

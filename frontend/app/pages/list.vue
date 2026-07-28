@@ -1,5 +1,6 @@
 <template>
     <div class="reservation">
+        <p v-if="message" class="header-message">{{ message }}</p>
         <div class="reservation-content">
             <h2 class="title">{{ year }}年{{ month }}月</h2>
             <div class="table-scroll-wrapper">
@@ -151,9 +152,24 @@ const token = useCookie("token");
 const isLoggedIn = computed(() => {
     return !!token.value;
 });
+// URLのクエリパラメータからメッセージのキーを取得
+const route = useRoute();
+const messageKey = route.query.message;
+// キーに対応する表示用メッセージのマッピング
+const messageMap = {
+    success: "予約が完了しました",
+};
+const message = ref(messageMap[messageKey] || "");
+// 画面リロード時にメッセージが再表示されるのを防ぐため、URLを書き換える目的で使用
+const router = useRouter();
 
 // 画面構成後に処理
 onMounted(async () => {
+    // 3秒後にメッセージが非表示になる
+    setTimeout(() => {
+        message.value = "";
+        router.replace({ query: { ...route.query, message: undefined } });
+    }, 3000);
     // tokenがある場合、ユーザー名を取得する
     if (isLoggedIn.value) {
         const userRes = await $fetch("http://localhost/api/auth/user", {
@@ -276,11 +292,22 @@ makeReservations();
 </script>
 
 <style scoped>
+p {
+    margin: 0;
+}
+
 .reservation {
     background-color: #cce9fa;
     width: 100%;
     height: 90vh;
     text-align: center;
+}
+
+.header-message {
+    background-color: #55c6a9;
+    color: #304654;
+    padding: 10px 20px;
+    text-align: left;
 }
 
 .reservation-content {
