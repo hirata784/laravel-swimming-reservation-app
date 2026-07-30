@@ -13,7 +13,9 @@
                             <th class="fix-th">受付時刻</th>
                             <template v-for="i in 7">
                                 <th class="fix-th">
-                                    {{ dates[i - 1] }}({{ days[i - 1] }})
+                                    {{ dates[i - 1].slice(8) }}({{
+                                        days[i - 1]
+                                    }})
                                 </th>
                             </template>
                         </tr>
@@ -29,7 +31,7 @@
                                         v-if="isLoggedIn"
                                         :class="
                                             statusMap[
-                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
+                                                `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
                                             ].class
                                         "
                                     >
@@ -39,17 +41,17 @@
                                             type="button"
                                             @click="
                                                 confirm(
-                                                    `${year}-${month}-${dates[j - 1]}`,
+                                                    `${dates[j - 1]}`,
                                                     `${(i + 8).toString().padStart(2, '0')}:00`,
                                                     statusMap[
-                                                        `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
+                                                        `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
                                                     ].text,
                                                 )
                                             "
                                         >
                                             {{
                                                 statusMap[
-                                                    `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:00`
+                                                    `${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:00`
                                                 ].text
                                             }}
                                         </button>
@@ -58,14 +60,14 @@
                                         v-else
                                         :class="
                                             statusMap[
-                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
+                                                `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
                                             ].class
                                         "
                                     >
                                         <!-- ログアウト：テキスト表示 -->
                                         {{
                                             statusMap[
-                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:00`
+                                                `${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:00`
                                             ].text
                                         }}
                                     </td>
@@ -82,7 +84,7 @@
                                         v-if="isLoggedIn"
                                         :class="
                                             statusMap[
-                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
+                                                `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
                                             ].class
                                         "
                                     >
@@ -92,17 +94,17 @@
                                             type="button"
                                             @click="
                                                 confirm(
-                                                    `${year}-${month}-${dates[j - 1]}`,
+                                                    `${dates[j - 1]}`,
                                                     `${(i + 8).toString().padStart(2, '0')}:30`,
                                                     statusMap[
-                                                        `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
+                                                        `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
                                                     ].text,
                                                 )
                                             "
                                         >
                                             {{
                                                 statusMap[
-                                                    `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:30`
+                                                    `${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:30`
                                                 ].text
                                             }}
                                         </button>
@@ -111,14 +113,14 @@
                                         v-else
                                         :class="
                                             statusMap[
-                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
+                                                `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
                                             ].class
                                         "
                                     >
                                         <!-- ログアウト：テキスト表示 -->
                                         {{
                                             statusMap[
-                                                `${year}-${month}-${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:30`
+                                                `${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:30`
                                             ].text
                                         }}
                                     </td>
@@ -145,7 +147,7 @@ const hour = today.getHours();
 const minute = today.getMinutes().toString().padStart(2, "0");
 // 現在の時刻
 const currentTime = `${hour}:${minute}`;
-// 日にち
+// 年月日
 const dates = ref([]);
 // 曜日
 const days = ref([]);
@@ -197,8 +199,12 @@ for (let i = 0; i < 7; i++) {
     const d = new Date(today);
     // 月末日に+1した場合、自動的に翌月の1日に進む
     d.setDate(today.getDate() + i);
-    // 日にちを取得(1~9日は頭を0で埋める(例：01日))
-    dates.value.push(d.getDate().toString().padStart(2, "0"));
+    // 年月日を取得(月日は頭を0で埋める(例：01日))
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    // 年月日を取得
+    dates.value.push(`${y}-${m}-${day}`);
     // 曜日を取得
     days.value.push(weekday[d.getDay()]);
 }
@@ -259,7 +265,7 @@ const statusMap = computed(() => {
                 // 時間
                 const time = `${h.toString().padStart(2, "0")}:${m}`;
                 // 日付
-                const date = `${year}-${month}-${d}`;
+                const date = d;
                 // キー
                 const key = `${date}_${time}`;
                 // 予約取得数(reservationMap.value[key]が存在しない場合、0を取得)
