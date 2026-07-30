@@ -175,6 +175,8 @@ const message = ref(messageMap[messageKey] || "");
 const router = useRouter();
 // エラーメッセージ
 const errorMessage = ref("");
+// エラーメッセージの連打防止
+let isRunning = false;
 
 // 画面構成後に処理
 onMounted(async () => {
@@ -303,10 +305,16 @@ const statusMap = computed(() => {
 const confirm = (confirmDate, confirmTime, text) => {
     // ボタンテキストが[×]の場合、確認画面へ遷移しない
     if (text === "×") {
+        // エラーメッセージ表示中なら何もしない
+        if (isRunning) return;
+        isRunning = true;
+
         errorMessage.value = "エラー：満員か、過去日時のため予約ができません";
         // 3秒後にメッセージが非表示になる
         setTimeout(() => {
             errorMessage.value = "";
+            // 処理が終わったら解除
+            isRunning = false;
         }, 3000);
     } else {
         navigateTo(`/confirm/${confirmDate}/${confirmTime}`);
