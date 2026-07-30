@@ -1,9 +1,9 @@
 <template>
     <div class="reservation">
-        <p v-if="message" class="header-success-message">{{ message }}</p>
         <p v-if="errorMessage" class="header-error-message">
             {{ errorMessage }}
         </p>
+        <p v-else-if="message" class="header-success-message">{{ message }}</p>
         <div class="reservation-content">
             <h2 class="title">{{ year }}年{{ month }}月</h2>
             <div class="table-scroll-wrapper">
@@ -335,6 +335,7 @@ p {
     width: 100%;
     height: 90vh;
     text-align: center;
+    position: relative;
 }
 
 .header-success-message {
@@ -342,6 +343,11 @@ p {
     color: #304654;
     padding: 10px 20px;
     text-align: left;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .header-error-message {
@@ -349,6 +355,11 @@ p {
     color: #f5f5f5;
     padding: 10px 20px;
     text-align: left;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .reservation-content {
