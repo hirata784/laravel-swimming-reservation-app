@@ -105,11 +105,22 @@ onMounted(async () => {
         }
     } catch (error) {
         if (error.response?.status === 401) {
-            // トークンの有効期限が切れた場合は強制ログアウトする
-            // クライアント側ログアウト
-            token.value = null;
-            // ログイン画面へ遷移する
-            navigateTo("/login");
+            // トークンの有効期限が切れた場合はリフレッシュしてログインを継続する
+            try {
+                const res = await $fetch("http://localhost/api/auth/refresh", {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token.value}`,
+                    },
+                });
+                token.value = res.access_token;
+            } catch {
+                // リフレッシュができない場合は強制ログアウトする
+                // クライアント側ログアウト
+                token.value = null;
+                // ログイン画面へ遷移する
+                navigateTo("/login");
+            }
         }
     }
 });
