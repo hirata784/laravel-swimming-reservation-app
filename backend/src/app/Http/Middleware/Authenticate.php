@@ -14,8 +14,9 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
+        // 未認証時は401エラーを返す
         if (! $request->expectsJson()) {
-            return route('login');
+            abort(401);
         }
     }
 }

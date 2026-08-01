@@ -93,14 +93,24 @@ const isLoggedIn = computed(() => {
 
 // 画面構成後に処理
 onMounted(async () => {
-    // tokenがある場合、ユーザー名を取得する
-    if (isLoggedIn.value == true) {
-        const userRes = await $fetch("http://localhost/api/auth/user", {
-            headers: {
-                Authorization: `Bearer ${token.value}`,
-            },
-        });
-        user.value = userRes;
+    try {
+        // tokenがある場合、ユーザー名を取得する
+        if (isLoggedIn.value == true) {
+            const userRes = await $fetch("http://localhost/api/auth/user", {
+                headers: {
+                    Authorization: `Bearer ${token.value}`,
+                },
+            });
+            user.value = userRes;
+        }
+    } catch (error) {
+        if (error.response?.status === 401) {
+            // トークンの有効期限が切れた場合は強制ログアウトする
+            // クライアント側ログアウト
+            token.value = null;
+            // ログイン画面へ遷移する
+            navigateTo("/login");
+        }
     }
 });
 
