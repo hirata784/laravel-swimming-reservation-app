@@ -79,7 +79,7 @@
 <script setup>
 // ページのURLを取得
 const route = useRoute();
-// {user:ユーザー情報表示用, token: トークン, fetchUser: ユーザー情報 }
+// {user:データ（状態）, token: トークン, fetchUser: データを取得する関数 }
 const { user, token, fetchUser } = useAuth();
 
 // ログイン状態

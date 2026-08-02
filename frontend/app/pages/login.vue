@@ -55,6 +55,9 @@ import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { ref, watch } from "vue";
 
+// {token: トークン, fetchUser: データを取得する関数 }
+const { token, fetchUser } = useAuth();
+
 // 未認証時のみアクセス可能にする
 definePageMeta({
     middleware: "auth",
@@ -107,8 +110,8 @@ const isLogin = async () => {
             },
         });
         // トークンを保存
-        const token = useCookie("token");
         token.value = res.access_token;
+        await fetchUser();
         // 予約一覧画面へ移動
         navigateTo("list");
     } catch (error) {
