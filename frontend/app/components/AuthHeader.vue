@@ -3,7 +3,7 @@
         <h1 class="header-str">▼●▲水泳クラブ</h1>
         <!-- ログイン中 -->
         <nav v-if="isLoggedIn">
-            <div class="login-user">
+            <div v-if="user" class="login-user">
                 {{ user.name }}さんがログインしています
             </div>
         </nav>
@@ -77,16 +77,12 @@
 </template>
 
 <script setup>
-// インポート
-import { watch } from "vue";
-
 // ページのURLを取得
 const route = useRoute();
-// ユーザー情報取得
-const user = ref("");
+// {user:ユーザー情報表示用, token: トークン, fetchUser: ユーザー情報 }
+const { user, token, fetchUser } = useAuth();
 
 // ログイン状態
-const token = useCookie("token");
 const isLoggedIn = computed(() => {
     return !!token.value;
 });
@@ -94,15 +90,7 @@ const isLoggedIn = computed(() => {
 // 画面構成後に処理
 onMounted(async () => {
     try {
-        // tokenがある場合、ユーザー名を取得する
-        if (isLoggedIn.value == true) {
-            const userRes = await $fetch("http://localhost/api/auth/user", {
-                headers: {
-                    Authorization: `Bearer ${token.value}`,
-                },
-            });
-            user.value = userRes;
-        }
+        await fetchUser();
     } catch (error) {
         if (error.response?.status === 401) {
             // トークンの有効期限が切れた場合はリフレッシュしてログインを継続する
@@ -114,6 +102,7 @@ onMounted(async () => {
                     },
                 });
                 token.value = res.access_token;
+                await fetchUser();
             } catch {
                 // リフレッシュができない場合は強制ログアウトする
                 // クライアント側ログアウト
@@ -124,14 +113,6 @@ onMounted(async () => {
         }
     }
 });
-
-// ルートの変更を検知してリロード
-watch(
-    () => route.path,
-    () => {
-        window.location.reload();
-    },
-);
 
 // ログイン画面へ遷移
 const login = () => {
