@@ -177,11 +177,15 @@ const router = useRouter();
 const errorMessage = ref("");
 // エラーメッセージの連打防止
 let isRunning = false;
+// 予約成功メッセージのタイマー
+let messageTimerId = null;
+// エラーメッセージのタイマー
+let errorTimerId = null;
 
 // 画面構成後に処理
 onMounted(async () => {
     // 3秒後にメッセージが非表示になる
-    setTimeout(() => {
+    messageTimerId = setTimeout(() => {
         message.value = "";
         router.replace({ query: { ...route.query, message: undefined } });
     }, 3000);
@@ -194,6 +198,12 @@ onMounted(async () => {
         });
         user.value = userRes;
     }
+});
+
+// 画面を離れる時は、動いているタイマーを「すべて」完全に抹消する
+onUnmounted(() => {
+    if (messageTimerId) clearTimeout(messageTimerId);
+    if (errorTimerId) clearTimeout(errorTimerId);
 });
 
 // 7日分用意する
@@ -311,13 +321,23 @@ const confirm = (confirmDate, confirmTime, text) => {
 
         errorMessage.value = "エラー：満員か、過去日時のため予約ができません";
         // 3秒後にメッセージが非表示になる
-        setTimeout(() => {
+        errorTimerId = setTimeout(() => {
             errorMessage.value = "";
             // 処理が終わったら解除
             isRunning = false;
         }, 3000);
+        // ボタンテキストが[◎]の場合、予約取り消し確認画面へ遷移
+    } else if (text === "◎") {
+        navigateTo({
+            path: `/confirm/${confirmDate}/${confirmTime}`,
+            query: { mode: "cancel" },
+        });
+        // ボタンテキストが[⚪︎][△]の場合、確認画面へ遷移
     } else {
-        navigateTo(`/confirm/${confirmDate}/${confirmTime}`);
+        navigateTo({
+            path: `/confirm/${confirmDate}/${confirmTime}`,
+            query: { mode: "create" },
+        });
     }
 };
 

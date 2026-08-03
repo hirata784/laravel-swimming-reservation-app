@@ -30,7 +30,7 @@
                 </div>
                 <div class="btn-area">
                     <button class="reservation-btn" type="submit">
-                        予約する
+                        {{ buttonText }}
                     </button>
                     <button class="return-btn" type="button" @click="list">
                         予約一覧へ戻る
@@ -47,6 +47,13 @@ const route = useRoute();
 // 予約日時取得
 const date = route.params.date;
 const time = route.params.time;
+// クエリからモードを取得 ( route.query )
+const mode = computed(() => route.query.mode || "create");
+// モードによって表示を切り替え
+const isCancel = computed(() => mode.value === "cancel");
+const buttonText = computed(() =>
+    isCancel.value ? "予約を取り消す" : "予約する",
+);
 // 年月日表示用
 const year = date.substring(0, 4);
 const month = date.substring(5, 7);
