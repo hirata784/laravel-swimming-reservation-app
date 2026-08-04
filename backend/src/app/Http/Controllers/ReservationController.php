@@ -71,12 +71,23 @@ class ReservationController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Reservation  $reservation
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Reservation $reservation)
+    public function destroy(Request $request)
     {
-        $item = Reservation::where('id', $reservation->id)->delete();
+        // ユーザーidを取得
+        $user_id = $request->user_id;
+        // 予約枠idを検索してから取得
+        $time_slot = TimeSlot::where('date', $request->date)->where('start_time', $request->start_time)->first();
+        $time_slot_id = $time_slot->id;
+        // 予約idを取得
+        $reservation = Reservation::where('user_id', $user_id)->where('time_slot_id', $time_slot_id)->first();
+        $reservation_id = $reservation->id;
+
+        // 予約データを削除
+        $item = Reservation::where('id', $reservation_id)->delete();
+
         if ($item) {
             return response()->json([
                 'message' => 'Deleted successfully',

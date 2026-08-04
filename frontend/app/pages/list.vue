@@ -169,6 +169,7 @@ const messageKey = route.query.message;
 // キーに対応する表示用メッセージのマッピング
 const messageMap = {
     success: "予約が完了しました",
+    delete: "予約を取り消しました",
 };
 const message = ref(messageMap[messageKey] || "");
 // 画面リロード時にメッセージが再表示されるのを防ぐため、URLを書き換える目的で使用

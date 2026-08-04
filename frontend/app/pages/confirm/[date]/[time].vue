@@ -11,7 +11,7 @@
                     cancel: isCancel,
                     create: !isCancel,
                 }"
-                @submit.prevent="addReservation(user, date, time)"
+                @submit.prevent="handleSubmit(user, date, time)"
             >
                 <p class="section-title">【ご予約者情報】</p>
                 <div class="group">
@@ -86,6 +86,17 @@ const list = () => {
     navigateTo("/list");
 };
 
+// 予約の分岐点
+const handleSubmit = (user, date, time) => {
+    if (mode.value === "create") {
+        // 予約確認画面の場合、予約処理
+        addReservation(user, date, time);
+    } else if (mode.value === "cancel") {
+        // 予約取り消し確認画面の場合、予約取り消し処理
+        deleteReservation(user, date, time);
+    }
+};
+
 // 予約の処理を行う
 const addReservation = async (user, date, time) => {
     await $fetch("http://localhost/api/reservation", {
@@ -100,6 +111,23 @@ const addReservation = async (user, date, time) => {
     navigateTo({
         path: "/list",
         query: { message: "success" },
+    });
+};
+
+// 予約の取り消しを行う
+const deleteReservation = async (user, date, time) => {
+    await $fetch("http://localhost/api/reservation", {
+        method: "DELETE",
+        body: {
+            user_id: user.id,
+            date: date,
+            start_time: time,
+        },
+    });
+    // 予約一覧画面へ遷移
+    navigateTo({
+        path: "/list",
+        query: { message: "delete" },
     });
 };
 </script>

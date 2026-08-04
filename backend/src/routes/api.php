@@ -21,7 +21,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::apiResource('/reservation', ReservationController::class);
+Route::apiResource('/reservation', ReservationController::class)->only([
+    'index',
+    'store'
+]);
+Route::delete('/reservation', [ReservationController::class, 'destroy']);
 Route::apiResource('/mypage', MypageController::class);
 Route::apiResource('/timeslot', TimeSlotController::class);
 
