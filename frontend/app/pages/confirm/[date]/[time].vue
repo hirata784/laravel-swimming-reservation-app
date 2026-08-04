@@ -2,8 +2,15 @@
     <div class="confirm">
         <div class="confirm-content">
             <h2 class="title">予約内容の確認</h2>
+            <p v-if="isCancel" class="note">
+                注意：下記内容の予約情報を取り消します！！
+            </p>
             <form
-                class="confirm-form"
+                :class="{
+                    'confirm-form': true,
+                    cancel: isCancel,
+                    create: !isCancel,
+                }"
                 @submit.prevent="addReservation(user, date, time)"
             >
                 <p class="section-title">【ご予約者情報】</p>
@@ -119,14 +126,27 @@ p {
     color: #304654;
 }
 
+.note {
+    color: #da251d;
+    font-size: 20px;
+}
+
 .confirm-form {
     width: 50%;
     max-width: 600px;
-    margin: 80px auto;
+    /* margin: 80px auto; */
     padding: 30px 50px;
     border: 1px solid #304654;
     border-radius: 20px;
     background-color: #eef9ff;
+}
+
+.create {
+    margin: 80px auto;
+}
+
+.cancel {
+    margin: 50px auto 80px;
 }
 
 .section-title {
