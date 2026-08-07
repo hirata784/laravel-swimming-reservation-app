@@ -57,6 +57,8 @@ import { ref, watch } from "vue";
 
 // {token: トークン, fetchUser: データを取得する関数 }
 const { token, fetchUser } = useAuth();
+// リフレッシュトークン
+const refreshToken = useCookie("refresh_token");
 
 // 未認証時のみアクセス可能にする
 definePageMeta({
@@ -111,6 +113,9 @@ const isLogin = async () => {
         });
         // トークンを保存
         token.value = res.access_token;
+        // リフレッシュトークンを保存
+        refreshToken.value = res.refresh_token;
+
         await fetchUser();
         // 予約一覧画面へ移動
         navigateTo("list");
