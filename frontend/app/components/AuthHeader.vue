@@ -81,9 +81,6 @@
 const route = useRoute();
 // {user:データ（状態）, token: トークン, fetchUser: データを取得する関数 }
 const { user, token, fetchUser } = useAuth();
-// リフレッシュトークン
-const refreshToken = useCookie("refresh_token");
-
 // ログイン状態
 const isLoggedIn = computed(() => {
     return !!token.value;
@@ -95,9 +92,7 @@ onMounted(async () => {
         await fetchUser();
     } catch (error) {
         if (error.status === 401) {
-            // トークンの有効期限が切れた場合はリフレッシュしてログインを継続する
             try {
-                await refresh();
                 await fetchUser();
             } catch {
                 // リフレッシュができない場合は強制ログアウトする
@@ -135,17 +130,6 @@ const logout = async () => {
     token.value = null;
     // ログイン画面へ遷移する
     navigateTo("/login");
-};
-
-// リフレッシュ
-const refresh = async () => {
-    const res = await $fetch("http://localhost/api/auth/refresh", {
-        method: "POST",
-        body: {
-            refresh_token: refreshToken.value,
-        },
-    });
-    token.value = res.access_token;
 };
 
 // 予約一覧画面へ遷移

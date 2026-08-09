@@ -11,11 +11,7 @@ export const useAuth = () => {
     const fetchUser = async () => {
         if (!token.value) return;
 
-        const res = await $fetch("http://localhost/api/auth/user", {
-            headers: {
-                Authorization: `Bearer ${token.value}`,
-            },
-        });
+        const res = await apiFetch("http://localhost/api/auth/user");
 
         user.value = res;
     };

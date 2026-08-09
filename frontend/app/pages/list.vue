@@ -156,10 +156,8 @@ const weekday = ["日", "月", "火", "水", "木", "金", "土"];
 // 予約一覧
 // 例: [{ user_id: "1", date: "2026-07-15", time: "09:00" }]
 const reservations = ref([]);
-// ユーザー情報取得
-const user = ref("");
-// ログイン状態
-const token = useCookie("token");
+// {user:データ（状態）, token: トークン, fetchUser: データを取得する関数 }
+const { user, token, fetchUser } = useAuth();
 const isLoggedIn = computed(() => {
     return !!token.value;
 });
@@ -182,6 +180,8 @@ let isRunning = false;
 let messageTimerId = null;
 // エラーメッセージのタイマー
 let errorTimerId = null;
+// 予約ユーザーとログインユーザーの比較用
+let isLoginUserReserved = false;
 
 // 画面構成後に処理
 onMounted(async () => {
@@ -192,12 +192,7 @@ onMounted(async () => {
     }, 3000);
     // tokenがある場合、ユーザー名を取得する
     if (isLoggedIn.value) {
-        const userRes = await $fetch("http://localhost/api/auth/user", {
-            headers: {
-                Authorization: `Bearer ${token.value}`,
-            },
-        });
-        user.value = userRes;
+        await fetchUser();
     }
 });
 
@@ -285,10 +280,12 @@ const statusMap = computed(() => {
                 const count = reservationMap.value[key] || 0;
                 // 予約ユーザーを全て取得
                 const userReservation = userMap.value[key] || [];
-                // 予約ユーザーの中に、ログインユーザーが含まれている場合trueを取得
-                const isLoginUserReserved = userReservation.includes(
-                    user.value.id,
-                );
+                // 予約ユーザーの中に、ログインユーザーが含まれている場合trueを取得(ログイン中のみ処理)
+                if (user.value) {
+                    isLoginUserReserved = userReservation.includes(
+                        user.value.id,
+                    );
+                }
 
                 // 状態決定
                 // 過去の日時の場合、予約0でも予約不可能とする

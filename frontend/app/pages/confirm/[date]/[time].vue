@@ -6,6 +6,7 @@
                 注意：下記内容の予約情報を取り消します！！
             </p>
             <form
+                v-if="user"
                 :class="{
                     'confirm-form': true,
                     cancel: isCancel,
@@ -66,19 +67,12 @@ const year = date.substring(0, 4);
 const month = date.substring(5, 7);
 const dates = date.substring(8, 10);
 const displayDate = `${year}年${month}月${dates}日`;
-// ユーザー情報取得
-const user = ref("");
-// トークン取得
-const token = useCookie("token");
+// {user:データ（状態）, fetchUser: データを取得する関数 }
+const { user, fetchUser } = useAuth();
 
 // 画面構成後に処理
 onMounted(async () => {
-    const userRes = await $fetch("http://localhost/api/auth/user", {
-        headers: {
-            Authorization: `Bearer ${token.value}`,
-        },
-    });
-    user.value = userRes;
+    await fetchUser();
 });
 
 // 予約一覧画面へ遷移
@@ -99,7 +93,7 @@ const handleSubmit = (user, date, time) => {
 
 // 予約の処理を行う
 const addReservation = async (user, date, time) => {
-    await $fetch("http://localhost/api/reservation", {
+    await apiFetch("http://localhost/api/reservation", {
         method: "POST",
         body: {
             user_id: user.id,
@@ -116,7 +110,7 @@ const addReservation = async (user, date, time) => {
 
 // 予約の取り消しを行う
 const deleteReservation = async (user, date, time) => {
-    await $fetch("http://localhost/api/reservation", {
+    await apiFetch("http://localhost/api/reservation", {
         method: "DELETE",
         body: {
             user_id: user.id,
