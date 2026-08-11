@@ -1,1 +1,229 @@
-# laravel-swimming-reservation-app
+# laravel-swimming-reservation-app(水泳施設予約アプリ)
+
+NuxtとLaravelを使用したアプリです。  
+水泳施設の予約状況を確認し、予約をすることができます。
+
+## 技術選定の理由
+
+### 1. 開発スピードの最大化と技術の深掘り
+
+これまでに学習してきた「Laravel」をバックエンドに、「Nuxt」をフロントエンドに採用しました。
+未知の技術を詰め込むのではなく、すでに基礎を学んだ技術を組み合わせることで、「設計や実用的な機能実装に集中し、アプリを確実に完成させること」を最優先としました。
+
+### 2. フロントエンドとバックエンドの関心事の分離（疎結合な設計）
+
+実務で広く取り入れられている「API駆動開発（フロントとバックを切り離す構成）」に挑戦したかったためです。
+
+## 環境構築
+
+### Dockerビルド
+
+1. リポジトリをクローンします。
+
+```bash
+git clone git@github.com:hirata784/laravel-swimming-reservation-app.git
+```
+
+2. DockerDesktopアプリを立ち上げます。
+
+3. backendフォルダへ移動します。
+
+```bash
+cd laravel-swimming-reservation-app/backend
+```
+
+4. コンテナをビルド（構築）し、バックグラウンドで起動します。
+
+```bash
+docker compose up -d --build
+```
+
+＊MySQLは、OSによって起動しない場合があるのでそれぞれのPCに合わせてdocker-compose.ymlファイルを編集して下さい。
+
+---
+
+### Laravel環境構築
+
+1. PHPコンテナ内に入ります。
+
+```bash
+docker compose exec php bash
+```
+
+2. プロジェクトに必要なPHPライブラリをインストールします。
+
+```bash
+composer install
+```
+
+3. 設定ファイルの雛形をコピーして `.env` ファイルを作成します。
+
+```bash
+cp .env.example .env
+```
+
+4. .envに以下の環境変数を変更します。
+
+```properties
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=laravel_db
+DB_USERNAME=laravel_user
+DB_PASSWORD=laravel_pass
+```
+
+5. アプリケーションキーを作成します。
+
+```bash
+php artisan key:generate
+```
+
+6. マイグレーションを実行します。
+
+```bash
+php artisan migrate
+```
+
+7. シーディングを実行します。
+
+```bash
+php artisan db:seed
+```
+
+8. JWTの署名・検証用の秘密鍵（シークレットキー）を生成します。
+
+```bash
+php artisan jwt:secret
+```
+
+9. PHPコンテナ内での作業が終わったら、以下のコマンドでホスト側（自分のパソコン）に戻ります。
+
+```bash
+exit
+```
+
+---
+
+### Nuxt環境構築
+
+1. frontendフォルダへ移動します。
+
+```bash
+cd ../frontend
+```
+
+2. Nuxtに必要なJavaScriptライブラリをインストールします。
+
+```bash
+npm install
+```
+
+3. フロントエンドの開発用サーバーを立ち上げます。  
+   (※開発作業中は、このターミナルを閉じずに起動したままにしてください)
+
+```bash
+ npm run dev
+```
+
+## テスト用アカウント
+
+name: テスト一郎  
+email: ichiro@example.com  
+password: ichi1234
+
+---
+
+name: テスト次郎  
+email: jiro@example.com  
+password: jiro5678
+
+---
+
+※その他、ランダムで25名分のアカウントが作成されます。  
+メールアドレスにはusersテーブルのemailデータを打ち込んでください。  
+パスワードは「password」を打ち込んでください。
+
+## 機能説明
+
+### ゲスト・未ログイン画面
+
+会員登録画面  
+![画像](images/register.png)
+ユーザーを新規登録します。  
+(※登録完了後は、今後作成する画面に遷移予定です。  
+そのため現状は、入力に成功しても、バリデーションが表示され、会員登録画面のままとなります。)
+
+---
+
+ログイン画面
+![画像](images/login.png)
+ユーザー登録したメールアドレスとパスワードを入力してログインします。  
+ログインに成功すると、予約一覧画面へ遷移します。
+
+---
+
+予約一覧画面  
+![画像](images/list-logout.png)
+予約状況を表示します。ログアウト中の場合は、閲覧のみで予約することはできません。  
+タイトルに今年月を表示し、リストのカラムには、当日から一週間分の日付が表示されます。  
+現在の時間と比較し、過去の時間は予約できない仕様となっています。  
+(例：現在12時40分なら、今日日付の13時までは予約ができません。)
+
+---
+
+### 認証済みユーザー専用画面
+
+予約一覧画面  
+![画像](images/list-login.png)
+予約状況を表示します。各記号の内容は下記となります。  
+| 記号 | クリック後の動作 | 表示条件
+| :-------------: | ------------- | ------------- |
+| ○ | 予約確認画面へ遷移 | 予約枠に十分な空きがある日時 |
+| △ | 予約確認画面へ遷移 | 予約枠が残りわずかの日時 |
+| × | 予約不可能(エラーメッセージを表示) | 予約満員、または過去の日時 |
+| ◎ | 予約取消確認画面へ遷移 | ログインユーザー自身が予約している日時 |
+
+---
+
+予約確認画面  
+![画像](images/confirm-create.png)
+「予約する」をクリックすると、表示内容で予約し、予約一覧画面へ遷移します。  
+予約が完了すると、ヘッダーにメッセージが表示されます。  
+「予約一覧へ戻る」をクリックすると、予約一覧画面へ遷移します。
+
+---
+
+予約取消確認画面  
+![画像](images/confirm-cancel.png)
+「予約を取り消す」をクリックすると、表示内容で予約を取り消し、予約一覧画面へ遷移します。  
+予約を取り消すと、ヘッダーにメッセージが表示されます。  
+「予約一覧へ戻る」をクリックすると、予約一覧画面へ遷移します。
+
+## 使用技術
+
+### フロントエンド
+
+- Nuxt 4
+
+### バックエンド
+
+- PHP 8.4.2
+- Laravel 8.83.29
+- tymon/jwt-auth
+- MySQL 8.0.26
+
+### 開発環境
+
+- Docker / Docker Compose
+
+## ER図
+
+![画像](images/er-diagram.png)
+
+## URL
+
+- 会員登録画面：http://localhost:3000/register
+- ログイン画面：http://localhost:3000/login
+- 予約一覧画面：http://localhost:3000/list
+- phpMyAdmin：http://localhost:8080/
