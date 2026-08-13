@@ -60,9 +60,9 @@ const { token, fetchUser } = useAuth();
 // リフレッシュトークン
 const refreshToken = useCookie("refresh_token");
 
-// 未認証時のみアクセス可能にする
+// 未認証中のみアクセス可能にする
 definePageMeta({
-    middleware: "auth",
+    middleware: "guest",
 });
 
 // バリデーションのルールを設定

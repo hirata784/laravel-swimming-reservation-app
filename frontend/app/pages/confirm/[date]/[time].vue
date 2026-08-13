@@ -70,6 +70,11 @@ const displayDate = `${year}年${month}月${dates}日`;
 // {user:データ（状態）, fetchUser: データを取得する関数 }
 const { user, fetchUser } = useAuth();
 
+// 認証中のみアクセス可能にする
+definePageMeta({
+    middleware: "auth",
+});
+
 // 画面構成後に処理
 onMounted(async () => {
     await fetchUser();

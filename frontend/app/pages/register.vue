@@ -70,9 +70,9 @@ import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { ref, watch } from "vue";
 
-// 未認証時のみアクセス可能にする
+// 未認証中のみアクセス可能にする
 definePageMeta({
-    middleware: "auth",
+    middleware: "guest",
 });
 
 // バリデーションのルールを設定
