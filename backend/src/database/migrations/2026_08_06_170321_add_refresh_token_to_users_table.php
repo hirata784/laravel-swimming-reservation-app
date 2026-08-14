@@ -14,7 +14,10 @@ class AddRefreshTokenToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-                $table->text('refresh_token')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('address')->nullable();
+            $table->string('phone')->nullable();
+            $table->text('refresh_token')->nullable();
         });
     }
 
