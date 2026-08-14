@@ -161,7 +161,6 @@ p {
 .confirm-form {
     width: 50%;
     max-width: 600px;
-    /* margin: 80px auto; */
     padding: 30px 50px;
     border: 1px solid #304654;
     border-radius: 20px;

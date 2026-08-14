@@ -15,7 +15,9 @@
             </div>
             <!-- 予約一覧画面(ログイン) -->
             <div v-if="route.name === 'list'">
-                <button class="btn" type="button">マイページ</button>
+                <button class="btn" type="button" @click="mypage">
+                    マイページ
+                </button>
                 <button class="btn" type="button" @click="logout">
                     ログアウト
                 </button>
@@ -33,7 +35,9 @@
                 <button class="btn" type="button" @click="list">
                     予約一覧
                 </button>
-                <button class="btn" type="button">マイページ</button>
+                <button class="btn" type="button" @click="mypage">
+                    マイページ
+                </button>
                 <button class="btn" type="button" @click="logout">
                     ログアウト
                 </button>
@@ -135,6 +139,11 @@ const logout = async () => {
 // 予約一覧画面へ遷移
 const list = () => {
     navigateTo("/list");
+};
+
+// マイページ画面へ遷移
+const mypage = () => {
+    navigateTo("/mypage");
 };
 </script>
 
