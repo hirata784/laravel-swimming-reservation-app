@@ -18,14 +18,14 @@
                     </button>
                 </div>
                 <p class="section-title">【会員情報】</p>
-                <div class="group">
+                <div v-if="user" class="group">
                     <div class="item-group">
                         <p class="label">名前</p>
-                        <p class="item">テストテスト</p>
+                        <p class="item">{{ user.name }}</p>
                     </div>
                     <div class="item-group">
                         <p class="label">メールアドレス</p>
-                        <p class="item">aaaa.example.com</p>
+                        <p class="item">{{ user.email }}</p>
                     </div>
                     <div class="item-group">
                         <p class="label">パスワード</p>
@@ -33,15 +33,15 @@
                     </div>
                     <div class="item-group">
                         <p class="label">性別</p>
-                        <p class="item">その他</p>
+                        <p class="item">{{ user.gender }}</p>
                     </div>
                     <div class="item-group">
                         <p class="label">住所</p>
-                        <p class="item">どこどこ県そこそこ市どこそこ区</p>
+                        <p class="item">{{ user.address }}</p>
                     </div>
                     <div class="item-group">
                         <p class="label">電話番号</p>
-                        <p class="item">1112223333</p>
+                        <p class="item">{{ user.phone }}</p>
                     </div>
                     <div class="btn-area">
                         <button class="user-btn" type="button">
@@ -100,6 +100,21 @@
         </div>
     </div>
 </template>
+
+<script setup>
+// {user:データ（状態）, fetchUser: データを取得する関数 }
+const { user, fetchUser } = useAuth();
+
+// 認証中のみアクセス可能にする
+definePageMeta({
+    middleware: "auth",
+});
+
+// 画面構成後に処理
+onMounted(async () => {
+    await fetchUser();
+});
+</script>
 
 <style scoped>
 p {
