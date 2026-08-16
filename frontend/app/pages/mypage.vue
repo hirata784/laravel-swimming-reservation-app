@@ -59,8 +59,8 @@
                         <table class="reserved-list">
                             <tbody>
                                 <template
-                                    v-for="(reservation, i) in reservations"
-                                    :key="i"
+                                    v-for="reservation in sortReservations"
+                                    :key="reservation.id"
                                 >
                                     <tr>
                                         <td>{{ reservation.date }}</td>
@@ -103,6 +103,7 @@
 </template>
 
 <script setup>
+import { ref, computed } from "vue";
 // {user:データ（状態）, fetchUser: データを取得する関数 }
 const { user, fetchUser } = useAuth();
 // 予約一覧
@@ -136,6 +137,20 @@ const makeReservations = async () => {
         }
     }
 };
+
+// 日付→時間の優先順位で昇順に並び替え
+const sortReservations = computed(() => {
+    return [...reservations.value].sort((a, b) => {
+        // 日付を比較
+        const dateDiff = new Date(a.date) - new Date(b.date);
+
+        // 日付が異なる（0以外）なら、その結果を返す
+        if (dateDiff !== 0) return dateDiff;
+
+        // 日付が同じ（0）なら、時間を文字列として比較
+        return a.time.localeCompare(b.time);
+    });
+});
 
 // 初回実行
 getUser();
