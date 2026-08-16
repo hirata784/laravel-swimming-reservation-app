@@ -58,14 +58,15 @@
                         <p class="label">予約中</p>
                         <table class="reserved-list">
                             <tbody>
-                                <tr>
-                                    <td>2026年08月10日</td>
-                                    <td>15:30~16:00</td>
-                                </tr>
-                                <tr>
-                                    <td>2026年08月12日</td>
-                                    <td>09:00~09:30</td>
-                                </tr>
+                                <template
+                                    v-for="(reservation, i) in reservations"
+                                    :key="i"
+                                >
+                                    <tr>
+                                        <td>{{ reservation.date }}</td>
+                                        <td>{{ reservation.time }}</td>
+                                    </tr>
+                                </template>
                             </tbody>
                         </table>
                     </div>
@@ -104,16 +105,41 @@
 <script setup>
 // {user:データ（状態）, fetchUser: データを取得する関数 }
 const { user, fetchUser } = useAuth();
+// 予約一覧
+// 例: [{ date: "2026-07-15", time: "09:00" }]
+const reservations = ref([]);
 
 // 認証中のみアクセス可能にする
 definePageMeta({
     middleware: "auth",
 });
 
-// 画面構成後に処理
-onMounted(async () => {
+// ログインユーザー取得
+const getUser = async () => {
     await fetchUser();
-});
+};
+
+// 予約データの作成
+const makeReservations = async () => {
+    const res = await $fetch("http://localhost/api/reservation", {
+        method: "GET",
+    });
+
+    // APIの配列を1つずつ整形
+    for (let i = 0; i < res.data.start_time.length; i++) {
+        if (res.data.user_id[i] === user.value.id) {
+            // ログインユーザーの予約データのみ取得
+            reservations.value.push({
+                date: res.data.date[i],
+                time: res.data.start_time[i].substring(0, 5),
+            });
+        }
+    }
+};
+
+// 初回実行
+getUser();
+makeReservations();
 </script>
 
 <style scoped>
