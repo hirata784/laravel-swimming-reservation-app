@@ -4,14 +4,14 @@
             <h2 class="title">マイページ</h2>
             <div class="mypage-card">
                 <p class="section-title">【次回の予約】</p>
-                <div class="group">
+                <div v-if="nextReservation" class="group">
                     <div class="item-group">
                         <p class="label">予約日</p>
-                        <p class="item">2026年08月03日</p>
+                        <p class="item">{{ nextReservation.date }}</p>
                     </div>
                     <div class="item-group">
                         <p class="label">予約時間</p>
-                        <p class="item">14:00~14:30</p>
+                        <p class="item">{{ nextReservation.time }}</p>
                     </div>
                     <button class="cancel-btn" type="button">
                         予約を取り消す
@@ -62,7 +62,7 @@
                                     v-for="reservation in reservedReservations"
                                     :key="reservation.id"
                                 >
-                                    <tr>
+                                    <tr v-if="reservation !== nextReservation">
                                         <td>{{ reservation.date }}</td>
                                         <td>{{ reservation.time }}</td>
                                     </tr>
@@ -184,6 +184,16 @@ const usedReservations = computed(() => {
         const reservationDateTime = item.date + " " + item.time;
         // 予約日時 < 現在の日時となるデータのみ取得
         return reservationDateTime < currentDateTime;
+    });
+});
+
+// 次回の予約を取得
+const nextReservation = computed(() => {
+    return sortReservations.value.find((item) => {
+        // 予約データの年月日と時間を結合(例：2026-08-14 09:00)
+        const reservationDateTime = item.date + " " + item.time;
+        // 予約日時 > 現在の日時となる最初のデータのみ取得
+        return reservationDateTime > currentDateTime;
     });
 });
 
