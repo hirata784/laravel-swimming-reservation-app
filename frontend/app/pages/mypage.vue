@@ -59,7 +59,7 @@
                         <table class="reserved-list">
                             <tbody>
                                 <template
-                                    v-for="reservation in sortReservations"
+                                    v-for="reservation in reservedReservations"
                                     :key="reservation.id"
                                 >
                                     <tr>
@@ -74,18 +74,15 @@
                         <p class="label">利用済み</p>
                         <table class="used-list">
                             <tbody>
-                                <tr>
-                                    <td>2026年07月20日</td>
-                                    <td>10:00~10:30</td>
-                                </tr>
-                                <tr>
-                                    <td>2026年07月27日</td>
-                                    <td>14:00~14:30</td>
-                                </tr>
-                                <tr>
-                                    <td>2026年07月29日</td>
-                                    <td>09:00~09:30</td>
-                                </tr>
+                                <template
+                                    v-for="reservation in usedReservations"
+                                    :key="reservation.id"
+                                >
+                                    <tr>
+                                        <td>{{ reservation.date }}</td>
+                                        <td>{{ reservation.time }}</td>
+                                    </tr>
+                                </template>
                             </tbody>
                         </table>
                     </div>
@@ -109,6 +106,24 @@ const { user, fetchUser } = useAuth();
 // 予約一覧
 // 例: [{ date: "2026-07-15", time: "09:00" }]
 const reservations = ref([]);
+// 今日の日付を取得
+const today = new Date();
+// 今年
+const year = today.getFullYear();
+// 今月(1~9月は頭を0で埋める(例：01月))
+const month = (today.getMonth() + 1).toString().padStart(2, "0");
+// 今月(1~9月は頭を0で埋める(例：01月))
+const date = today.getDate().toString().padStart(2, "0");
+// 現在の時間
+const hour = today.getHours();
+// 現在の分
+const minute = today.getMinutes().toString().padStart(2, "0");
+// 現在の年月日
+const currentDate = `${year}-${month}-${date}`;
+// 現在の時刻
+const currentTime = `${hour}:${minute}`;
+// 現在の日時
+const currentDateTime = currentDate + " " + currentTime;
 
 // 認証中のみアクセス可能にする
 definePageMeta({
@@ -149,6 +164,26 @@ const sortReservations = computed(() => {
 
         // 日付が同じ（0）なら、時間を文字列として比較
         return a.time.localeCompare(b.time);
+    });
+});
+
+// 予約履歴(予約中)を取得
+const reservedReservations = computed(() => {
+    return sortReservations.value.filter((item) => {
+        // 予約データの年月日と時間を結合(例：2026-08-14 09:00)
+        const reservationDateTime = item.date + " " + item.time;
+        // 予約日時 > 現在の日時となるデータのみ取得
+        return reservationDateTime > currentDateTime;
+    });
+});
+
+// 予約履歴(利用済み)を取得
+const usedReservations = computed(() => {
+    return sortReservations.value.filter((item) => {
+        // 予約データの年月日と時間を結合(例：2026-08-14 09:00)
+        const reservationDateTime = item.date + " " + item.time;
+        // 予約日時 < 現在の日時となるデータのみ取得
+        return reservationDateTime < currentDateTime;
     });
 });
 
