@@ -7,7 +7,9 @@
                 <div v-if="nextReservation" class="group">
                     <div class="item-group">
                         <p class="label">予約日</p>
-                        <p class="item">{{ nextReservation.date }}</p>
+                        <p class="item">
+                            {{ formatDate(nextReservation.date) }}
+                        </p>
                     </div>
                     <div class="item-group">
                         <p class="label">予約時間</p>
@@ -63,7 +65,9 @@
                                     :key="reservation.id"
                                 >
                                     <tr v-if="reservation !== nextReservation">
-                                        <td>{{ reservation.date }}</td>
+                                        <td>
+                                            {{ formatDate(reservation.date) }}
+                                        </td>
                                         <td>{{ reservation.time }}</td>
                                     </tr>
                                 </template>
@@ -79,7 +83,9 @@
                                     :key="reservation.id"
                                 >
                                     <tr>
-                                        <td>{{ reservation.date }}</td>
+                                        <td>
+                                            {{ formatDate(reservation.date) }}
+                                        </td>
                                         <td>{{ reservation.time }}</td>
                                     </tr>
                                 </template>
@@ -196,6 +202,21 @@ const nextReservation = computed(() => {
         return reservationDateTime > currentDateTime;
     });
 });
+
+// 年月日フォーマット変更(例：2026年08月14日)
+const formatDate = (dateString) => {
+    // 空データ時のガード句（バグ防止）
+    if (!dateString) return "";
+    // 日付文字列をDateオブジェクトに変換
+    const d = new Date(dateString);
+
+    // 取得した日付から年・月・日を抽出して0埋め
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+
+    return `${yyyy}年${mm}月${dd}日`;
+};
 
 // 初回実行
 getUser();
