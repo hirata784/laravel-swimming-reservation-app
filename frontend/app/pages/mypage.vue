@@ -4,6 +4,7 @@
             <h2 class="title">マイページ</h2>
             <div class="mypage-card">
                 <p class="section-title">【次回の予約】</p>
+                <!-- 次回の予約がある場合 -->
                 <div v-if="nextReservation" class="group">
                     <div class="item-group">
                         <p class="label">予約日</p>
@@ -20,6 +21,12 @@
                     <button class="cancel-btn" type="button">
                         予約を取り消す
                     </button>
+                </div>
+                <!-- 次回の予約がない場合 -->
+                <div v-else class="group">
+                    <div class="item-group">
+                        <p class="item">次回の予約はありません。</p>
+                    </div>
                 </div>
                 <p class="section-title">【会員情報】</p>
                 <div v-if="user" class="group">
@@ -80,7 +87,11 @@
                     </div>
                     <div class="item-group">
                         <p class="label">利用済み</p>
-                        <table class="used-list">
+                        <!-- 利用済み履歴がある場合 -->
+                        <table
+                            v-if="usedReservations.length !== 0"
+                            class="used-list"
+                        >
                             <tbody>
                                 <template
                                     v-for="reservation in usedReservations"
@@ -97,6 +108,10 @@
                                 </template>
                             </tbody>
                         </table>
+                        <!-- 利用済み履歴がない場合 -->
+                        <div v-else>
+                            <p class="item">利用済み履歴はありません。</p>
+                        </div>
                     </div>
                 </div>
                 <p class="section-title">【利用実績】</p>
