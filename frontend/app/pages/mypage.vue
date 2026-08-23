@@ -67,13 +67,17 @@
                 <div class="group">
                     <div class="item-group">
                         <p class="label">予約中</p>
-                        <table class="reserved-list">
+                        <!-- 予約データがある場合 -->
+                        <table
+                            v-if="reservedReservations.length !== 0"
+                            class="reserved-list"
+                        >
                             <tbody>
                                 <template
                                     v-for="reservation in reservedReservations"
                                     :key="reservation.id"
                                 >
-                                    <tr v-if="reservation !== nextReservation">
+                                    <tr>
                                         <td>
                                             {{ formatDate(reservation.date) }}
                                         </td>
@@ -84,6 +88,10 @@
                                 </template>
                             </tbody>
                         </table>
+                        <!-- 予約データがない場合 -->
+                        <div v-else>
+                            <p class="item">予約履歴はありません。</p>
+                        </div>
                     </div>
                     <div class="item-group">
                         <p class="label">利用済み</p>
@@ -199,8 +207,14 @@ const reservedReservations = computed(() => {
     return sortReservations.value.filter((item) => {
         // 予約データの年月日と時間を結合(例：2026-08-14 09:00)
         const reservationDateTime = item.date + " " + item.time;
-        // 予約日時 > 現在の日時となるデータのみ取得
-        return reservationDateTime > currentDateTime;
+        // 次回の予約データを取得
+        const next =
+            nextReservation.value.date + " " + nextReservation.value.time;
+        // 次回の予約データはreservedReservationsに含めない
+        if (reservationDateTime !== next) {
+            // 予約日時 > 現在の日時となるデータのみ取得
+            return reservationDateTime > currentDateTime;
+        }
     });
 });
 
