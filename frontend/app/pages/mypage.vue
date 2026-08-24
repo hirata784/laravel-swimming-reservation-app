@@ -126,7 +126,7 @@
                 <div class="group">
                     <div class="item-group">
                         <p class="label">累計利用回数</p>
-                        <p class="item">3回</p>
+                        <p class="item">{{ usedReservations.length }}回</p>
                     </div>
                 </div>
             </div>
