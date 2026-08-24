@@ -18,7 +18,13 @@
                             {{ formatTime(nextReservation.time) }}
                         </p>
                     </div>
-                    <button class="cancel-btn" type="button">
+                    <button
+                        class="cancel-btn"
+                        type="button"
+                        @click="
+                            confirm(nextReservation.date, nextReservation.time)
+                        "
+                    >
                         予約を取り消す
                     </button>
                 </div>
@@ -273,6 +279,14 @@ const formatTime = (dateString) => {
     const finishTime = `${t.getHours().toString().padStart(2, "0")}:${t.getMinutes().toString().padStart(2, "0")}`;
 
     return `${dateString}~${finishTime}`;
+};
+
+// 次回の予約日時を持たせて、予約取り消し確認画面へ遷移
+const confirm = (confirmDate, confirmTime) => {
+    navigateTo({
+        path: `/confirm/${confirmDate}/${confirmTime}`,
+        query: { mode: "cancel" },
+    });
 };
 
 // 初回実行
