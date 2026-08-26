@@ -290,8 +290,12 @@ const confirm = (confirmDate, confirmTime) => {
 };
 
 // 初回実行
-getUser();
-makeReservations();
+const init = async () => {
+    await getUser();
+    await makeReservations();
+};
+
+init();
 </script>
 
 <style scoped>
