@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 <!-- 編集モード -->
-                <div v-if="edit">
+                <form v-if="edit" @submit.prevent="update">
                     <div>
                         <p class="section-title">【会員情報】※編集モードです</p>
                     </div>
@@ -73,7 +73,7 @@
                             <input class="txt" type="text" v-model="phone" />
                         </div>
                         <div class="btn-area">
-                            <button class="update-btn" type="button">
+                            <button class="update-btn" type="submit">
                                 変更する
                             </button>
                             <button
@@ -85,7 +85,7 @@
                             </button>
                         </div>
                     </div>
-                </div>
+                </form>
                 <!-- 閲覧モード -->
                 <div v-else>
                     <div>
@@ -368,6 +368,31 @@ const informationUpdate = () => {
     phone.value = user.value.phone;
     // 編集モードに変更
     edit.value = true;
+};
+
+// 会員情報変更
+const update = async () => {
+    try {
+        await apiFetch("http://localhost/api/user", {
+            method: "PUT",
+            body: {
+                user_id: user.value.id,
+                name: name.value,
+                email: email.value,
+                gender: gender.value,
+                address: address.value,
+                phone: phone.value,
+            },
+        });
+        // 画面に変更を即反映する
+        getUser();
+        // 閲覧モードに変更
+        edit.value = false;
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
 };
 
 // キャンセル
