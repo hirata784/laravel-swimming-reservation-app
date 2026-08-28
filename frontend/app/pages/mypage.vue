@@ -19,7 +19,7 @@
                         </p>
                     </div>
                     <button
-                        class="cancel-btn"
+                        class="delete-btn"
                         type="button"
                         @click="
                             confirm(nextReservation.date, nextReservation.time)
@@ -76,7 +76,11 @@
                             <button class="update-btn" type="button">
                                 変更する
                             </button>
-                            <button class="return-btn" type="button">
+                            <button
+                                class="cancel-btn"
+                                type="button"
+                                @click="informationCancel"
+                            >
                                 キャンセル
                             </button>
                         </div>
@@ -366,6 +370,12 @@ const informationUpdate = () => {
     edit.value = true;
 };
 
+// キャンセル
+const informationCancel = () => {
+    // 閲覧モードに変更
+    edit.value = false;
+};
+
 // 初回実行
 const init = async () => {
     await getUser();
@@ -466,7 +476,7 @@ p {
     justify-content: center;
 }
 
-.cancel-btn {
+.delete-btn {
     border: none;
     background-color: #da251d;
     color: #eef9ff;
@@ -488,7 +498,7 @@ p {
     width: 45%;
 }
 
-.return-btn {
+.cancel-btn {
     border: none;
     background-color: #a7a7a7;
     color: #eef9ff;
