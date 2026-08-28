@@ -34,39 +34,96 @@
                         <p class="item">次回の予約はありません。</p>
                     </div>
                 </div>
-                <p class="section-title">【会員情報】</p>
-                <div v-if="user" class="group">
-                    <div class="item-group">
-                        <p class="label">名前</p>
-                        <p class="item">{{ user.name }}</p>
+                <!-- 編集モード -->
+                <div v-if="edit">
+                    <div>
+                        <p class="section-title">【会員情報】※編集モードです</p>
                     </div>
-                    <div class="item-group">
-                        <p class="label">メールアドレス</p>
-                        <p class="item">{{ user.email }}</p>
+                    <div v-if="user" class="group">
+                        <div class="item-group">
+                            <p class="label">名前</p>
+                            <input class="txt" type="text" v-model="name" />
+                        </div>
+                        <div class="item-group">
+                            <p class="label">メールアドレス</p>
+                            <input class="txt" type="text" v-model="email" />
+                        </div>
+                        <!-- パスワードは会員情報変更では変更不可 -->
+                        <div class="item-group no-edit">
+                            <p class="label">
+                                ※パスワードはここでは変更できません
+                            </p>
+                            <p class="item">********</p>
+                        </div>
+                        <div class="item-group">
+                            <p class="label">性別</p>
+                            <select class="sel" v-model="gender">
+                                <option value="男性">男性</option>
+                                <option value="女性">女性</option>
+                                <option value="その他">その他</option>
+                                <option value="未回答">未回答</option>
+                            </select>
+                        </div>
+                        <div class="item-group">
+                            <p class="label">住所</p>
+                            <input class="txt" type="text" v-model="address" />
+                        </div>
+                        <div class="item-group">
+                            <p class="label">電話番号</p>
+                            <input class="txt" type="text" v-model="phone" />
+                        </div>
+                        <div class="btn-area">
+                            <button class="update-btn" type="button">
+                                変更する
+                            </button>
+                            <button class="return-btn" type="button">
+                                キャンセル
+                            </button>
+                        </div>
                     </div>
-                    <div class="item-group">
-                        <p class="label">パスワード</p>
-                        <p class="item">********</p>
+                </div>
+                <!-- 閲覧モード -->
+                <div v-else>
+                    <div>
+                        <p class="section-title">【会員情報】</p>
                     </div>
-                    <div class="item-group">
-                        <p class="label">性別</p>
-                        <p class="item">{{ user.gender }}</p>
-                    </div>
-                    <div class="item-group">
-                        <p class="label">住所</p>
-                        <p class="item">{{ user.address }}</p>
-                    </div>
-                    <div class="item-group">
-                        <p class="label">電話番号</p>
-                        <p class="item">{{ user.phone }}</p>
-                    </div>
-                    <div class="btn-area">
-                        <button class="user-btn" type="button">
-                            会員情報を変更する
-                        </button>
-                        <button class="password-btn" type="button">
-                            パスワードを変更する
-                        </button>
+                    <div v-if="user" class="group">
+                        <div class="item-group">
+                            <p class="label">名前</p>
+                            <p class="item">{{ user.name }}</p>
+                        </div>
+                        <div class="item-group">
+                            <p class="label">メールアドレス</p>
+                            <p class="item">{{ user.email }}</p>
+                        </div>
+                        <div class="item-group">
+                            <p class="label">パスワード</p>
+                            <p class="item">********</p>
+                        </div>
+                        <div class="item-group">
+                            <p class="label">性別</p>
+                            <p class="item">{{ user.gender }}</p>
+                        </div>
+                        <div class="item-group">
+                            <p class="label">住所</p>
+                            <p class="item">{{ user.address }}</p>
+                        </div>
+                        <div class="item-group">
+                            <p class="label">電話番号</p>
+                            <p class="item">{{ user.phone }}</p>
+                        </div>
+                        <div class="btn-area">
+                            <button
+                                class="user-btn"
+                                type="button"
+                                @click="informationUpdate"
+                            >
+                                会員情報を変更する
+                            </button>
+                            <button class="password-btn" type="button">
+                                パスワードを変更する
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <p class="section-title">【予約履歴】</p>
@@ -165,6 +222,14 @@ const currentDate = `${year}-${month}-${date}`;
 const currentTime = `${hour}:${minute}`;
 // 現在の日時
 const currentDateTime = currentDate + " " + currentTime;
+// 編集モード
+const edit = ref(false);
+// 現在の会員情報
+const name = ref("");
+const email = ref("");
+const gender = ref("");
+const address = ref("");
+const phone = ref("");
 
 // 認証中のみアクセス可能にする
 definePageMeta({
@@ -289,6 +354,18 @@ const confirm = (confirmDate, confirmTime) => {
     });
 };
 
+// 編集モード
+const informationUpdate = () => {
+    // テキストボックスに現在の会員情報を入力
+    name.value = user.value.name;
+    email.value = user.value.email;
+    gender.value = user.value.gender;
+    address.value = user.value.address;
+    phone.value = user.value.phone;
+    // 編集モードに変更
+    edit.value = true;
+};
+
 // 初回実行
 const init = async () => {
     await getUser();
@@ -357,10 +434,31 @@ p {
     text-align: left;
 }
 
+.txt {
+    background-color: #f5fbff;
+    font-size: 18px;
+    padding: 5px;
+}
+
+.sel {
+    background-color: #f5fbff;
+    font-size: 18px;
+    padding: 5px;
+}
+
+.txt:focus-visible {
+    background-color: #fde2e4;
+}
+
 .item {
     font-size: 18px;
     color: #304654;
     text-align: left;
+}
+
+.no-edit {
+    background-color: #e5e5e5;
+    color: #777;
 }
 
 .btn-area {
@@ -371,6 +469,28 @@ p {
 .cancel-btn {
     border: none;
     background-color: #da251d;
+    color: #eef9ff;
+    padding: 10px 20px;
+    margin: 0 20px 0;
+    font-size: 20px;
+    cursor: pointer;
+    width: 45%;
+}
+
+.update-btn {
+    border: none;
+    background-color: #99b1ea;
+    color: #eef9ff;
+    padding: 10px 20px;
+    margin: 0 20px 0;
+    font-size: 20px;
+    cursor: pointer;
+    width: 45%;
+}
+
+.return-btn {
+    border: none;
+    background-color: #a7a7a7;
     color: #eef9ff;
     padding: 10px 20px;
     margin: 0 20px 0;
