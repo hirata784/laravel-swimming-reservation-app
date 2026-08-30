@@ -229,7 +229,7 @@ const month = (today.getMonth() + 1).toString().padStart(2, "0");
 // 今月(1~9月は頭を0で埋める(例：01月))
 const date = today.getDate().toString().padStart(2, "0");
 // 現在の時間
-const hour = today.getHours();
+const hour = today.getHours().toString().padStart(2, "0");
 // 現在の分
 const minute = today.getMinutes().toString().padStart(2, "0");
 // 現在の年月日

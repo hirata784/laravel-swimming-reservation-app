@@ -142,7 +142,7 @@ const year = today.getFullYear();
 // 今月(1~9月は頭を0で埋める(例：01月))
 const month = (today.getMonth() + 1).toString().padStart(2, "0");
 // 現在の時間
-const hour = today.getHours();
+const hour = today.getHours().toString().padStart(2, "0");
 // 現在の分
 const minute = today.getMinutes().toString().padStart(2, "0");
 // 現在の時刻
@@ -289,7 +289,7 @@ const statusMap = computed(() => {
 
                 // 状態決定
                 // 過去の日時の場合、予約0でも予約不可能とする
-                if (dates.value[0] == d && currentTime > time) {
+                if (dates.value[0] == d && currentTime >= time) {
                     result[key] = { text: "×", class: "bg-gray" };
                     // ログインユーザーが予約済みの場合
                 } else if (isLoginUserReserved === true) {
