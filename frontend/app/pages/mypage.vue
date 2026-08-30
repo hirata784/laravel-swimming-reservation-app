@@ -43,10 +43,14 @@
                         <div class="item-group">
                             <p class="label">名前</p>
                             <input class="txt" type="text" v-model="name" />
+                            <!-- vee-validateのバリデーション -->
+                            <p class="error">{{ errors.name }}</p>
                         </div>
                         <div class="item-group">
                             <p class="label">メールアドレス</p>
                             <input class="txt" type="text" v-model="email" />
+                            <!-- vee-validateのバリデーション -->
+                            <p class="error">{{ errors.email }}</p>
                         </div>
                         <!-- パスワードは会員情報変更では変更不可 -->
                         <div class="item-group no-edit">
@@ -67,13 +71,25 @@
                         <div class="item-group">
                             <p class="label">住所</p>
                             <input class="txt" type="text" v-model="address" />
+                            <!-- vee-validateのバリデーション -->
+                            <p class="error">{{ errors.address }}</p>
                         </div>
                         <div class="item-group">
                             <p class="label">電話番号</p>
                             <input class="txt" type="text" v-model="phone" />
+                            <!-- vee-validateのバリデーション -->
+                            <p class="error">{{ errors.phone }}</p>
                         </div>
                         <div class="btn-area">
-                            <button class="update-btn" type="submit">
+                            <!-- バリデーションの表示中はclass変更 & クリック不可 -->
+                            <button
+                                class="update-btn"
+                                type="submit"
+                                v-bind:class="{
+                                    'is-disabled-btn': btnIsInvalid,
+                                }"
+                                :disabled="btnIsInvalid"
+                            >
                                 変更する
                             </button>
                             <button
@@ -214,6 +230,9 @@
 </template>
 
 <script setup>
+// インポート
+import { useForm, useField } from "vee-validate";
+import * as yup from "yup";
 import { ref, computed } from "vue";
 // {user:データ（状態）, fetchUser: データを取得する関数 }
 const { user, fetchUser } = useAuth();
@@ -240,12 +259,40 @@ const currentTime = `${hour}:${minute}`;
 const currentDateTime = currentDate + " " + currentTime;
 // 編集モード
 const edit = ref(false);
+
+// バリデーションのルールを設定
+const schema = yup.object({
+    name: yup
+        .string()
+        .required("名前を入力してください")
+        .max(20, "20文字以下で入力してください"),
+    email: yup
+        .string()
+        .required("メールアドレスを入力してください")
+        .email("メールアドレスの形式で入力してください"),
+    address: yup.string().max(255, "255文字以下で入力してください"),
+    phone: yup
+        .string()
+        .nullable()
+        // 空文字の場合はバリデーションを免除する設定
+        .transform((value) => (value === "" ? null : value))
+        .matches(
+            /^0\d{9,10}$/,
+            "正しい電話番号（10桁または11桁）を入力してください",
+        ),
+});
+// クライアントエラーを格納するオブジェクト
+const { errors } = useForm({
+    validationSchema: schema,
+});
+// エラーを格納するオブジェクト
+const { value: name } = useField("name");
+const { value: email } = useField("email");
+const { value: address } = useField("address");
+const { value: phone } = useField("phone");
+
 // 現在の会員情報
-const name = ref("");
-const email = ref("");
 const gender = ref("");
-const address = ref("");
-const phone = ref("");
 
 // 認証中のみアクセス可能にする
 definePageMeta({
@@ -338,6 +385,11 @@ const isUser = computed(() => {
         // 全て入力済みの場合falseを返す(未回答なし：会員情報を変更する)
         return false;
     }
+});
+
+// バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
+const btnIsInvalid = computed(() => {
+    return Object.keys(errors.value).length > 0;
 });
 
 // 年月日フォーマット変更(例：2026年08月14日)
@@ -502,6 +554,12 @@ p {
     padding: 5px;
 }
 
+.error {
+    color: #da251d;
+    text-align: left;
+    margin-top: 10px;
+}
+
 .sel {
     background-color: #f5fbff;
     font-size: 18px;
@@ -548,6 +606,12 @@ p {
     font-size: 20px;
     cursor: pointer;
     width: 45%;
+}
+
+.is-disabled-btn {
+    background-color: #666666;
+    opacity: 0.2;
+    cursor: auto;
 }
 
 .cancel-btn {
