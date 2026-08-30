@@ -61,7 +61,7 @@
                                 <option value="男性">男性</option>
                                 <option value="女性">女性</option>
                                 <option value="その他">その他</option>
-                                <option value="未回答">未回答</option>
+                                <option value="">未回答</option>
                             </select>
                         </div>
                         <div class="item-group">
@@ -106,24 +106,36 @@
                         </div>
                         <div class="item-group">
                             <p class="label">性別</p>
-                            <p class="item">{{ user.gender }}</p>
+                            <p class="item">{{ user.gender || "未回答" }}</p>
                         </div>
                         <div class="item-group">
                             <p class="label">住所</p>
-                            <p class="item">{{ user.address }}</p>
+                            <p class="item">{{ user.address || "未回答" }}</p>
                         </div>
                         <div class="item-group">
                             <p class="label">電話番号</p>
-                            <p class="item">{{ user.phone }}</p>
+                            <p class="item">{{ user.phone || "未回答" }}</p>
                         </div>
                         <div class="btn-area">
+                            <!-- 未回答がある場合 -->
                             <button
+                                v-if="isUser"
+                                class="user-btn"
+                                type="button"
+                                @click="informationUpdate"
+                            >
+                                プロフィールの設定
+                            </button>
+                            <!-- 未回答がない場合 -->
+                            <button
+                                v-else
                                 class="user-btn"
                                 type="button"
                                 @click="informationUpdate"
                             >
                                 会員情報を変更する
                             </button>
+
                             <button class="password-btn" type="button">
                                 パスワードを変更する
                             </button>
@@ -311,6 +323,21 @@ const nextReservation = computed(() => {
         // 予約日時 > 現在の日時となる最初のデータのみ取得
         return reservationDateTime > currentDateTime;
     });
+});
+
+// 会員情報の未回答チェック
+const isUser = computed(() => {
+    if (
+        user.value.gender === null ||
+        user.value.address === null ||
+        user.value.phone === null
+    ) {
+        // いずれかnullの場合trueを返す(未回答あり：プロフィールの設定)
+        return true;
+    } else {
+        // 全て入力済みの場合falseを返す(未回答なし：会員情報を変更する)
+        return false;
+    }
 });
 
 // 年月日フォーマット変更(例：2026年08月14日)
