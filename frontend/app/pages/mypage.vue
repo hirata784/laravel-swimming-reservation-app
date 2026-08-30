@@ -45,12 +45,20 @@
                             <input class="txt" type="text" v-model="name" />
                             <!-- vee-validateのバリデーション -->
                             <p class="error">{{ errors.name }}</p>
+                            <!-- FormRequestのバリデーション -->
+                            <p v-if="backErrors.name" class="error">
+                                {{ backErrors.name[0] }}
+                            </p>
                         </div>
                         <div class="item-group">
                             <p class="label">メールアドレス</p>
                             <input class="txt" type="text" v-model="email" />
                             <!-- vee-validateのバリデーション -->
                             <p class="error">{{ errors.email }}</p>
+                            <!-- FormRequestのバリデーション -->
+                            <p v-if="backErrors.email" class="error">
+                                {{ backErrors.email[0] }}
+                            </p>
                         </div>
                         <!-- パスワードは会員情報変更では変更不可 -->
                         <div class="item-group no-edit">
@@ -73,12 +81,20 @@
                             <input class="txt" type="text" v-model="address" />
                             <!-- vee-validateのバリデーション -->
                             <p class="error">{{ errors.address }}</p>
+                            <!-- FormRequestのバリデーション -->
+                            <p v-if="backErrors.address" class="error">
+                                {{ backErrors.address[0] }}
+                            </p>
                         </div>
                         <div class="item-group">
                             <p class="label">電話番号</p>
                             <input class="txt" type="text" v-model="phone" />
                             <!-- vee-validateのバリデーション -->
                             <p class="error">{{ errors.phone }}</p>
+                            <!-- FormRequestのバリデーション -->
+                            <p v-if="backErrors.phone" class="error">
+                                {{ backErrors.phone[0] }}
+                            </p>
                         </div>
                         <div class="btn-area">
                             <!-- バリデーションの表示中はclass変更 & クリック不可 -->
@@ -270,7 +286,7 @@ const schema = yup.object({
         .string()
         .required("メールアドレスを入力してください")
         .email("メールアドレスの形式で入力してください"),
-    address: yup.string().max(255, "255文字以下で入力してください"),
+    address: yup.string().nullable().max(255, "255文字以下で入力してください"),
     phone: yup
         .string()
         .nullable()
@@ -286,6 +302,7 @@ const { errors } = useForm({
     validationSchema: schema,
 });
 // エラーを格納するオブジェクト
+const backErrors = ref({});
 const { value: name } = useField("name");
 const { value: email } = useField("email");
 const { value: address } = useField("address");
@@ -293,6 +310,11 @@ const { value: phone } = useField("phone");
 
 // 現在の会員情報
 const gender = ref("");
+
+// 入力したらFormRequestのバリデーションを削除する
+watch([name, email, address, phone], () => {
+    backErrors.value = {};
+});
 
 // 認証中のみアクセス可能にする
 definePageMeta({
@@ -389,7 +411,10 @@ const isUser = computed(() => {
 
 // バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
 const btnIsInvalid = computed(() => {
-    return Object.keys(errors.value).length > 0;
+    return (
+        Object.keys(errors.value).length > 0 ||
+        Object.keys(backErrors.value).length > 0
+    );
 });
 
 // 年月日フォーマット変更(例：2026年08月14日)
@@ -451,6 +476,8 @@ const informationUpdate = () => {
 
 // 会員情報変更
 const update = async () => {
+    // 初期化
+    backErrors.value = {};
     try {
         await apiFetch("http://localhost/api/user", {
             method: "PUT",
@@ -464,13 +491,18 @@ const update = async () => {
             },
         });
         // 画面に変更を即反映する
-        getUser();
+        await getUser();
         // 閲覧モードに変更
         edit.value = false;
     } catch (error) {
-        // エラー表示
-        console.error("予期せぬエラーが発生しました：", error);
-        alert(`予期せぬエラーが発生しました： ${error}`);
+        // ステータスコード422の場合はエラーメッセージをセット
+        if (error.response && error.response.status === 422) {
+            backErrors.value = error.response._data.errors;
+        } else {
+            // その他のエラー
+            console.error("予期せぬエラーが発生しました：", error);
+            alert(`予期せぬエラーが発生しました： ${error}`);
+        }
     }
 };
 
@@ -557,7 +589,6 @@ p {
 .error {
     color: #da251d;
     text-align: left;
-    margin-top: 10px;
 }
 
 .sel {

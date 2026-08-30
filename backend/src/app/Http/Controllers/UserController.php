@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Requests\MypageRequest;
 
 class UserController extends Controller
 {
@@ -13,7 +13,7 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(MypageRequest $request)
     {
         // ユーザーidを取得
         $user_id = $request->user_id;
