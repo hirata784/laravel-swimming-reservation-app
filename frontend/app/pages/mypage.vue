@@ -167,10 +167,14 @@
                             >
                                 会員情報を変更する
                             </button>
-
-                            <button class="password-btn" type="button">
+                            <button
+                                class="password-btn"
+                                type="button"
+                                @click="open = true"
+                            >
                                 パスワードを変更する
                             </button>
+                            <Modal v-if="open" @close="open = false" />
                         </div>
                     </div>
                 </div>
@@ -275,6 +279,8 @@ const currentTime = `${hour}:${minute}`;
 const currentDateTime = currentDate + " " + currentTime;
 // 編集モード
 const edit = ref(false);
+// モーダル画面
+const open = ref(false);
 
 // バリデーションのルールを設定
 const schema = yup.object({
