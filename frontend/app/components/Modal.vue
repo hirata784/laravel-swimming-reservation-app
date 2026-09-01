@@ -1,6 +1,6 @@
 <template>
     <div class="modal">
-        <div class="modal-content">
+        <form class="modal-content" @submit.prevent="update">
             <span class="close" @click="$emit('close')">&times;</span>
             <h3 class="title">パスワード変更</h3>
             <div class="item-group">
@@ -9,14 +9,14 @@
             </div>
             <div class="item-group">
                 <p class="label">新しいパスワード</p>
-                <input class="txt" type="text" />
+                <input class="txt" type="text" v-model="newPassword" />
             </div>
             <div class="item-group">
                 <p class="label">新しいパスワード(確認)</p>
                 <input class="txt" type="text" />
             </div>
             <div class="btn-area">
-                <button class="update-btn" type="button">変更する</button>
+                <button class="update-btn" type="submit">変更する</button>
                 <button
                     class="cancel-btn"
                     type="button"
@@ -25,9 +25,33 @@
                     キャンセル
                 </button>
             </div>
-        </div>
+        </form>
     </div>
 </template>
+
+<script setup>
+// モーダル画面を閉じるためのイベントを定義
+const emit = defineEmits(["close"]);
+// モーダル画面入力値
+const newPassword = ref("");
+// パスワード変更
+const update = async () => {
+    try {
+        await apiFetch("http://localhost/api/password", {
+            method: "PUT",
+            body: {
+                password: newPassword.value,
+            },
+        });
+        // モーダル画面を閉じる
+        emit("close");
+    } catch (error) {
+        // エラー
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+</script>
 
 <style>
 p {
