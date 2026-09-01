@@ -5,18 +5,33 @@
             <h3 class="title">パスワード変更</h3>
             <div class="item-group">
                 <p class="label">現在のパスワード</p>
-                <input class="txt" type="text" />
+                <input class="txt" type="text" v-model="currentPassword" />
+                <!-- vee-validateのバリデーション -->
+                <p class="error">{{ errors.currentPassword }}</p>
             </div>
             <div class="item-group">
                 <p class="label">新しいパスワード</p>
                 <input class="txt" type="text" v-model="newPassword" />
+                <!-- vee-validateのバリデーション -->
+                <p class="error">{{ errors.newPassword }}</p>
             </div>
             <div class="item-group">
                 <p class="label">新しいパスワード(確認)</p>
-                <input class="txt" type="text" />
+                <input class="txt" type="text" v-model="confirmPassword" />
+                <!-- vee-validateのバリデーション -->
+                <p class="error">{{ errors.confirmPassword }}</p>
             </div>
             <div class="btn-area">
-                <button class="update-btn" type="submit">変更する</button>
+                <button
+                    class="update-btn"
+                    type="submit"
+                    v-bind:class="{
+                        'is-disabled-btn': btnIsInvalid,
+                    }"
+                    :disabled="btnIsInvalid"
+                >
+                    変更する
+                </button>
                 <button
                     class="cancel-btn"
                     type="button"
@@ -30,10 +45,41 @@
 </template>
 
 <script setup>
+// インポート
+import { useForm, useField } from "vee-validate";
+import * as yup from "yup";
+
 // モーダル画面を閉じるためのイベントを定義
 const emit = defineEmits(["close"]);
-// モーダル画面入力値
-const newPassword = ref("");
+
+// バリデーションのルールを設定
+const schema = yup.object({
+    currentPassword: yup
+        .string()
+        .required("現在のパスワードを入力してください"),
+    newPassword: yup
+        .string()
+        .required("新しいパスワードを入力してください")
+        .min(6, "6文字以上で入力してください"),
+    confirmPassword: yup
+        .string()
+        .required("新しいパスワード(確認)を入力してください")
+        .oneOf([yup.ref("newPassword")], "パスワードが一致しません"),
+});
+// クライアントエラーを格納するオブジェクト
+const { errors } = useForm({
+    validationSchema: schema,
+});
+// エラーを格納するオブジェクト
+const { value: currentPassword } = useField("currentPassword");
+const { value: newPassword } = useField("newPassword");
+const { value: confirmPassword } = useField("confirmPassword");
+
+// バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
+const btnIsInvalid = computed(() => {
+    return Object.keys(errors.value).length > 0;
+});
+
 // パスワード変更
 const update = async () => {
     try {
@@ -114,6 +160,11 @@ p {
     background-color: #fde2e4;
 }
 
+.error {
+    color: #da251d;
+    text-align: left;
+}
+
 .btn-area {
     display: flex;
     justify-content: center;
@@ -128,6 +179,12 @@ p {
     font-size: 20px;
     cursor: pointer;
     width: 45%;
+}
+
+.is-disabled-btn {
+    background-color: #666666;
+    opacity: 0.2;
+    cursor: auto;
 }
 
 .cancel-btn {
