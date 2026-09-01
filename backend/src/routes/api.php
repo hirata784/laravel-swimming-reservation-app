@@ -7,6 +7,7 @@ use App\Http\Controllers\MypageController;
 use App\Http\Controllers\TimeSlotController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PasswordController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,6 +31,7 @@ Route::delete('/reservation', [ReservationController::class, 'destroy']);
 Route::apiResource('/mypage', MypageController::class);
 Route::apiResource('/timeslot', TimeSlotController::class);
 Route::put('/user', [UserController::class, 'update']);
+Route::put('/password', [PasswordController::class, 'update']);
 
 Route::group([
     'middleware' => ['auth:api'],
