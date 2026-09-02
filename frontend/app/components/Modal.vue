@@ -8,18 +8,30 @@
                 <input class="txt" type="text" v-model="currentPassword" />
                 <!-- vee-validateのバリデーション -->
                 <p class="error">{{ errors.currentPassword }}</p>
+                <!-- FormRequestのバリデーション -->
+                <p v-if="backErrors.currentPassword" class="error">
+                    {{ backErrors.currentPassword[0] }}
+                </p>
             </div>
             <div class="item-group">
                 <p class="label">新しいパスワード</p>
                 <input class="txt" type="text" v-model="newPassword" />
                 <!-- vee-validateのバリデーション -->
                 <p class="error">{{ errors.newPassword }}</p>
+                <!-- FormRequestのバリデーション -->
+                <p v-if="backErrors.newPassword" class="error">
+                    {{ backErrors.newPassword[0] }}
+                </p>
             </div>
             <div class="item-group">
                 <p class="label">新しいパスワード(確認)</p>
                 <input class="txt" type="text" v-model="confirmPassword" />
                 <!-- vee-validateのバリデーション -->
                 <p class="error">{{ errors.confirmPassword }}</p>
+                <!-- FormRequestのバリデーション -->
+                <p v-if="backErrors.confirmPassword" class="error">
+                    {{ backErrors.confirmPassword[0] }}
+                </p>
             </div>
             <div class="btn-area">
                 <button
@@ -71,30 +83,48 @@ const { errors } = useForm({
     validationSchema: schema,
 });
 // エラーを格納するオブジェクト
+const backErrors = ref({});
 const { value: currentPassword } = useField("currentPassword");
 const { value: newPassword } = useField("newPassword");
 const { value: confirmPassword } = useField("confirmPassword");
 
+// 入力したらFormRequestのバリデーションを削除する
+watch([currentPassword, newPassword, confirmPassword], () => {
+    backErrors.value = {};
+});
+
 // バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
 const btnIsInvalid = computed(() => {
-    return Object.keys(errors.value).length > 0;
+    return (
+        Object.keys(errors.value).length > 0 ||
+        Object.keys(backErrors.value).length > 0
+    );
 });
 
 // パスワード変更
 const update = async () => {
+    // 初期化
+    backErrors.value = {};
     try {
         await apiFetch("http://localhost/api/password", {
             method: "PUT",
             body: {
-                password: newPassword.value,
+                currentPassword: currentPassword.value,
+                newPassword: newPassword.value,
+                confirmPassword: confirmPassword.value,
             },
         });
         // モーダル画面を閉じる
         emit("close");
     } catch (error) {
-        // エラー
-        console.error("予期せぬエラーが発生しました：", error);
-        alert(`予期せぬエラーが発生しました： ${error}`);
+        // ステータスコード422の場合はエラーメッセージをセット
+        if (error.response && error.response.status === 422) {
+            backErrors.value = error.response._data.errors;
+        } else {
+            // その他のエラー
+            console.error("予期せぬエラーが発生しました：", error);
+            alert(`予期せぬエラーが発生しました： ${error}`);
+        }
     }
 };
 </script>
