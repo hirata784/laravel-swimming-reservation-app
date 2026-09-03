@@ -5,7 +5,7 @@
             <h3 class="title">パスワード変更</h3>
             <div class="item-group">
                 <p class="label">現在のパスワード</p>
-                <input class="txt" type="text" v-model="currentPassword" />
+                <input class="txt" type="password" v-model="currentPassword" />
                 <!-- vee-validateのバリデーション -->
                 <p class="error">{{ errors.currentPassword }}</p>
                 <!-- FormRequestのバリデーション -->
@@ -15,7 +15,7 @@
             </div>
             <div class="item-group">
                 <p class="label">新しいパスワード</p>
-                <input class="txt" type="text" v-model="newPassword" />
+                <input class="txt" type="password" v-model="newPassword" />
                 <!-- vee-validateのバリデーション -->
                 <p class="error">{{ errors.newPassword }}</p>
                 <!-- FormRequestのバリデーション -->
@@ -25,7 +25,7 @@
             </div>
             <div class="item-group">
                 <p class="label">新しいパスワード(確認)</p>
-                <input class="txt" type="text" v-model="confirmPassword" />
+                <input class="txt" type="password" v-model="confirmPassword" />
                 <!-- vee-validateのバリデーション -->
                 <p class="error">{{ errors.confirmPassword }}</p>
                 <!-- FormRequestのバリデーション -->
