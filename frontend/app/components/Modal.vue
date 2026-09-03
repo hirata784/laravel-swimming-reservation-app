@@ -114,8 +114,13 @@ const update = async () => {
                 confirmPassword: confirmPassword.value,
             },
         });
-        // モーダル画面を閉じる
-        emit("close");
+        // モーダル画面を閉じる(パスワード変更完了のメッセージも渡す)
+        emit("close", "パスワードの変更が完了しました");
+        // 画面を最上部へスクロール
+        window.scrollTo({
+            top: 0,
+            behavior: "auto",
+        });
     } catch (error) {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {

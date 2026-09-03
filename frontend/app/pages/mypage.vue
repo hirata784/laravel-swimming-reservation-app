@@ -1,5 +1,6 @@
 <template>
     <div class="mypage">
+        <p v-if="message" class="message">{{ message }}</p>
         <div class="mypage-content">
             <h2 class="title">マイページ</h2>
             <div class="mypage-card">
@@ -174,7 +175,7 @@
                             >
                                 パスワードを変更する
                             </button>
-                            <Modal v-if="open" @close="open = false" />
+                            <Modal v-if="open" @close="handleClose" />
                         </div>
                     </div>
                 </div>
@@ -281,6 +282,10 @@ const currentDateTime = currentDate + " " + currentTime;
 const edit = ref(false);
 // モーダル画面
 const open = ref(false);
+// パスワード変更成功のメッセージ
+const message = ref("");
+// メッセージ表示用のタイマー
+let messageTimerId = null;
 
 // バリデーションのルールを設定
 const schema = yup.object({
@@ -320,6 +325,11 @@ const gender = ref("");
 // 入力したらFormRequestのバリデーションを削除する
 watch([name, email, address, phone], () => {
     backErrors.value = {};
+});
+
+// 画面を離れる時は、動いているタイマーを完全に抹消する
+onUnmounted(() => {
+    clearTimeout(messageTimerId);
 });
 
 // 認証中のみアクセス可能にする
@@ -518,6 +528,18 @@ const informationCancel = () => {
     edit.value = false;
 };
 
+// モーダル画面が閉じた時、ヘッダー下にメッセージを表示
+const handleClose = (msg) => {
+    open.value = false;
+    if (msg) {
+        message.value = msg;
+    }
+    // 3秒後にメッセージが非表示になる
+    messageTimerId = setTimeout(() => {
+        message.value = "";
+    }, 3000);
+};
+
 // 初回実行
 const init = async () => {
     await getUser();
@@ -536,6 +558,17 @@ p {
     background-color: #cce9fa;
     width: 100%;
     text-align: center;
+    position: relative;
+}
+
+.message {
+    background-color: #55c6a9;
+    color: #304654;
+    padding: 10px 20px;
+    text-align: left;
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .mypage-content {
