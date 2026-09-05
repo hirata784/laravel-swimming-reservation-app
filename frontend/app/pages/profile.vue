@@ -2,10 +2,10 @@
     <div class="profile">
         <div class="profile-content">
             <h2 class="title">プロフィール設定</h2>
-            <form class="profile-form">
+            <form class="profile-form" @submit.prevent="addProfile">
                 <div class="group">
                     <p class="item">性別</p>
-                    <select class="sel">
+                    <select class="sel" v-model="gender">
                         <option value="">未回答</option>
                         <option value="男性">男性</option>
                         <option value="女性">女性</option>
@@ -17,6 +17,7 @@
                     <input
                         class="txt"
                         type="text"
+                        v-model="address"
                         placeholder="例：東京都新宿区西新宿2-8-1"
                     />
                 </div>
@@ -25,6 +26,7 @@
                     <input
                         class="txt"
                         type="text"
+                        v-model="phone"
                         placeholder="例：0901112222"
                     />
                 </div>
@@ -36,6 +38,40 @@
         </div>
     </div>
 </template>
+
+<script setup>
+// プロフィール入力値
+const gender = ref("");
+const address = ref("");
+const phone = ref("");
+
+// 認証中のみアクセス可能にする
+definePageMeta({
+    middleware: "auth",
+});
+
+// プロフィール設定
+const addProfile = async () => {
+    try {
+        await apiFetch("http://localhost/api/auth/user", {
+            method: "PUT",
+            body: {
+                gender: gender.value,
+                address: address.value,
+                phone: phone.value,
+            },
+        });
+        // 予約一覧画面へ遷移する
+        navigateTo("/list");
+    } catch (error) {
+        {
+            // エラー
+            console.error("予期せぬエラーが発生しました：", error);
+            alert(`予期せぬエラーが発生しました： ${error}`);
+        }
+    }
+};
+</script>
 
 <style scoped>
 p {
