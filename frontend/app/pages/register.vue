@@ -70,6 +70,11 @@ import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { ref, watch } from "vue";
 
+// {token: トークン, fetchUser: データを取得する関数 }
+const { token, fetchUser } = useAuth();
+// リフレッシュトークン
+const refreshToken = useCookie("refresh_token");
+
 // 未認証中のみアクセス可能にする
 definePageMeta({
     middleware: "guest",
@@ -126,10 +131,23 @@ const addRegister = async () => {
                 password: password.value,
             },
         });
-        // 入力値を空白にする
-        name.value = "";
-        email.value = "";
-        password.value = "";
+        // 会員登録後ログイン
+        const res = await $fetch("http://localhost/api/auth/login", {
+            method: "POST",
+            body: {
+                email: email.value,
+                password: password.value,
+            },
+        });
+        // トークンを保存
+        token.value = res.access_token;
+        // リフレッシュトークンを保存
+        refreshToken.value = res.refresh_token;
+
+        await fetchUser();
+
+        // プロフィール設定画面へ遷移する
+        navigateTo("/profile");
     } catch (error) {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {
