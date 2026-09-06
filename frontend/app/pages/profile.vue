@@ -22,6 +22,10 @@
                     />
                     <!-- vee-validateのバリデーション -->
                     <p class="error">{{ errors.address }}</p>
+                    <!-- FormRequestのバリデーション -->
+                    <p v-if="backErrors.address" class="error">
+                        {{ backErrors.address[0] }}
+                    </p>
                 </div>
                 <div class="group">
                     <p class="item">電話番号</p>
@@ -33,6 +37,10 @@
                     />
                     <!-- vee-validateのバリデーション -->
                     <p class="error">{{ errors.phone }}</p>
+                    <!-- FormRequestのバリデーション -->
+                    <p v-if="backErrors.phone" class="error">
+                        {{ backErrors.phone[0] }}
+                    </p>
                 </div>
                 <!-- バリデーションの表示中はclass変更 & クリック不可 -->
                 <button
@@ -77,11 +85,17 @@ const { errors } = useForm({
     validationSchema: schema,
 });
 // エラーを格納するオブジェクト
+const backErrors = ref({});
 const { value: address } = useField("address");
 const { value: phone } = useField("phone");
 
 // プロフィール入力値
 const gender = ref("");
+
+// 入力したらFormRequestのバリデーションを削除する
+watch([address, phone], () => {
+    backErrors.value = {};
+});
 
 // 認証中のみアクセス可能にする
 definePageMeta({
@@ -90,11 +104,16 @@ definePageMeta({
 
 // バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
 const btnIsInvalid = computed(() => {
-    return Object.keys(errors.value).length > 0;
+    return (
+        Object.keys(errors.value).length > 0 ||
+        Object.keys(backErrors.value).length > 0
+    );
 });
 
 // プロフィール設定
 const addProfile = async () => {
+    // 初期化
+    backErrors.value = {};
     try {
         await apiFetch("http://localhost/api/auth/user", {
             method: "PUT",
@@ -108,9 +127,14 @@ const addProfile = async () => {
         navigateTo("/list");
     } catch (error) {
         {
-            // エラー
-            console.error("予期せぬエラーが発生しました：", error);
-            alert(`予期せぬエラーが発生しました： ${error}`);
+            // ステータスコード422の場合はエラーメッセージをセット
+            if (error.response && error.response.status === 422) {
+                backErrors.value = error.response._data.errors;
+            } else {
+                // その他のエラー
+                console.error("予期せぬエラーが発生しました：", error);
+                alert(`予期せぬエラーが発生しました： ${error}`);
+            }
         }
     }
 };

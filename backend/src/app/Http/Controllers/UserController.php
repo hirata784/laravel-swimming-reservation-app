@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use App\Http\Requests\MypageRequest;
+use App\Http\Requests\ProfileRequest;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -15,7 +15,7 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function updateProfile(Request $request)
+    public function updateProfile(ProfileRequest $request)
     {
         // 認証中のユーザーidを取得
         $user_id = Auth::id();
