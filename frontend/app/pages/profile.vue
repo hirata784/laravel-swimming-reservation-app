@@ -187,6 +187,7 @@ p {
 .sel {
     font-size: 18px;
     padding: 10px;
+    margin-bottom: 11px;
 }
 
 .txt {
@@ -197,6 +198,7 @@ p {
 .error {
     color: #da251d;
     text-align: left;
+    margin-top: 10px;
 }
 
 .profile-btn {
@@ -217,6 +219,6 @@ p {
 }
 
 .profile-link {
-    margin-bottom: 47px;
+    margin-bottom: 15px;
 }
 </style>
