@@ -59,6 +59,11 @@
                 >
                     登録する
                 </button>
+                <div class="register-link">
+                    <NuxtLink class="no-underline" to="/login"
+                        >ログイン画面へ</NuxtLink
+                    >
+                </div>
             </form>
         </div>
     </div>
@@ -224,12 +229,20 @@ p {
     font-size: 20px;
     cursor: pointer;
     width: 70%;
-    margin-bottom: 60px;
+    margin-bottom: 20px;
 }
 
 .is-disabled-btn {
     background-color: #666666;
     opacity: 0.5;
     cursor: auto;
+}
+
+.register-link {
+    margin-bottom: 15px;
+}
+
+.no-underline {
+    text-decoration: none;
 }
 </style>

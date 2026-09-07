@@ -54,7 +54,9 @@
                     登録する
                 </button>
                 <div class="profile-link">
-                    <NuxtLink class="" to="/list">設定せず一覧画面へ</NuxtLink>
+                    <NuxtLink class="no-underline" to="/list"
+                        >設定せず一覧画面へ</NuxtLink
+                    >
                 </div>
             </form>
         </div>
@@ -220,5 +222,9 @@ p {
 
 .profile-link {
     margin-bottom: 15px;
+}
+
+.no-underline {
+    text-decoration: none;
 }
 </style>
