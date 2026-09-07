@@ -23,7 +23,7 @@
                     <input
                         v-model="password"
                         class="txt"
-                        type="text"
+                        type="password"
                         placeholder="例：test1234"
                     />
                     <!-- vee-validateのバリデーション -->
