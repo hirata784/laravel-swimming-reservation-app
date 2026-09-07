@@ -150,12 +150,11 @@ p {
 .profile {
     background-color: #cce9fa;
     width: 100%;
-    height: 90vh;
     text-align: center;
 }
 
 .profile-content {
-    padding-top: 80px;
+    padding: 80px 0 1px;
 }
 
 .title {

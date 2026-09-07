@@ -174,12 +174,11 @@ p {
 .register {
     background-color: #cce9fa;
     width: 100%;
-    height: 90vh;
     text-align: center;
 }
 
 .register-content {
-    padding-top: 80px;
+    padding: 80px 0 1px;
 }
 
 .title {
