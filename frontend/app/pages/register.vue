@@ -98,7 +98,7 @@ const schema = yup.object({
     password: yup
         .string()
         .required("パスワードを入力してください")
-        .min(6, "6文字以上入力してください"),
+        .min(8, "8文字以上で入力してください"),
 });
 // クライアントエラーを格納するオブジェクト
 const { errors } = useForm({

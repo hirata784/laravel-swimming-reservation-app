@@ -72,7 +72,7 @@ const schema = yup.object({
     newPassword: yup
         .string()
         .required("新しいパスワードを入力してください")
-        .min(6, "6文字以上で入力してください"),
+        .min(8, "8文字以上で入力してください"),
     confirmPassword: yup
         .string()
         .required("新しいパスワード(確認)を入力してください")

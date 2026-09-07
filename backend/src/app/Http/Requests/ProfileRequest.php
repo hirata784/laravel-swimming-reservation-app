@@ -37,7 +37,7 @@ class ProfileRequest extends FormRequest
     {
         return [
             'address.max' =>  '255文字以下で入力してください',
-            'phone.regex' => '正しい電話番号（10桁または11桁）を入力してください。',
+            'phone.regex' => '正しい電話番号（10桁または11桁）を入力してください',
         ];
     }
 }

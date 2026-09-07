@@ -44,7 +44,7 @@ class MypageRequest extends FormRequest
             'email.email' => 'メールアドレスの形式で入力してください',
             'email.unique' => 'そのアドレスは登録されています',
             'address.max' =>  '255文字以下で入力してください',
-            'phone.regex' => '正しい電話番号（10桁または11桁）を入力してください。',
+            'phone.regex' => '正しい電話番号（10桁または11桁）を入力してください',
         ];
     }
 }

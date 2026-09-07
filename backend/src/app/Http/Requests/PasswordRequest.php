@@ -26,7 +26,7 @@ class PasswordRequest extends FormRequest
 
         return [
             'currentPassword' => ['required', 'current_password'],
-            'newPassword' => ['required', 'min:6'],
+            'newPassword' => ['required', 'min:8'],
             'confirmPassword' => ['required', 'same:newPassword'],
         ];
     }
@@ -37,7 +37,7 @@ class PasswordRequest extends FormRequest
             'currentPassword.required' => '現在のパスワードを入力してください',
             'currentPassword.current_password' => '現在のパスワードが正しくありません',
             'newPassword.required' => '新しいパスワードを入力してください',
-            'newPassword.min' =>  '6文字以上で入力してください',
+            'newPassword.min' =>  '8文字以上で入力してください',
             'confirmPassword.required' => '新しいパスワード(確認)を入力してください',
             'confirmPassword.same' => 'パスワードが一致しません',
         ];
