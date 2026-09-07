@@ -620,9 +620,12 @@ p {
 }
 
 .txt {
-    background-color: #f5fbff;
     font-size: 18px;
     padding: 5px;
+}
+
+.txt:focus-visible {
+    background-color: #e1f4fd;
 }
 
 .error {
@@ -631,13 +634,8 @@ p {
 }
 
 .sel {
-    background-color: #f5fbff;
     font-size: 18px;
     padding: 5px;
-}
-
-.txt:focus-visible {
-    background-color: #fde2e4;
 }
 
 .item {

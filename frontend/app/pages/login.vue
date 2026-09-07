@@ -186,6 +186,10 @@ p {
     padding: 10px;
 }
 
+.txt:focus-visible {
+    background-color: #e1f4fd;
+}
+
 .error {
     color: #da251d;
     text-align: left;
