@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TimeSlot;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
@@ -37,8 +38,8 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        // ユーザーidを取得
-        $user_id = $request->user_id;
+        // 認証中のユーザーidを取得
+        $user_id = Auth::id();
         // 予約枠idを検索してから取得
         $time_slot = TimeSlot::where('date', $request->date)->where('start_time', $request->start_time)->first();
 
@@ -76,8 +77,8 @@ class ReservationController extends Controller
      */
     public function destroy(Request $request)
     {
-        // ユーザーidを取得
-        $user_id = $request->user_id;
+        // 認証中のユーザーidを取得
+        $user_id = Auth::id();
         // 予約枠idを検索してから取得
         $time_slot = TimeSlot::where('date', $request->date)->where('start_time', $request->start_time)->first();
         $time_slot_id = $time_slot->id;

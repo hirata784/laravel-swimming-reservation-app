@@ -495,10 +495,9 @@ const update = async () => {
     // 初期化
     backErrors.value = {};
     try {
-        await apiFetch("http://localhost/api/user", {
+        await apiFetch("http://localhost/api/auth/user", {
             method: "PUT",
             body: {
-                user_id: user.value.id,
                 name: name.value,
                 email: email.value,
                 gender: gender.value,

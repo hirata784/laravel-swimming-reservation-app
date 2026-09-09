@@ -22,15 +22,9 @@ use App\Http\Controllers\PasswordController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-Route::apiResource('/reservation', ReservationController::class)->only([
-    'index',
-    'store'
-]);
-Route::delete('/reservation', [ReservationController::class, 'destroy']);
+Route::get('/reservation', [ReservationController::class, 'index']);
 Route::apiResource('/mypage', MypageController::class);
 Route::apiResource('/timeslot', TimeSlotController::class);
-Route::put('/user', [UserController::class, 'update']);
 Route::put('/password', [PasswordController::class, 'update']);
 
 Route::group([
@@ -43,5 +37,8 @@ Route::group([
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh'])->withoutMiddleware(['auth:api']);
     Route::get('me', [AuthController::class, 'me']);
+    Route::post('reservation', [ReservationController::class, 'store']);
+    Route::delete('reservation', [ReservationController::class, 'destroy']);
     Route::put('user', [UserController::class, 'updateProfile']);
+    Route::put('user', [UserController::class, 'update']);
 });

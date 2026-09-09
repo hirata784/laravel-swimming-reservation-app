@@ -98,10 +98,9 @@ const handleSubmit = (user, date, time) => {
 
 // 予約の処理を行う
 const addReservation = async (user, date, time) => {
-    await apiFetch("http://localhost/api/reservation", {
+    await apiFetch("http://localhost/api/auth/reservation", {
         method: "POST",
         body: {
-            user_id: user.id,
             date: date,
             start_time: time,
         },
@@ -115,10 +114,9 @@ const addReservation = async (user, date, time) => {
 
 // 予約の取り消しを行う
 const deleteReservation = async (user, date, time) => {
-    await apiFetch("http://localhost/api/reservation", {
+    await apiFetch("http://localhost/api/auth/reservation", {
         method: "DELETE",
         body: {
-            user_id: user.id,
             date: date,
             start_time: time,
         },

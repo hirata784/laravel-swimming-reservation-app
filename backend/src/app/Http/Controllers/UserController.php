@@ -40,8 +40,8 @@ class UserController extends Controller
      */
     public function update(MypageRequest $request)
     {
-        // ユーザーidを取得
-        $user_id = $request->user_id;
+        // 認証中のユーザーidを取得
+        $user_id = Auth::id();
         // 変更内容を取得
         $update = [
             'name' => $request->name,
