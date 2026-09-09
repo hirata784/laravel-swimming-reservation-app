@@ -60,6 +60,7 @@
 // インポート
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
+import { ref, computed, watch } from "vue";
 
 // モーダル画面を閉じるためのイベントを定義
 const emit = defineEmits(["close"]);

@@ -254,7 +254,8 @@
 // インポート
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
+
 // {user:データ（状態）, fetchUser: データを取得する関数 }
 const { user, fetchUser } = useAuth();
 // 予約一覧

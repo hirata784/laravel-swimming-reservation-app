@@ -135,6 +135,9 @@
 </template>
 
 <script setup>
+// インポート
+import { ref, computed } from "vue";
+
 // 今日の日付を取得
 const today = new Date();
 // 今年

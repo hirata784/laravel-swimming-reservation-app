@@ -58,7 +58,7 @@
 // インポート
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { ref, watch } from "vue";
+import { ref, computed, watch } from "vue";
 
 // {token: トークン, fetchUser: データを取得する関数 }
 const { token, fetchUser } = useAuth();

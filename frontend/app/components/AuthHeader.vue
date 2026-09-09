@@ -81,6 +81,9 @@
 </template>
 
 <script setup>
+// インポート
+import { computed } from "vue";
+
 // ページのURLを取得
 const route = useRoute();
 // {user:データ（状態）, token: トークン, fetchUser: データを取得する関数 }

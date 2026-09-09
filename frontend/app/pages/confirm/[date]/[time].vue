@@ -50,6 +50,9 @@
 </template>
 
 <script setup>
+// インポート
+import { computed } from "vue";
+
 // useRoute呼び出し
 const route = useRoute();
 // 予約日時取得

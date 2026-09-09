@@ -67,7 +67,7 @@
 // インポート
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 
 // バリデーションのルールを設定
 const schema = yup.object({
