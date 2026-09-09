@@ -42,6 +42,6 @@ Route::group([
     Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh'])->withoutMiddleware(['auth:api']);
-    Route::get('user', [AuthController::class, 'me']);
+    Route::get('me', [AuthController::class, 'me']);
     Route::put('user', [UserController::class, 'updateProfile']);
 });

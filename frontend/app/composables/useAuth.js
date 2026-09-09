@@ -10,9 +10,7 @@ export const useAuth = () => {
     // tokenがある場合、ユーザー名を取得する
     const fetchUser = async () => {
         if (!token.value) return;
-
-        const res = await apiFetch("http://localhost/api/auth/user");
-
+        const res = await apiFetch("http://localhost/api/auth/me");
         user.value = res;
     };
 
