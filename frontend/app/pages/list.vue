@@ -130,6 +130,9 @@
                     </tbody>
                 </table>
             </div>
+            <p class="legend">
+                ○：空きあり。 △：残りわずか。 ×：予約不可。 ✓：予約済み。
+            </p>
         </div>
     </div>
 </template>
@@ -296,14 +299,15 @@ const statusMap = computed(() => {
                     result[key] = { text: "×", class: "bg-gray" };
                     // ログインユーザーが予約済みの場合
                 } else if (isLoginUserReserved === true) {
-                    result[key] = { text: "◎", class: "bg-red" };
+                    result[key] = { text: "✔︎", class: "bg-blue" };
                     // 予約人数によって、表示を変更する
                 } else if (count >= 2) {
                     result[key] = { text: "×", class: "bg-gray" };
+                    // 「△」と「○」は背景色を設定しない
                 } else if (count >= 1) {
-                    result[key] = { text: "△", class: "bg-yellow" };
+                    result[key] = { text: "△" };
                 } else {
-                    result[key] = { text: "⚪︎", class: "bg-green" };
+                    result[key] = { text: "⚪︎" };
                 }
             }
         }
@@ -327,8 +331,8 @@ const confirm = (confirmDate, confirmTime, text) => {
             // 処理が終わったら解除
             isRunning = false;
         }, 3000);
-        // ボタンテキストが[◎]の場合、予約取り消し確認画面へ遷移
-    } else if (text === "◎") {
+        // ボタンテキストが[✔︎]の場合、予約取り消し確認画面へ遷移
+    } else if (text === "✔︎") {
         navigateTo({
             path: `/confirm/${confirmDate}/${confirmTime}`,
             query: { mode: "cancel" },
@@ -437,19 +441,17 @@ td {
     border: 1px solid #304654;
 }
 
-.bg-green {
-    background-color: #55c6a9;
-}
-
-.bg-yellow {
-    background-color: #fce77c;
-}
-
 .bg-gray {
-    background-color: #7f8c8d;
+    background-color: #d2d7df;
 }
 
-.bg-red {
-    background-color: #e25c5c;
+.bg-blue {
+    background-color: #4ba3e3;
+}
+
+.legend {
+    width: 90%;
+    margin: 0 auto;
+    text-align: left;
 }
 </style>
