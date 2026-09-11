@@ -18,7 +18,7 @@
                 <button class="btn" type="button" @click="mypage">
                     マイページ
                 </button>
-                <button class="btn" type="button" @click="logout">
+                <button class="btn" type="button" @click="isLogout">
                     ログアウト
                 </button>
             </div>
@@ -86,8 +86,8 @@ import { computed } from "vue";
 
 // ページのURLを取得
 const route = useRoute();
-// {user:データ（状態）, token: トークン, fetchUser: データを取得する関数 }
-const { user, token, fetchUser } = useAuth();
+// {user:データ（状態）, token: トークン, fetchUser: データを取得する関数, logout: ログアウト関数 }
+const { user, token, fetchUser, logout } = useAuth();
 // ログイン状態
 const isLoggedIn = computed(() => {
     return !!token.value;
@@ -123,20 +123,8 @@ const register = () => {
 };
 
 // ログアウト
-const logout = async () => {
-    // サーバー側ログアウト
-    await $fetch("http://localhost/api/auth/logout", {
-        method: "POST",
-        headers: {
-            // JWT等を使用している場合はここでAuthorizationヘッダーを渡す
-            Authorization: `Bearer ${token.value}`,
-        },
-    });
-
-    // クライアント側ログアウト
-    token.value = null;
-    // ログイン画面へ遷移する
-    navigateTo("/login");
+const isLogout = async () => {
+    await logout();
 };
 
 // 予約一覧画面へ遷移
