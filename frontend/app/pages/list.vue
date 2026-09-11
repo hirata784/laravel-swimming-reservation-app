@@ -421,6 +421,9 @@ p {
     position: sticky;
     top: 0;
     left: 0;
+    box-shadow:
+        inset 0 1px 0 #304654,
+        inset 0 -1px 0 #304654;
 }
 
 .table-cell-btn {
