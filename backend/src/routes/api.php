@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservationController;
-use App\Http\Controllers\MypageController;
 use App\Http\Controllers\TimeSlotController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
@@ -23,7 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('/reservation', [ReservationController::class, 'index']);
-Route::apiResource('/mypage', MypageController::class);
 Route::apiResource('/timeslot', TimeSlotController::class);
 Route::put('/password', [PasswordController::class, 'update']);
 
