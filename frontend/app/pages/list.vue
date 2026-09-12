@@ -225,16 +225,22 @@ for (let i = 0; i < 7; i++) {
 
 // 予約データの作成
 const makeReservations = async () => {
-    const res = await $fetch("http://localhost/api/reservation", {
-        method: "GET",
-    });
-    // APIの配列を1つずつ整形
-    for (let i = 0; i < res.data.start_time.length; i++) {
-        reservations.value.push({
-            user_id: res.data.user_id[i],
-            date: res.data.date[i],
-            time: res.data.start_time[i].substring(0, 5),
+    try {
+        const res = await $fetch("http://localhost/api/reservation", {
+            method: "GET",
         });
+        // APIの配列を1つずつ整形
+        for (let i = 0; i < res.data.start_time.length; i++) {
+            reservations.value.push({
+                user_id: res.data.user_id[i],
+                date: res.data.date[i],
+                time: res.data.start_time[i].substring(0, 5),
+            });
+        }
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
     }
 };
 

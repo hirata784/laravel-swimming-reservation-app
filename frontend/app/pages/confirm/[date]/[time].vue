@@ -101,34 +101,46 @@ const handleSubmit = (user, date, time) => {
 
 // 予約の処理を行う
 const addReservation = async (user, date, time) => {
-    await apiFetch("http://localhost/api/auth/reservation", {
-        method: "POST",
-        body: {
-            date: date,
-            start_time: time,
-        },
-    });
-    // 予約一覧画面へ遷移
-    navigateTo({
-        path: "/list",
-        query: { message: "success" },
-    });
+    try {
+        await apiFetch("http://localhost/api/auth/reservation", {
+            method: "POST",
+            body: {
+                date: date,
+                start_time: time,
+            },
+        });
+        // 予約一覧画面へ遷移
+        navigateTo({
+            path: "/list",
+            query: { message: "success" },
+        });
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
 };
 
 // 予約の取り消しを行う
 const deleteReservation = async (user, date, time) => {
-    await apiFetch("http://localhost/api/auth/reservation", {
-        method: "DELETE",
-        body: {
-            date: date,
-            start_time: time,
-        },
-    });
-    // 予約一覧画面へ遷移
-    navigateTo({
-        path: "/list",
-        query: { message: "delete" },
-    });
+    try {
+        await apiFetch("http://localhost/api/auth/reservation", {
+            method: "DELETE",
+            body: {
+                date: date,
+                start_time: time,
+            },
+        });
+        // 予約一覧画面へ遷移
+        navigateTo({
+            path: "/list",
+            query: { message: "delete" },
+        });
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
 };
 </script>
 
