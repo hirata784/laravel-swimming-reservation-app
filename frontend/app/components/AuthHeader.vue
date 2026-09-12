@@ -2,12 +2,6 @@
     <div class="header">
         <h1 class="header-str">▼●▲水泳クラブ</h1>
         <!-- ログイン中 -->
-        <nav v-if="isLoggedIn">
-            <div v-if="user" class="login-user">
-                {{ user.name }}さんがログインしています
-            </div>
-        </nav>
-        <!-- ログイン中 -->
         <nav v-if="isLoggedIn" class="header-nav">
             <div>
                 <!-- レイアウト調整用(削除不可) -->
@@ -86,8 +80,8 @@ import { computed } from "vue";
 
 // ページのURLを取得
 const route = useRoute();
-// {user:データ（状態）, token: トークン, fetchUser: データを取得する関数, logout: ログアウト関数 }
-const { user, token, fetchUser, logout } = useAuth();
+// { token: トークン, fetchUser: データを取得する関数, logout: ログアウト関数 }
+const { token, fetchUser, logout } = useAuth();
 // ログイン状態
 const isLoggedIn = computed(() => {
     return !!token.value;
@@ -161,13 +155,8 @@ body {
     margin: 0;
 }
 
-.login-user {
-    color: #eef9ff;
-    font-size: 20px;
-}
-
 .header-nav {
-    width: 25%;
+    width: 45%;
     padding-right: 20px;
     display: flex;
     justify-content: space-between;
