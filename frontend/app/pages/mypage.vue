@@ -350,12 +350,12 @@ const makeReservations = async () => {
             method: "GET",
         });
         // APIの配列を1つずつ整形
-        for (let i = 0; i < res.data.start_time.length; i++) {
-            if (res.data.user_id[i] === user.value.id) {
+        for (let i = 0; i < res.data.length; i++) {
+            if (res.data[i].user_id === user.value.id) {
                 // ログインユーザーの予約データのみ取得
                 reservations.value.push({
-                    date: res.data.date[i],
-                    time: res.data.start_time[i].substring(0, 5),
+                    date: res.data[i].date,
+                    time: res.data[i].start_time.substring(0, 5),
                 });
             }
         }

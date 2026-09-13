@@ -230,11 +230,11 @@ const makeReservations = async () => {
             method: "GET",
         });
         // APIの配列を1つずつ整形
-        for (let i = 0; i < res.data.start_time.length; i++) {
+        for (let i = 0; i < res.data.length; i++) {
             reservations.value.push({
-                user_id: res.data.user_id[i],
-                date: res.data.date[i],
-                time: res.data.start_time[i].substring(0, 5),
+                user_id: res.data[i].user_id,
+                date: res.data[i].date,
+                time: res.data[i].start_time.substring(0, 5),
             });
         }
     } catch (error) {

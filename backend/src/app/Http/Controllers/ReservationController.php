@@ -20,9 +20,9 @@ class ReservationController extends Controller
         // 各予約日と時間を取得
         foreach ($reservations as $index => $reservation) {
             $id =  $reservation->time_slot_id;
-            $item['user_id'][$index] = $reservation->user_id;
-            $item['date'][$index] = TimeSlot::find($id)->date;
-            $item['start_time'][$index] = TimeSlot::find($id)->start_time;
+            $item[$index]['user_id'] = $reservation->user_id;
+            $item[$index]['date'] = TimeSlot::find($id)->date;
+            $item[$index]['start_time'] = TimeSlot::find($id)->start_time;
         }
 
         return response()->json([
