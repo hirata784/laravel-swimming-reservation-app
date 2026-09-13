@@ -33,7 +33,7 @@
                     </div>
                     <div class="item-group">
                         <p class="label">予約時間</p>
-                        <p class="item">{{ time }}</p>
+                        <p class="item">{{ formatTime(time) }}</p>
                     </div>
                 </div>
                 <div class="btn-area">
@@ -82,6 +82,28 @@ definePageMeta({
 onMounted(async () => {
     await fetchUser();
 });
+
+// 時間フォーマット変更(例：予約時間~予約時間+30分)
+const formatTime = (dateString) => {
+    // 空データ時のガード句（バグ防止）
+    if (!dateString) return "";
+
+    // 時間を取得
+    const h = dateString.substring(0, 2);
+    // 分を取得
+    const m = dateString.substring(3, 5);
+
+    // 本日の日付を取得
+    const t = new Date();
+    // 時間と分をセット(秒とミリ秒は0にリセット)
+    t.setHours(h, m, 0, 0);
+    // 現在の分に30分を足す（15:30+30分=16:00に自動繰り上げ）
+    t.setMinutes(t.getMinutes() + 30);
+    // 30分後の表記を取得
+    const finishTime = `${t.getHours().toString().padStart(2, "0")}:${t.getMinutes().toString().padStart(2, "0")}`;
+
+    return `${dateString}~${finishTime}`;
+};
 
 // 予約一覧画面へ遷移
 const list = () => {
