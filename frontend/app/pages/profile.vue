@@ -117,7 +117,7 @@ const addProfile = async () => {
     // 初期化
     backErrors.value = {};
     try {
-        await apiFetch("http://localhost/api/auth/user", {
+        await apiFetch("http://localhost/api/auth/profile", {
             method: "PUT",
             body: {
                 gender: gender.value,

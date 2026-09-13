@@ -107,7 +107,7 @@ const update = async () => {
     // 初期化
     backErrors.value = {};
     try {
-        await apiFetch("http://localhost/api/password", {
+        await apiFetch("http://localhost/api/auth/password", {
             method: "PUT",
             body: {
                 currentPassword: currentPassword.value,
