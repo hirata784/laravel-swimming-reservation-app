@@ -162,6 +162,9 @@ const weekday = ["日", "月", "火", "水", "木", "金", "土"];
 // 予約一覧
 // 例: [{ user_id: "1", date: "2026-07-15", time: "09:00" }]
 const reservations = ref([]);
+// 日時枠
+// 例: [{ "date": "2026-09-15", "start_time": "10:30", "capacity": 7 }]
+const timeSlots = ref([]);
 // {user:データ（状態）, token: トークン, fetchUser: データを取得する関数 }
 const { user, token, fetchUser } = useAuth();
 const isLoggedIn = computed(() => {
@@ -244,6 +247,27 @@ const makeReservations = async () => {
     }
 };
 
+// 日時枠の取得
+const makeTimeSlots = async () => {
+    try {
+        const res = await $fetch("http://localhost/api/timeslot", {
+            method: "GET",
+        });
+        // APIの配列を1つずつ整形
+        for (let i = 0; i < res.data.length; i++) {
+            timeSlots.value.push({
+                date: res.data[i].date,
+                start_time: res.data[i].start_time.substring(0, 5),
+                capacity: res.data[i].capacity,
+            });
+        }
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
 // 予約数を集計する
 const reservationMap = computed(() => {
     const map = {};
@@ -298,19 +322,33 @@ const statusMap = computed(() => {
                         user.value.id,
                     );
                 }
+                // 予約の日時が一致するtimeSlotsを取得
+                const matchedSlot = timeSlots.value.find(
+                    (t) => t.start_time === time && t.date === date,
+                );
+
+                // 予約人数の上限
+                let capacity;
+                // matchedSlotが取得できた時のみ、予約人数の上限を取得
+                if (matchedSlot) {
+                    capacity = matchedSlot.capacity;
+                }
 
                 // 状態決定
                 // 過去の日時の場合、予約0でも予約不可能とする
                 if (dates.value[0] == d && currentTime >= time) {
                     result[key] = { text: "×", class: "bg-gray" };
+                    // capacityがうまく取得できなかった場合
+                } else if (capacity === undefined) {
+                    result[key] = { text: "×", class: "bg-gray" };
                     // ログインユーザーが予約済みの場合
                 } else if (isLoginUserReserved === true) {
                     result[key] = { text: "✔︎", class: "bg-blue" };
                     // 予約人数によって、表示を変更する
-                } else if (count >= 2) {
+                } else if (count >= capacity) {
                     result[key] = { text: "×", class: "bg-gray" };
                     // 「△」と「○」は背景色を設定しない
-                } else if (count >= 1) {
+                } else if (count >= capacity - 3) {
                     result[key] = { text: "△" };
                 } else {
                     result[key] = { text: "⚪︎" };
@@ -353,6 +391,7 @@ const confirm = (confirmDate, confirmTime, text) => {
 };
 
 // 初回実行
+makeTimeSlots();
 makeReservations();
 </script>
 
