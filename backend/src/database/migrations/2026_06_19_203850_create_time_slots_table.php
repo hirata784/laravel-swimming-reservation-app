@@ -17,7 +17,7 @@ class CreateTimeSlotsTable extends Migration
             $table->id();
             $table->date('date');
             $table->time('start_time');
-            $table->integer('capacity')->default(25);
+            $table->integer('capacity')->default(7);
             $table->timestamps();
         });
     }
