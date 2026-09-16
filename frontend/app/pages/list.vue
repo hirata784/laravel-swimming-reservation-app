@@ -36,9 +36,15 @@
                                         "
                                     >
                                         <!-- ログイン：ボタン表示 クリックした日時をconfirmへ渡す -->
+                                        <!-- 「×」表示のボタンを無効化 -->
                                         <button
                                             class="table-cell-btn"
                                             type="button"
+                                            :disabled="
+                                                statusMap[
+                                                    `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
+                                                ].text === '×'
+                                            "
                                             @click="
                                                 confirm(
                                                     `${dates[j - 1]}`,
@@ -89,9 +95,15 @@
                                         "
                                     >
                                         <!-- ログイン：ボタン表示 クリックした日時をconfirmへ渡す -->
+                                        <!-- 「×」表示のボタンを無効化 -->
                                         <button
                                             class="table-cell-btn"
                                             type="button"
+                                            :disabled="
+                                                statusMap[
+                                                    `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
+                                                ].text === '×'
+                                            "
                                             @click="
                                                 confirm(
                                                     `${dates[j - 1]}`,
@@ -491,6 +503,7 @@ td {
 
 .bg-gray {
     background-color: #d2d7df;
+    pointer-events: none;
 }
 
 .bg-blue {
