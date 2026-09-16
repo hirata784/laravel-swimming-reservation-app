@@ -340,7 +340,7 @@ const statusMap = computed(() => {
                     result[key] = { text: "×", class: "bg-gray" };
                     // capacityがうまく取得できなかった場合
                 } else if (capacity === undefined) {
-                    result[key] = { text: "×", class: "bg-gray" };
+                    result[key] = { text: "⚪︎" };
                     // ログインユーザーが予約済みの場合
                 } else if (isLoginUserReserved === true) {
                     result[key] = { text: "✔︎", class: "bg-blue" };
