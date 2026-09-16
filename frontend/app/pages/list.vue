@@ -28,14 +28,12 @@
                                 <template v-for="j in 7">
                                     <!-- 9時は頭を0で埋める(09:00) -->
                                     <td
-                                        v-if="isLoggedIn"
                                         :class="
                                             statusMap[
                                                 `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
                                             ].class
                                         "
                                     >
-                                        <!-- ログイン：ボタン表示 クリックした日時をconfirmへ渡す -->
                                         <!-- 「×」表示のボタンを無効化 -->
                                         <button
                                             class="table-cell-btn"
@@ -62,21 +60,6 @@
                                             }}
                                         </button>
                                     </td>
-                                    <td
-                                        v-else
-                                        :class="
-                                            statusMap[
-                                                `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:00`
-                                            ].class
-                                        "
-                                    >
-                                        <!-- ログアウト：テキスト表示 -->
-                                        {{
-                                            statusMap[
-                                                `${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:00`
-                                            ].text
-                                        }}
-                                    </td>
                                 </template>
                             </tr>
                             <tr>
@@ -87,14 +70,12 @@
                                 <template v-for="j in 7">
                                     <!-- 9時は頭を0で埋める(09:00) -->
                                     <td
-                                        v-if="isLoggedIn"
                                         :class="
                                             statusMap[
                                                 `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
                                             ].class
                                         "
                                     >
-                                        <!-- ログイン：ボタン表示 クリックした日時をconfirmへ渡す -->
                                         <!-- 「×」表示のボタンを無効化 -->
                                         <button
                                             class="table-cell-btn"
@@ -120,21 +101,6 @@
                                                 ].text
                                             }}
                                         </button>
-                                    </td>
-                                    <td
-                                        v-else
-                                        :class="
-                                            statusMap[
-                                                `${dates[j - 1]}_${(i + 8).toString().padStart(2, '0')}:30`
-                                            ].class
-                                        "
-                                    >
-                                        <!-- ログアウト：テキスト表示 -->
-                                        {{
-                                            statusMap[
-                                                `${dates[j - 1]}_${(i + 8).toString().padStart(2, "0")}:30`
-                                            ].text
-                                        }}
                                     </td>
                                 </template>
                             </tr>
