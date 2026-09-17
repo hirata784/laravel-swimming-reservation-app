@@ -64,6 +64,8 @@ import { ref, computed, watch } from "vue";
 const { token, fetchUser } = useAuth();
 // リフレッシュトークン
 const refreshToken = useCookie("refresh_token");
+// useRoute呼び出し
+const route = useRoute();
 
 // 未認証中のみアクセス可能にする
 definePageMeta({
@@ -120,10 +122,30 @@ const isLogin = async () => {
         token.value = res.access_token;
         // リフレッシュトークンを保存
         refreshToken.value = res.refresh_token;
-
         await fetchUser();
-        // 予約一覧画面へ移動
-        navigateTo("list");
+
+        // redirectクエリ（'/confirm/2026-09-23/09:00'）を取得
+        const redirectPath = route.query.redirect;
+
+        // 予約一覧から日時を持たせてログイン画面へ遷移した場合
+        if (redirectPath) {
+            // スラッシュで文字列を分割する
+            // 例: ["", "confirm", "2026-09-23", "09:00"]
+            const segments = redirectPath.split("/");
+
+            // 配列の後ろから2番目と1番目をそれぞれ変数に代入
+            const date = segments[2]; // '2026-09-23'
+            const time = segments[3]; // '09:00'
+
+            // 確認画面へ遷移
+            navigateTo({
+                path: `/confirm/${date}/${time}`,
+                query: { mode: route.query.mode },
+            });
+        } else {
+            // 予約一覧画面へ移動
+            navigateTo("list");
+        }
     } catch (error) {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {
