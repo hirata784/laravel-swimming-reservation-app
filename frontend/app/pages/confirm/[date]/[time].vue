@@ -140,6 +140,41 @@ onMounted(async () => {
         if (!matchedSlot) {
             navigateTo("/list");
         }
+
+        // 3. 予約人数が満員
+        // 予約一覧
+        const reservations = ref([]);
+
+        // 予約中の人数を取得
+        const reservationRes = await $fetch(
+            "http://localhost/api/reservation",
+            {
+                method: "GET",
+            },
+        );
+        // APIの配列を1つずつ整形
+        for (let i = 0; i < reservationRes.data.length; i++) {
+            reservations.value.push({
+                user_id: reservationRes.data[i].user_id,
+                date: reservationRes.data[i].date,
+                time: reservationRes.data[i].start_time.substring(0, 5),
+            });
+        }
+
+        // URLから取得した日時の予約中データを取得
+        const targetReservations = reservations.value.filter(
+            (t) => t.time === time && t.date === date,
+        );
+        // 予約中の人数をカウント
+        const reservedCount = targetReservations.length;
+
+        // 予約上限を取得
+        const matchedCapacity = matchedSlot.capacity;
+
+        // 予約中の人数が予約上限以上かつ予約モードの場合、予約一覧画面へ戻る
+        if (reservedCount >= matchedCapacity && mode.value === "create") {
+            navigateTo("/list");
+        }
     } catch (error) {
         // エラー表示
         console.error("予期せぬエラーが発生しました：", error);
