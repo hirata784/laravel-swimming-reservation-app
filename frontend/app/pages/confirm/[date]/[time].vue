@@ -80,36 +80,70 @@ definePageMeta({
 
 // 画面構成後に処理
 onMounted(async () => {
-    await fetchUser();
+    try {
+        await fetchUser();
 
-    // 現在の日時を取得
-    const today = new Date();
-    // 今年
-    const currentYear = today.getFullYear();
-    // 今月(1~9月は頭を0で埋める(例：01月))
-    const currentMonth = (today.getMonth() + 1).toString().padStart(2, "0");
-    // 今日(1~9日は頭を0で埋める(例：01日))
-    const currentDay = today.getDate().toString().padStart(2, "0");
-    // 現在の時間
-    const currentHour = today.getHours().toString().padStart(2, "0");
-    // 現在の分
-    const currentMinute = today.getMinutes().toString().padStart(2, "0");
+        // 予約日時の不適切チェック
+        // 1. 過去日時
+        // 現在の日時を取得
+        const today = new Date();
+        // 今年
+        const currentYear = today.getFullYear();
+        // 今月(1~9月は頭を0で埋める(例：01月))
+        const currentMonth = (today.getMonth() + 1).toString().padStart(2, "0");
+        // 今日(1~9日は頭を0で埋める(例：01日))
+        const currentDay = today.getDate().toString().padStart(2, "0");
+        // 現在の時間
+        const currentHour = today.getHours().toString().padStart(2, "0");
+        // 現在の分
+        const currentMinute = today.getMinutes().toString().padStart(2, "0");
 
-    // 比較用の本日日付
-    const targetDate = `${currentYear}-${currentMonth}-${currentDay}`;
-    // 比較用の時刻
-    const targetTime = `${currentHour}:${currentMinute}`;
+        // 比較用の本日日付
+        const targetDate = `${currentYear}-${currentMonth}-${currentDay}`;
+        // 比較用の時刻
+        const targetTime = `${currentHour}:${currentMinute}`;
 
-    // 過去日時の場合、予約一覧画面へ戻る
-    // 今日 > 予約日(過去)
-    if (targetDate > date) {
-        navigateTo("/list");
-        // 今日 === 予約日(時間を比較)
-    } else if (targetDate === date) {
-        // 現在の時間 >= 予約時間(過去)
-        if (targetTime >= time) {
+        // 過去日時の場合、予約一覧画面へ戻る
+        // 今日 > 予約日(過去)
+        if (targetDate > date) {
+            navigateTo("/list");
+            // 今日 === 予約日(時間を比較)
+        } else if (targetDate === date) {
+            // 現在の時間 >= 予約時間(過去)
+            if (targetTime >= time) {
+                navigateTo("/list");
+            }
+        }
+
+        // 2. 予約枠データの有無
+        // 日時枠
+        const timeSlots = ref([]);
+
+        const res = await $fetch("http://localhost/api/timeslot", {
+            method: "GET",
+        });
+        // APIの配列を1つずつ整形
+        for (let i = 0; i < res.data.length; i++) {
+            timeSlots.value.push({
+                date: res.data[i].date,
+                start_time: res.data[i].start_time.substring(0, 5),
+                capacity: res.data[i].capacity,
+            });
+        }
+
+        // time_slotsテーブルにURLから取得した日時があるか確認
+        const matchedSlot = timeSlots.value.find(
+            (t) => t.start_time === time && t.date === date,
+        );
+
+        // matchedSlotがない場合、予約一覧画面へ戻る
+        if (!matchedSlot) {
             navigateTo("/list");
         }
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
     }
 });
 
