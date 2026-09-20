@@ -43,18 +43,6 @@ class ReservationController extends Controller
         // 予約枠idを検索してから取得
         $time_slot = TimeSlot::where('date', $request->date)->where('start_time', $request->start_time)->first();
 
-        // 予約枠テーブルに存在しない日時の場合、新たにデータを追加する
-        if ($time_slot === null) {
-            TimeSlot::create(
-                [
-                    'date' => $request->date,
-                    'start_time' => $request->start_time,
-                ]
-            );
-            // データ追加後、改めて予約枠idを検索してから取得
-            $time_slot = TimeSlot::where('date', $request->date)->where('start_time', $request->start_time)->first();
-        }
-
         $time_slot_id = $time_slot->id;
         // 予約データを作成
         $item = Reservation::create(
