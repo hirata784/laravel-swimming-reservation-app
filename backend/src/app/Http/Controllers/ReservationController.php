@@ -81,6 +81,17 @@ class ReservationController extends Controller
             ], 409);
         }
 
+        // 4. 予約人数が満員
+        // 予約中の人数をカウント
+        $reservedCount = Reservation::where('time_slot_id', $time_slot->id)->count();
+        // 予約上限を取得
+        $matchedCapacity = $time_slot->capacity;
+        if ($reservedCount >= $matchedCapacity) {
+            return response()->json([
+                'message' => 'slot_full'
+            ], 409);
+        }
+
         $time_slot_id = $time_slot->id;
         // 予約データを作成
         $item = Reservation::create(
