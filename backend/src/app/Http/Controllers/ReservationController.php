@@ -6,6 +6,7 @@ use App\Models\TimeSlot;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 class ReservationController extends Controller
 {
@@ -49,6 +50,26 @@ class ReservationController extends Controller
             return response()->json([
                 'message' => 'invalid_slot'
             ], 404);
+        }
+
+        // 2. 過去日時
+        // 本日日付
+        $targetDate = Carbon::now()->toDateString();
+        // 現在時刻
+        $targetTime = Carbon::now()->format('H:i');
+        // 今日 > 予約日(過去)
+        if ($targetDate > $request->date) {
+            return response()->json([
+                'message' => 'past_datetime'
+            ], 422);
+            // 今日 === 予約日(時間を比較)
+        } else if ($targetDate === $request->date) {
+            // 現在の時間 >= 予約時間(過去)
+            if ($targetTime >= $request->start_time) {
+                return response()->json([
+                    'message' => 'past_datetime'
+                ], 422);
+            }
         }
 
         $time_slot_id = $time_slot->id;
