@@ -133,7 +133,7 @@ onMounted(async () => {
 
         // time_slotsテーブルにURLから取得した日時があるか確認
         const matchedSlot = timeSlots.value.find(
-            (t) => t.start_time === time && t.date === date,
+            (ts) => ts.start_time === time && ts.date === date,
         );
 
         // matchedSlotがない場合、予約一覧画面へ戻る
@@ -163,7 +163,7 @@ onMounted(async () => {
 
         // URLから取得した日時の予約中データを取得
         const targetReservations = reservations.value.filter(
-            (t) => t.time === time && t.date === date,
+            (r) => r.time === time && r.date === date,
         );
         // 予約中の人数をカウント
         const reservedCount = targetReservations.length;
@@ -173,6 +173,18 @@ onMounted(async () => {
 
         // 予約中の人数が予約上限以上かつ予約モードの場合、予約一覧画面へ戻る
         if (reservedCount >= matchedCapacity && mode.value === "create") {
+            navigateTo("/list");
+        }
+
+        // 4. ログアウト時の予約 ログインしたユーザーがすでに予約済み
+        // ログインユーザーidを取得
+        const myUserId = user.value.id;
+        // 予約中のユーザーidにログインユーザーidが含まれているかチェック
+        const myReservation = targetReservations.find(
+            (tr) => tr.user_id === myUserId,
+        );
+        // 予約中のユーザーidにログインユーザーのidが含まれているかつ予約モードの場合、予約一覧へ戻る
+        if (myReservation !== undefined && mode.value === "create") {
             navigateTo("/list");
         }
     } catch (error) {
