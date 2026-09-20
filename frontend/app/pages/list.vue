@@ -156,13 +156,18 @@ const messageMap = {
     success: "予約が完了しました",
     delete: "予約を取り消しました",
 };
+const errorMessageMap = {
+    past_datetime: "過去の日時は選択できません",
+    invalid_slot: "ご指定の日時は予約枠が存在しないか、受付を終了しています",
+    slot_full: "大変申し訳ありません。ご指定の予約枠は満員となりました",
+    already_booked:
+        "すでに同じ日時でご予約を承っているため、重複して予約することはできません",
+};
 const message = ref(messageMap[messageKey] || "");
 // 画面リロード時にメッセージが再表示されるのを防ぐため、URLを書き換える目的で使用
 const router = useRouter();
 // エラーメッセージ
-const errorMessage = ref("");
-// エラーメッセージの連打防止
-let isRunning = false;
+const errorMessage = ref(errorMessageMap[messageKey] || "");
 // 予約成功メッセージのタイマー
 let messageTimerId = null;
 // エラーメッセージのタイマー
@@ -172,11 +177,20 @@ let isLoginUserReserved = false;
 
 // 画面構成後に処理
 onMounted(async () => {
-    // 3秒後にメッセージが非表示になる
-    messageTimerId = setTimeout(() => {
-        message.value = "";
-        router.replace({ query: { ...route.query, message: undefined } });
-    }, 3000);
+    // 3秒後に予約メッセージが非表示になる
+    if (message.value) {
+        messageTimerId = setTimeout(() => {
+            message.value = "";
+            router.replace({ query: { ...route.query, message: undefined } });
+        }, 3000);
+    }
+    // 6秒後にエラーメッセージが非表示になる
+    if (errorMessage.value) {
+        errorTimerId = setTimeout(() => {
+            errorMessage.value = "";
+            router.replace({ query: { ...route.query, message: undefined } });
+        }, 6000);
+    }
     // tokenがある場合、ユーザー名を取得する
     if (isLoggedIn.value) {
         await fetchUser();
@@ -340,21 +354,8 @@ const statusMap = computed(() => {
 
 // 予約日時を持たせて確認画面へ遷移
 const confirm = (confirmDate, confirmTime, text) => {
-    // ボタンテキストが[×]の場合、確認画面へ遷移しない
-    if (text === "×") {
-        // エラーメッセージ表示中なら何もしない
-        if (isRunning) return;
-        isRunning = true;
-
-        errorMessage.value = "エラー：満員か、過去日時のため予約ができません";
-        // 3秒後にメッセージが非表示になる
-        errorTimerId = setTimeout(() => {
-            errorMessage.value = "";
-            // 処理が終わったら解除
-            isRunning = false;
-        }, 3000);
-        // ボタンテキストが[✔︎]の場合、予約取り消し確認画面へ遷移
-    } else if (text === "✔︎") {
+    // ボタンテキストが[✔︎]の場合、予約取り消し確認画面へ遷移
+    if (text === "✔︎") {
         return navigateTo({
             path: `/confirm/${confirmDate}/${confirmTime}`,
             query: { mode: "cancel" },
