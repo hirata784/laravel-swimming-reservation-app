@@ -1,5 +1,8 @@
 <template>
     <div class="confirm">
+        <p v-if="errorMessage" class="header-error-message">
+            {{ errorMessage }}
+        </p>
         <div class="confirm-content">
             <h2 class="title">予約内容の確認</h2>
             <p v-if="isCancel" class="note">
@@ -65,6 +68,19 @@ const isCancel = computed(() => mode.value === "cancel");
 const buttonText = computed(() =>
     isCancel.value ? "予約を取り消す" : "予約する",
 );
+const messageKey = route.query.message;
+// キーに対応する表示用メッセージのマッピング
+const errorMessageMap = {
+    past_datetime: "過去の日時は選択できません",
+    invalid_slot: "ご指定の日時は予約枠が存在しないか、受付を終了しています",
+    slot_full: "大変申し訳ありません。ご指定の予約枠は満員となりました",
+    already_booked:
+        "すでに同じ日時でご予約を承っているため、重複して予約することはできません",
+};
+// 画面リロード時にメッセージが再表示されるのを防ぐため、URLを書き換える目的で使用
+const router = useRouter();
+// エラーメッセージ
+const errorMessage = ref(errorMessageMap[messageKey] || "");
 // 年月日表示用
 const year = date.substring(0, 4);
 const month = date.substring(5, 7);
@@ -265,7 +281,16 @@ const addReservation = async (date, time) => {
     } catch (error) {
         // エラー表示
         console.error("予期せぬエラーが発生しました：", error);
-        alert(`予期せぬエラーが発生しました： ${error}`);
+        errorMessage.value = errorMessageMap[error.data.message];
+        // 6秒後にエラーメッセージが非表示になる
+        if (errorMessage.value) {
+            errorTimerId = setTimeout(() => {
+                errorMessage.value = "";
+                router.replace({
+                    query: { ...route.query, message: undefined },
+                });
+            }, 6000);
+        }
     }
 };
 
@@ -302,6 +327,17 @@ p {
     width: 100%;
     height: 90vh;
     text-align: center;
+    position: relative;
+}
+
+.header-error-message {
+    background-color: #e25c5c;
+    color: #f5f5f5;
+    padding: 10px 20px;
+    text-align: left;
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .confirm-content {
