@@ -72,6 +72,15 @@ class ReservationController extends Controller
             }
         }
 
+        // 3. すでに予約済みかチェック
+        // 予約中のユーザーidにログインユーザーidが含まれているかチェック
+        $myReservation = Reservation::where('time_slot_id', $time_slot->id)->where('user_id', $user_id)->first();
+        if ($myReservation) {
+            return response()->json([
+                'message' => 'already_booked'
+            ], 409);
+        }
+
         $time_slot_id = $time_slot->id;
         // 予約データを作成
         $item = Reservation::create(
