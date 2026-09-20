@@ -100,7 +100,7 @@ onMounted(async () => {
                 // クライアント側ログアウト
                 token.value = null;
                 // ログイン画面へ遷移する
-                navigateTo("/login");
+                return navigateTo("/login");
             }
         }
     }
@@ -108,12 +108,12 @@ onMounted(async () => {
 
 // ログイン画面へ遷移
 const login = () => {
-    navigateTo("/login");
+    return navigateTo("/login");
 };
 
 // 会員登録画面へ遷移
 const register = () => {
-    navigateTo("/register");
+    return navigateTo("/register");
 };
 
 // ログアウト
@@ -123,12 +123,12 @@ const isLogout = async () => {
 
 // 予約一覧画面へ遷移
 const list = () => {
-    navigateTo("/list");
+    return navigateTo("/list");
 };
 
 // マイページ画面へ遷移
 const mypage = () => {
-    navigateTo("/mypage");
+    return navigateTo("/mypage");
 };
 </script>
 

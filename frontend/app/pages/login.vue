@@ -138,13 +138,13 @@ const isLogin = async () => {
             const time = segments[3]; // '09:00'
 
             // 確認画面へ遷移
-            navigateTo({
+            return navigateTo({
                 path: `/confirm/${date}/${time}`,
                 query: { mode: route.query.mode },
             });
         } else {
             // 予約一覧画面へ移動
-            navigateTo("list");
+            return navigateTo("/list");
         }
     } catch (error) {
         // ステータスコード422の場合はエラーメッセージをセット

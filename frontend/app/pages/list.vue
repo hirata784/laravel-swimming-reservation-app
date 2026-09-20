@@ -355,13 +355,13 @@ const confirm = (confirmDate, confirmTime, text) => {
         }, 3000);
         // ボタンテキストが[✔︎]の場合、予約取り消し確認画面へ遷移
     } else if (text === "✔︎") {
-        navigateTo({
+        return navigateTo({
             path: `/confirm/${confirmDate}/${confirmTime}`,
             query: { mode: "cancel" },
         });
         // ボタンテキストが[⚪︎][△]の場合、確認画面へ遷移
     } else {
-        navigateTo({
+        return navigateTo({
             path: `/confirm/${confirmDate}/${confirmTime}`,
             query: { mode: "create" },
         });

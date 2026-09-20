@@ -37,7 +37,7 @@ export const useAuth = () => {
             // ユーザーの情報を削除
             user.value = null;
             // ログイン画面へ遷移する
-            navigateTo("/login");
+            return navigateTo("/login");
         } catch (error) {
             // エラー表示
             console.error("予期せぬエラーが発生しました：", error);

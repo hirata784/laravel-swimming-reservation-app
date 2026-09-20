@@ -106,12 +106,12 @@ onMounted(async () => {
         // 過去日時の場合、予約一覧画面へ戻る
         // 今日 > 予約日(過去)
         if (targetDate > date) {
-            navigateTo("/list");
+            return navigateTo("/list");
             // 今日 === 予約日(時間を比較)
         } else if (targetDate === date) {
             // 現在の時間 >= 予約時間(過去)
             if (targetTime >= time) {
-                navigateTo("/list");
+                return navigateTo("/list");
             }
         }
 
@@ -138,7 +138,7 @@ onMounted(async () => {
 
         // matchedSlotがない場合、予約一覧画面へ戻る
         if (!matchedSlot) {
-            navigateTo("/list");
+            return navigateTo("/list");
         }
 
         // 3. 予約人数が満員
@@ -173,7 +173,7 @@ onMounted(async () => {
 
         // 予約中の人数が予約上限以上かつ予約モードの場合、予約一覧画面へ戻る
         if (reservedCount >= matchedCapacity && mode.value === "create") {
-            navigateTo("/list");
+            return navigateTo("/list");
         }
 
         // 4. ログアウト時の予約 ログインしたユーザーがすでに予約済み
@@ -185,7 +185,7 @@ onMounted(async () => {
         );
         // 予約中のユーザーidにログインユーザーのidが含まれているかつ予約モードの場合、予約一覧へ戻る
         if (myReservation !== undefined && mode.value === "create") {
-            navigateTo("/list");
+            return navigateTo("/list");
         }
     } catch (error) {
         // エラー表示
@@ -218,7 +218,7 @@ const formatTime = (dateString) => {
 
 // 予約一覧画面へ遷移
 const list = () => {
-    navigateTo("/list");
+    return navigateTo("/list");
 };
 
 // 予約の分岐点
@@ -243,7 +243,7 @@ const addReservation = async (date, time) => {
             },
         });
         // 予約一覧画面へ遷移
-        navigateTo({
+        return navigateTo({
             path: "/list",
             query: { message: "success" },
         });
@@ -265,7 +265,7 @@ const deleteReservation = async (date, time) => {
             },
         });
         // 予約一覧画面へ遷移
-        navigateTo({
+        return navigateTo({
             path: "/list",
             query: { message: "delete" },
         });

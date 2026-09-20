@@ -126,7 +126,7 @@ const addProfile = async () => {
             },
         });
         // 予約一覧画面へ遷移する
-        navigateTo("/list");
+        return navigateTo("/list");
     } catch (error) {
         {
             // ステータスコード422の場合はエラーメッセージをセット

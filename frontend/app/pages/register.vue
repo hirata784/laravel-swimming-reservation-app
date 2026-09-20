@@ -152,7 +152,7 @@ const addRegister = async () => {
         await fetchUser();
 
         // プロフィール設定画面へ遷移する
-        navigateTo("/profile");
+        return navigateTo("/profile");
     } catch (error) {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {

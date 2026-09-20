@@ -478,7 +478,7 @@ const formatTime = (dateString) => {
 
 // 次回の予約日時を持たせて、予約取り消し確認画面へ遷移
 const confirm = (confirmDate, confirmTime) => {
-    navigateTo({
+    return navigateTo({
         path: `/confirm/${confirmDate}/${confirmTime}`,
         query: { mode: "cancel" },
     });
