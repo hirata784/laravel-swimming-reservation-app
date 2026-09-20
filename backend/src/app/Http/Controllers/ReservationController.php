@@ -43,6 +43,14 @@ class ReservationController extends Controller
         // 予約枠idを検索してから取得
         $time_slot = TimeSlot::where('date', $request->date)->where('start_time', $request->start_time)->first();
 
+        // 予約日時の不適切チェック
+        // 1. 予約枠データの有無
+        if ($time_slot === null) {
+            return response()->json([
+                'message' => 'invalid_slot'
+            ], 404);
+        }
+
         $time_slot_id = $time_slot->id;
         // 予約データを作成
         $item = Reservation::create(
