@@ -7,6 +7,7 @@ use App\Http\Controllers\TimeSlotController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\AdminController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,6 +19,7 @@ use App\Http\Controllers\PasswordController;
 |
 */
 
+// 一般
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -39,4 +41,15 @@ Route::group([
     Route::put('profile', [UserController::class, 'updateProfile']);
     Route::put('user', [UserController::class, 'update']);
     Route::put('password', [PasswordController::class, 'update']);
+});
+
+// 管理者
+Route::group([
+    'middleware' => ['auth:admins'],
+    'prefix' => 'admins'
+], function ($router) {
+    // loginは認証不要
+    Route::post('login', [AdminController::class, 'login'])->withoutMiddleware(['auth:admins']);
+    Route::post('logout', [AdminController::class, 'logout']);
+    Route::get('me', [AdminController::class, 'me']);
 });
