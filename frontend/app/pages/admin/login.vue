@@ -2,10 +2,11 @@
     <div class="login">
         <div class="login-content">
             <h2 class="title">管理者ログイン</h2>
-            <form class="login-form">
+            <form class="login-form" @submit.prevent="isLogin">
                 <div class="group">
                     <p class="item">メールアドレス</p>
                     <input
+                        v-model="email"
                         class="txt"
                         type="text"
                         placeholder="例：test@example.com"
@@ -14,6 +15,7 @@
                 <div class="group">
                     <p class="item">パスワード</p>
                     <input
+                        v-model="password"
                         class="txt"
                         type="password"
                         placeholder="例：test1234"
@@ -24,6 +26,31 @@
         </div>
     </div>
 </template>
+
+<script setup>
+const email = ref("");
+const password = ref("");
+const { token } = useAuth();
+
+// ログイン
+const isLogin = async () => {
+    try {
+        const res = await $fetch("http://localhost/api/admins/login", {
+            method: "POST",
+            body: {
+                email: email.value,
+                password: password.value,
+            },
+        });
+        // トークンを保存
+        token.value = res.access_token;
+    } catch (error) {
+        // エラー
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+</script>
 
 <style scoped>
 p {
