@@ -108,6 +108,8 @@ const isLogin = async () => {
         });
         // トークンを保存
         token.value = res.access_token;
+        // 予約管理画面へ遷移
+        navigateTo("/admin/reservations");
     } catch (error) {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {

@@ -7,7 +7,9 @@
                 <!-- レイアウト調整用(削除不可) -->
                 <div></div>
             </div>
-            <div>
+            <!-- 予約管理画面 -->
+            <div v-if="route.name === 'admin-reservations'">
+                <button class="btn" type="button">会員管理</button>
                 <button class="btn" type="button" @click="isLogout">
                     ログアウト
                 </button>
@@ -20,6 +22,8 @@
 // インポート
 import { computed } from "vue";
 
+// ページのURLを取得
+const route = useRoute();
 // { token: トークン, fetchUser: データを取得する関数, logout: ログアウト関数 }
 const { token, fetchUser, logout } = useAdminAuth();
 // ログイン状態
