@@ -32,6 +32,10 @@ const email = ref("");
 const password = ref("");
 const { token } = useAdminAuth();
 
+definePageMeta({
+    layout: "admin",
+});
+
 // ログイン
 const isLogin = async () => {
     try {
