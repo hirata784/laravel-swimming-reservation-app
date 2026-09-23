@@ -30,7 +30,7 @@
 <script setup>
 const email = ref("");
 const password = ref("");
-const { token } = useAuth();
+const { token } = useAdminAuth();
 
 // ログイン
 const isLogin = async () => {
