@@ -13,6 +13,10 @@
                     />
                     <!-- vee-validateのバリデーション -->
                     <p class="error">{{ errors.email }}</p>
+                    <!-- FormRequestのバリデーション -->
+                    <p v-if="backErrors.email" class="error">
+                        {{ backErrors.email[0] }}
+                    </p>
                 </div>
                 <div class="group">
                     <p class="item">パスワード</p>
@@ -24,6 +28,10 @@
                     />
                     <!-- vee-validateのバリデーション -->
                     <p class="error">{{ errors.password }}</p>
+                    <!-- FormRequestのバリデーション -->
+                    <p v-if="backErrors.password" class="error">
+                        {{ backErrors.password[0] }}
+                    </p>
                 </div>
                 <!-- バリデーションの表示中はclass変更 & クリック不可 -->
                 <button
@@ -45,6 +53,7 @@
 // インポート
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
+import { watch } from "vue";
 
 const { token } = useAdminAuth();
 
@@ -70,12 +79,21 @@ const { errors } = useForm({
     validationSchema: schema,
 });
 // サーバーエラーを格納するオブジェクト
+const backErrors = ref({});
 const { value: email } = useField("email");
 const { value: password } = useField("password");
 
+// 入力したらFormRequestのバリデーションを削除する
+watch([email, password], () => {
+    backErrors.value = {};
+});
+
 // バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
 const btnIsInvalid = computed(() => {
-    return Object.keys(errors.value).length > 0;
+    return (
+        Object.keys(errors.value).length > 0 ||
+        Object.keys(backErrors.value).length > 0
+    );
 });
 
 // ログイン
@@ -91,9 +109,14 @@ const isLogin = async () => {
         // トークンを保存
         token.value = res.access_token;
     } catch (error) {
-        // エラー
-        console.error("予期せぬエラーが発生しました：", error);
-        alert(`予期せぬエラーが発生しました： ${error}`);
+        // ステータスコード422の場合はエラーメッセージをセット
+        if (error.response && error.response.status === 422) {
+            backErrors.value = error.response._data.errors;
+        } else {
+            // その他のエラー
+            console.error("予期せぬエラーが発生しました：", error);
+            alert(`予期せぬエラーが発生しました： ${error}`);
+        }
     }
 };
 </script>
