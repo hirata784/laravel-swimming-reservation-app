@@ -11,6 +11,8 @@
                         type="text"
                         placeholder="例：test@example.com"
                     />
+                    <!-- vee-validateのバリデーション -->
+                    <p class="error">{{ errors.email }}</p>
                 </div>
                 <div class="group">
                     <p class="item">パスワード</p>
@@ -20,20 +22,60 @@
                         type="password"
                         placeholder="例：test1234"
                     />
+                    <!-- vee-validateのバリデーション -->
+                    <p class="error">{{ errors.password }}</p>
                 </div>
-                <button class="login-btn">ログインする</button>
+                <!-- バリデーションの表示中はclass変更 & クリック不可 -->
+                <button
+                    class="login-btn"
+                    type="submit"
+                    v-bind:class="{
+                        'is-disabled-btn': btnIsInvalid,
+                    }"
+                    :disabled="btnIsInvalid"
+                >
+                    ログインする
+                </button>
             </form>
         </div>
     </div>
 </template>
 
 <script setup>
-const email = ref("");
-const password = ref("");
+// インポート
+import { useForm, useField } from "vee-validate";
+import * as yup from "yup";
+
 const { token } = useAdminAuth();
 
+// 管理者用のヘッダーを表示
 definePageMeta({
     layout: "admin",
+});
+
+// バリデーションのルールを設定
+const schema = yup.object({
+    email: yup
+        .string()
+        .required("メールアドレスを入力してください")
+        .email("メールアドレスの形式で入力してください"),
+    password: yup
+        .string()
+        .required("パスワードを入力してください")
+        .min(8, "8文字以上で入力してください"),
+});
+
+// クライアントエラーを格納するオブジェクト
+const { errors } = useForm({
+    validationSchema: schema,
+});
+// サーバーエラーを格納するオブジェクト
+const { value: email } = useField("email");
+const { value: password } = useField("password");
+
+// バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
+const btnIsInvalid = computed(() => {
+    return Object.keys(errors.value).length > 0;
 });
 
 // ログイン
@@ -109,6 +151,12 @@ p {
     background-color: #e1f4fd;
 }
 
+.error {
+    color: #da251d;
+    text-align: left;
+    margin-top: 10px;
+}
+
 .login-btn {
     border: none;
     background-color: #da251d;
@@ -118,5 +166,11 @@ p {
     cursor: pointer;
     width: 70%;
     margin-bottom: 20px;
+}
+
+.is-disabled-btn {
+    background-color: #666666;
+    opacity: 0.5;
+    cursor: auto;
 }
 </style>
