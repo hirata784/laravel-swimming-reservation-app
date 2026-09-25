@@ -57,9 +57,9 @@ import { watch } from "vue";
 
 const { token } = useAdminAuth();
 
-// 管理者用のヘッダーを表示
 definePageMeta({
-    layout: "admin",
+    layout: "admin", // 管理者用のヘッダーを表示
+    middleware: "admin-guest", // 未認証中のみアクセス可能にする
 });
 
 // バリデーションのルールを設定
@@ -109,7 +109,7 @@ const isLogin = async () => {
         // トークンを保存
         token.value = res.access_token;
         // 予約管理画面へ遷移
-        navigateTo("/admin/reservations");
+        return navigateTo("/admin/reservations");
     } catch (error) {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {

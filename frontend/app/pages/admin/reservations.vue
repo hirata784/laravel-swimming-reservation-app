@@ -3,8 +3,8 @@
 </template>
 
 <script setup>
-// 管理者用のヘッダーを表示
 definePageMeta({
-    layout: "admin",
+    layout: "admin", // 管理者用のヘッダーを表示
+    middleware: "admin-auth", // 認証中のみアクセス可能にする
 });
 </script>
