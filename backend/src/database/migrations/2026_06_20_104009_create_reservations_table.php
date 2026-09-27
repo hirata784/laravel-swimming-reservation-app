@@ -17,6 +17,7 @@ class CreateReservationsTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('time_slot_id')->constrained()->cascadeOnDelete();
+            $table->string('status');
             $table->timestamps();
             $table->unique(['user_id', 'time_slot_id']);
         });
