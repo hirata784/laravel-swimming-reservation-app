@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminReservationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -52,4 +53,5 @@ Route::group([
     Route::post('login', [AdminController::class, 'login'])->withoutMiddleware(['auth:admins']);
     Route::post('logout', [AdminController::class, 'logout']);
     Route::get('me', [AdminController::class, 'me']);
+    Route::get('reservation', [AdminReservationController::class, 'index']);
 });
