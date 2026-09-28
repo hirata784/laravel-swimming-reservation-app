@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TimeSlot;
 use App\Models\Reservation;
+use Carbon\Carbon;
 
 class AdminReservationController extends Controller
 {
@@ -13,10 +14,16 @@ class AdminReservationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        // パスの年月日を初日に設定
+        $firstDate = $request->firstDate;
+        // 一週間後を最終日に設定
+        $lastDate = Carbon::parse($firstDate)->addDays(6)->toDateString();
+
         $reservations = Reservation::all();
-        $timeSlots = TimeSlot::all();
+        // 指定した日から一週間分のデータを取得
+        $timeSlots = TimeSlot::whereBetween('date', [$firstDate, $lastDate])->get();
 
         // 全ての日時, 予約人数, 定員を取得
         foreach ($timeSlots as $index => $timeSlot) {
