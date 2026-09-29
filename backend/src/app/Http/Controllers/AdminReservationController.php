@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TimeSlot;
 use App\Models\Reservation;
+use App\Models\User;
 use Carbon\Carbon;
 
 class AdminReservationController extends Controller
@@ -61,7 +62,25 @@ class AdminReservationController extends Controller
      */
     public function show($id)
     {
-        //
+        $reservations = Reservation::where('time_slot_id', $id)->get();
+        $timeSlot = TimeSlot::find($id);
+
+        // 日にち
+        $item['date'] = $timeSlot->date;
+        // 時間
+        $item['start_time'] = $timeSlot->start_time;
+        foreach ($reservations as $index => $reservation) {
+            // ユーザー名
+            $item['reservations'][$index]['name'] = User::find($reservation->user_id)->name;
+            // 予約ID
+            $item['reservations'][$index]['reservation_id'] = $reservation->id;
+            // 利用状況
+            $item['reservations'][$index]['status'] = $reservation->status;
+        }
+
+        return response()->json([
+            'data' => $item
+        ], 200);
     }
 
     /**

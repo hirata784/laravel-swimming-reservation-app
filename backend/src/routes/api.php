@@ -53,5 +53,6 @@ Route::group([
     Route::post('login', [AdminController::class, 'login'])->withoutMiddleware(['auth:admins']);
     Route::post('logout', [AdminController::class, 'logout']);
     Route::get('me', [AdminController::class, 'me']);
-    Route::get('reservation/{firstDate}', [AdminReservationController::class, 'index']);
+    Route::get('reservation/date/{firstDate}', [AdminReservationController::class, 'index']);
+    Route::get('reservation/time-slots/{timeSlotId}', [AdminReservationController::class, 'show']);
 });
