@@ -44,17 +44,6 @@ class AdminReservationController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -92,17 +81,14 @@ class AdminReservationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        // 変更内容を取得
+        $update = [
+            'status' => $request->status
+        ];
+        // 利用状況を更新
+        Reservation::where('id', $id)->update($update);
+        return response()->json([
+            'message' => 'Updated successfully',
+        ], 200);
     }
 }
