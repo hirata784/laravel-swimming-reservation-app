@@ -9,11 +9,17 @@
                     <button class="week-btn">次の週 →</button>
                 </div>
                 <div v-for="i in 7">
-                    <p class="date">
-                        {{ formatDate(dates[i - 1]) }}({{ days[i - 1] }})
-                    </p>
+                    <div class="date-toggle">
+                        <!-- トグル表示 -->
+                        <button class="date" @click="toggle(i - 1)">
+                            {{ formatDate(dates[i - 1]) }}({{ days[i - 1] }})
+                            <span class="toggle">{{
+                                isOpen[i - 1] === true ? "-" : "+"
+                            }}</span>
+                        </button>
+                    </div>
                     <div v-for="j in 10" class="group">
-                        <div class="item-group">
+                        <div v-if="isOpen[i - 1]" class="item-group">
                             <p class="time">
                                 {{ (j + 8).toString().padStart(2, "0") }}:00
                             </p>
@@ -22,7 +28,7 @@
                                 詳細
                             </button>
                         </div>
-                        <div class="item-group">
+                        <div v-if="isOpen[i - 1]" class="item-group">
                             <p class="time">
                                 {{ (j + 8).toString().padStart(2, "0") }}:30
                             </p>
@@ -60,6 +66,8 @@ const dates = ref([]);
 const days = ref([]);
 // 曜日のテキスト
 const weekday = ["日", "月", "火", "水", "木", "金", "土"];
+// トグル開閉用フラグ
+const isOpen = ref([]);
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -79,6 +87,8 @@ for (let i = 0; i < 7; i++) {
     dates.value.push(`${y}-${m}-${day}`);
     // 曜日を取得
     days.value.push(weekday[d.getDay()]);
+    // トグルのフラグを全て閉じるに設定
+    isOpen.value.push(false);
 }
 
 // 月日フォーマット変更(例：09/21)
@@ -93,6 +103,16 @@ const formatDate = (dateString) => {
     const dd = String(d.getDate()).padStart(2, "0");
 
     return `${mm}/${dd}`;
+};
+
+// クリックしたトグルを開く(開いているトグルの場合、閉じる)
+const toggle = (i) => {
+    if (!isOpen.value[i]) {
+        // 全てfalseに変更
+        isOpen.value.fill(false);
+    }
+    // クリックされた日付だけ開く
+    isOpen.value[i] = !isOpen.value[i];
 };
 </script>
 
@@ -141,12 +161,29 @@ p {
     font-size: 20px;
 }
 
+.date-toggle {
+    display: flex;
+    flex-direction: row;
+}
+
 .date {
     font-size: 20px;
     font-weight: bold;
     color: #304654;
     text-align: left;
     margin-top: 20px;
+    width: 100%;
+    border: none;
+    background-color: #eef9ff;
+    cursor: pointer;
+}
+
+.date:hover {
+    background-color: #e1f4fd;
+}
+
+.toggle {
+    margin-left: 10px;
 }
 
 .group {
