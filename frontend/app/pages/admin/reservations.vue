@@ -5,15 +5,17 @@
             <div class="reservation-form">
                 <div class="week-pagination">
                     <button class="week-btn">← 前の週</button>
-                    <p>9/21~9/27</p>
+                    <p>{{ weekStart }}~{{ weekFinish }}</p>
                     <button class="week-btn">次の週 →</button>
                 </div>
-                <div v-for="j in 7">
-                    <p class="date">9/21(月)</p>
-                    <div v-for="i in 10" class="group">
+                <div v-for="i in 7">
+                    <p class="date">
+                        {{ formatDate(dates[i - 1]) }}({{ days[i - 1] }})
+                    </p>
+                    <div v-for="j in 10" class="group">
                         <div class="item-group">
                             <p class="time">
-                                {{ (i + 8).toString().padStart(2, "0") }}:00
+                                {{ (j + 8).toString().padStart(2, "0") }}:00
                             </p>
                             <p class="reservation-people">3/7人</p>
                             <button class="detail-btn" type="button">
@@ -22,7 +24,7 @@
                         </div>
                         <div class="item-group">
                             <p class="time">
-                                {{ (i + 8).toString().padStart(2, "0") }}:30
+                                {{ (j + 8).toString().padStart(2, "0") }}:30
                             </p>
                             <p class="reservation-people">5/7人</p>
                             <button class="detail-btn" type="button">
@@ -37,10 +39,61 @@
 </template>
 
 <script setup>
+// クエリパラメータから年月日を受け取り格納(予定)
+const test = "2026-09-21";
+// 週の開始日
+const dateStart = new Date(test);
+// 週の最終日
+const dateFinish = new Date(dateStart);
+dateFinish.setDate(dateFinish.getDate() + 6);
+// 月と日
+const monthStart = (dateStart.getMonth() + 1).toString().padStart(2, "0");
+const dayStart = dateStart.getDate().toString().padStart(2, "0");
+const monthFinish = (dateFinish.getMonth() + 1).toString().padStart(2, "0");
+const dayFinish = dateFinish.getDate().toString().padStart(2, "0");
+// 表示用
+const weekStart = `${monthStart}/${dayStart}`;
+const weekFinish = `${monthFinish}/${dayFinish}`;
+// 年月日
+const dates = ref([]);
+// 曜日
+const days = ref([]);
+// 曜日のテキスト
+const weekday = ["日", "月", "火", "水", "木", "金", "土"];
+
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
     middleware: "admin-auth", // 認証中のみアクセス可能にする
 });
+
+// 7日分用意する
+for (let i = 0; i < 7; i++) {
+    const d = new Date(dateStart);
+    // 月末日に+1した場合、自動的に翌月の1日に進む
+    d.setDate(dateStart.getDate() + i);
+    // 年月日を取得(月日は頭を0で埋める(例：01日))
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    // 年月日を取得
+    dates.value.push(`${y}-${m}-${day}`);
+    // 曜日を取得
+    days.value.push(weekday[d.getDay()]);
+}
+
+// 月日フォーマット変更(例：09/21)
+const formatDate = (dateString) => {
+    // 空データ時のガード句（バグ防止）
+    if (!dateString) return "";
+    // 日付文字列をDateオブジェクトに変換
+    const d = new Date(dateString);
+
+    // 取得した日付から月・日を抽出して0埋め
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+
+    return `${mm}/${dd}`;
+};
 </script>
 
 <style scoped>
