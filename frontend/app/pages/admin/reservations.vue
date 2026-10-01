@@ -4,9 +4,13 @@
             <h2 class="title">予約管理</h2>
             <div class="reservation-form">
                 <div class="week-pagination">
-                    <button class="week-btn">← 前の週</button>
+                    <button class="week-btn" @click="decrementQuery">
+                        ← 前の週
+                    </button>
                     <p>{{ weekStart }}~{{ weekFinish }}</p>
-                    <button class="week-btn">次の週 →</button>
+                    <button class="week-btn" @click="incrementQuery">
+                        次の週 →
+                    </button>
                 </div>
                 <div v-for="i in 7">
                     <div class="date-toggle">
@@ -44,9 +48,11 @@
 // useRoute呼び出し
 const route = useRoute();
 // クエリパラメータから年月日を受け取り格納
-const queryDate = route.query.date;
+const queryDate = computed(() => {
+    return route.query.date;
+});
 // 週の開始日
-const dateStart = new Date(queryDate);
+const dateStart = new Date(queryDate.value);
 // 週の最終日
 const dateFinish = new Date(dateStart);
 dateFinish.setDate(dateFinish.getDate() + 6);
@@ -56,8 +62,10 @@ const dayStart = dateStart.getDate().toString().padStart(2, "0");
 const monthFinish = (dateFinish.getMonth() + 1).toString().padStart(2, "0");
 const dayFinish = dateFinish.getDate().toString().padStart(2, "0");
 // 表示用
-const weekStart = `${monthStart}/${dayStart}`;
-const weekFinish = `${monthFinish}/${dayFinish}`;
+const weekStart = ref("");
+weekStart.value = `${monthStart}/${dayStart}`;
+const weekFinish = ref("");
+weekFinish.value = `${monthFinish}/${dayFinish}`;
 // 年月日
 const dates = ref([]);
 // 曜日
@@ -73,6 +81,47 @@ const timeSlots = ref([]);
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
     middleware: "admin-auth", // 認証中のみアクセス可能にする
+});
+
+// クエリが変更されたら、再実行
+watch(queryDate, () => {
+    // 週の開始日
+    const dateStart = new Date(queryDate.value);
+    // 週の最終日
+    const dateFinish = new Date(dateStart);
+    dateFinish.setDate(dateFinish.getDate() + 6);
+    // 月と日
+    const monthStart = (dateStart.getMonth() + 1).toString().padStart(2, "0");
+    const dayStart = dateStart.getDate().toString().padStart(2, "0");
+    const monthFinish = (dateFinish.getMonth() + 1).toString().padStart(2, "0");
+    const dayFinish = dateFinish.getDate().toString().padStart(2, "0");
+    // 表示用
+    weekStart.value = `${monthStart}/${dayStart}`;
+    weekFinish.value = `${monthFinish}/${dayFinish}`;
+
+    // 一度全て空にする
+    dates.value = [];
+    days.value = [];
+    isOpen.value = [];
+
+    // 7日分用意する
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(dateStart);
+        // 月末日に+1した場合、自動的に翌月の1日に進む
+        d.setDate(dateStart.getDate() + i);
+        // 年月日を取得(月日は頭を0で埋める(例：01日))
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        // 年月日を取得
+        dates.value.push(`${y}-${m}-${day}`);
+        // 曜日を取得
+        days.value.push(weekday[d.getDay()]);
+        // トグルのフラグを全て閉じるに設定
+        isOpen.value.push(false);
+    }
+
+    getTimeSlots();
 });
 
 // 7日分用意する
@@ -121,11 +170,47 @@ const getTimeSlotsByDate = (dates) => {
     return timeSlots.value.filter((ts) => ts.date === dates);
 };
 
+// 一週間前の日程を表示
+const decrementQuery = () => {
+    // Dateオブジェクトに変換して加算
+    const decrementDate = new Date(queryDate.value);
+    decrementDate.setDate(decrementDate.getDate() - 7);
+    // YYYY-MM-DD 形式の文字列に変換
+    const year = decrementDate.getFullYear();
+    const month = String(decrementDate.getMonth() + 1).padStart(2, "0"); // 月は0始まり
+    const day = String(decrementDate.getDate()).padStart(2, "0");
+    const lastDateStr = `${year}-${month}-${day}`;
+    // 予約管理画面を更新
+    return navigateTo({
+        path: "/admin/reservations",
+        query: { date: lastDateStr },
+    });
+};
+
+// 一週間後の日程を表示
+const incrementQuery = () => {
+    // Dateオブジェクトに変換して加算
+    const incrementDate = new Date(queryDate.value);
+    incrementDate.setDate(incrementDate.getDate() + 7);
+    // YYYY-MM-DD 形式の文字列に変換
+    const year = incrementDate.getFullYear();
+    const month = String(incrementDate.getMonth() + 1).padStart(2, "0"); // 月は0始まり
+    const day = String(incrementDate.getDate()).padStart(2, "0");
+    const nextDateStr = `${year}-${month}-${day}`;
+    // 予約管理画面を更新
+    return navigateTo({
+        path: "/admin/reservations",
+        query: { date: nextDateStr },
+    });
+};
+
 // 日時枠の取得
 const getTimeSlots = async () => {
+    // 一度全て空にする
+    timeSlots.value = [];
     try {
         const res = await adminApiFetch(
-            `http://localhost/api/admins/reservation/date/${queryDate}`,
+            `http://localhost/api/admins/reservation/date/${queryDate.value}`,
             {
                 method: "GET",
             },
