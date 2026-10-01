@@ -18,21 +18,17 @@
                             }}</span>
                         </button>
                     </div>
-                    <div v-for="j in 10" class="group">
+                    <div
+                        v-for="slot in getTimeSlotsByDate(dates[i - 1])"
+                        class="group"
+                    >
                         <div v-if="isOpen[i - 1]" class="item-group">
                             <p class="time">
-                                {{ (j + 8).toString().padStart(2, "0") }}:00
+                                {{ slot.start_time }}
                             </p>
-                            <p class="reservation-people">3/7人</p>
-                            <button class="detail-btn" type="button">
-                                詳細
-                            </button>
-                        </div>
-                        <div v-if="isOpen[i - 1]" class="item-group">
-                            <p class="time">
-                                {{ (j + 8).toString().padStart(2, "0") }}:30
+                            <p class="reservation-people">
+                                {{ slot.reserved_count }}/{{ slot.capacity }}人
                             </p>
-                            <p class="reservation-people">5/7人</p>
                             <button class="detail-btn" type="button">
                                 詳細
                             </button>
@@ -70,6 +66,9 @@ const days = ref([]);
 const weekday = ["日", "月", "火", "水", "木", "金", "土"];
 // トグル開閉用フラグ
 const isOpen = ref([]);
+// 日時枠
+// 例: [{ "date": "2026-10-01", "start_time": "09:00", "reserved_count": 0, "capacity": 7 },]
+const timeSlots = ref([]);
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -116,6 +115,39 @@ const toggle = (i) => {
     // クリックされた日付だけ開く
     isOpen.value[i] = !isOpen.value[i];
 };
+
+// 月日ごとにデータを分ける
+const getTimeSlotsByDate = (dates) => {
+    return timeSlots.value.filter((ts) => ts.date === dates);
+};
+
+// 日時枠の取得
+const getTimeSlots = async () => {
+    try {
+        const res = await adminApiFetch(
+            `http://localhost/api/admins/reservation/date/${queryDate}`,
+            {
+                method: "GET",
+            },
+        );
+        // APIから取得した予約枠を画面表示用に整形
+        for (let i = 0; i < res.data.length; i++) {
+            timeSlots.value.push({
+                date: res.data[i].date,
+                start_time: res.data[i].start_time.substring(0, 5),
+                reserved_count: res.data[i].reserved_count,
+                capacity: res.data[i].capacity,
+            });
+        }
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
+// 初回実行
+getTimeSlots();
 </script>
 
 <style scoped>
