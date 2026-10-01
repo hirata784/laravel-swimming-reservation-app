@@ -56,6 +56,16 @@ import * as yup from "yup";
 import { watch } from "vue";
 
 const { token } = useAdminAuth();
+// 今日の日付を取得
+const today = new Date();
+// 今年
+const year = today.getFullYear();
+// 今月(1~9月は頭を0で埋める(例：01月))
+const month = (today.getMonth() + 1).toString().padStart(2, "0");
+// 日付
+const date = today.getDate().toString().padStart(2, "0");
+// 現在の年月日
+const currentDate = `${year}-${month}-${date}`;
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -109,7 +119,10 @@ const isLogin = async () => {
         // トークンを保存
         token.value = res.access_token;
         // 予約管理画面へ遷移
-        return navigateTo("/admin/reservations");
+        return navigateTo({
+            path: "/admin/reservations",
+            query: { date: currentDate },
+        });
     } catch (error) {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {

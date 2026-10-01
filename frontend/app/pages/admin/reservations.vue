@@ -45,10 +45,12 @@
 </template>
 
 <script setup>
-// クエリパラメータから年月日を受け取り格納(予定)
-const test = "2026-09-21";
+// useRoute呼び出し
+const route = useRoute();
+// クエリパラメータから年月日を受け取り格納
+const queryDate = route.query.date;
 // 週の開始日
-const dateStart = new Date(test);
+const dateStart = new Date(queryDate);
 // 週の最終日
 const dateFinish = new Date(dateStart);
 dateFinish.setDate(dateFinish.getDate() + 6);
