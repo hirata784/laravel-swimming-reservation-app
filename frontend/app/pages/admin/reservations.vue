@@ -33,7 +33,11 @@
                             <p class="reservation-people">
                                 {{ slot.reserved_count }}/{{ slot.capacity }}人
                             </p>
-                            <button class="detail-btn" type="button">
+                            <button
+                                class="detail-btn"
+                                type="button"
+                                @click="detail(slot.id)"
+                            >
                                 詳細
                             </button>
                         </div>
@@ -218,6 +222,7 @@ const getTimeSlots = async () => {
         // APIから取得した予約枠を画面表示用に整形
         for (let i = 0; i < res.data.length; i++) {
             timeSlots.value.push({
+                id: res.data[i].id,
                 date: res.data[i].date,
                 start_time: res.data[i].start_time.substring(0, 5),
                 reserved_count: res.data[i].reserved_count,
@@ -229,6 +234,11 @@ const getTimeSlots = async () => {
         console.error("予期せぬエラーが発生しました：", error);
         alert(`予期せぬエラーが発生しました： ${error}`);
     }
+};
+
+// time_slotsテーブルのidを持たせて、予約詳細画面へ
+const detail = (id) => {
+    return navigateTo(`/admin/detail/${id}`);
 };
 
 // 初回実行
