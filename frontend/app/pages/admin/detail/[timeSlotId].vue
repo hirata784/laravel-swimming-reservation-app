@@ -22,6 +22,14 @@
                     >
                         利用しました
                     </button>
+                    <button
+                        v-else-if="user.status === 'used'"
+                        type="button"
+                        @click="reservedStatus(user.reservation_id)"
+                        class="cancel-btn"
+                    >
+                        利用前に戻す
+                    </button>
                 </div>
                 <button class="return-btn">予約管理画面へ戻る</button>
             </div>
@@ -133,6 +141,24 @@ const usedStatus = async (id) => {
     }
 };
 
+// 利用前に戻す
+const reservedStatus = async (id) => {
+    try {
+        await adminApiFetch(`http://localhost/api/admins/reservation/${id}`, {
+            method: "PUT",
+            body: {
+                status: "reserved",
+            },
+        });
+        // 画面に変更を即反映する
+        await getReservationDetail();
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
 // 初回実行
 getReservationDetail();
 </script>
@@ -194,6 +220,17 @@ p {
 .update-btn {
     border: none;
     background-color: #99b1ea;
+    color: #eef9ff;
+    cursor: pointer;
+    padding: 10px 0;
+    width: 30%;
+    margin: 5px 0;
+    font-size: 20px;
+}
+
+.cancel-btn {
+    border: none;
+    background-color: #da251d;
     color: #eef9ff;
     cursor: pointer;
     padding: 10px 0;
