@@ -16,6 +16,8 @@
                     <!-- 利用前の予約者のみボタンを表示 -->
                     <button
                         v-if="user.status === 'reserved'"
+                        type="button"
+                        @click="usedStatus(user.reservation_id)"
                         class="update-btn"
                     >
                         利用しました
@@ -86,6 +88,8 @@ const formatTime = (dateString) => {
 
 // 予約詳細の取得
 const getReservationDetail = async () => {
+    // 初期化
+    userStatus.value = [];
     try {
         const res = await adminApiFetch(
             `http://localhost/api/admins/reservation/time-slots/${timeSlotId}`,
@@ -104,6 +108,24 @@ const getReservationDetail = async () => {
                 status: res.data.reservations[i].status,
             });
         }
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
+// 利用済みに変更
+const usedStatus = async (id) => {
+    try {
+        await adminApiFetch(`http://localhost/api/admins/reservation/${id}`, {
+            method: "PUT",
+            body: {
+                status: "used",
+            },
+        });
+        // 画面に変更を即反映する
+        await getReservationDetail();
     } catch (error) {
         // エラー表示
         console.error("予期せぬエラーが発生しました：", error);
