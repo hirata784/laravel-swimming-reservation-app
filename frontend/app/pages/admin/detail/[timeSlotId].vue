@@ -4,38 +4,22 @@
             <h2 class="title">予約詳細</h2>
             <div class="detail-form">
                 <div class="week-pagination">
-                    <p>10/02 10:00</p>
+                    <p>{{ formatDate(date) }}{{ formatTime(time) }}</p>
                 </div>
-                <div class="user-status">
-                    <p class="user">テスト1</p>
-                    <p class="status">利用済み</p>
-                </div>
-                <div class="user-status">
-                    <p class="user">テスト2</p>
-                    <p class="status">利用前</p>
-                    <button class="update-btn">利用しました</button>
-                </div>
-                <div class="user-status">
-                    <p class="user">テスト3</p>
-                    <p class="status">利用済み</p>
-                </div>
-                <div class="user-status">
-                    <p class="user">テスト4</p>
-                    <p class="status">未利用</p>
-                </div>
-                <div class="user-status">
-                    <p class="user">テスト5</p>
-                    <p class="status">未利用</p>
-                </div>
-                <div class="user-status">
-                    <p class="user">テスト6</p>
-                    <p class="status">利用前</p>
-                    <button class="update-btn">利用しました</button>
-                </div>
-                <div class="user-status">
-                    <p class="user">テスト7</p>
-                    <p class="status">利用前</p>
-                    <button class="update-btn">利用しました</button>
+                <div
+                    v-for="user in userStatus"
+                    :key="user.reservation_id"
+                    class="user-status"
+                >
+                    <p class="user">{{ user.name }}</p>
+                    <p class="status">{{ user.status }}</p>
+                    <!-- 利用前の予約者のみボタンを表示 -->
+                    <button
+                        v-if="user.status === 'reserved'"
+                        class="update-btn"
+                    >
+                        利用しました
+                    </button>
                 </div>
                 <button class="return-btn">予約管理画面へ戻る</button>
             </div>
@@ -44,15 +28,91 @@
 </template>
 
 <script setup>
+// インポート
+import { ref } from "vue";
+
 // useRoute呼び出し
 const route = useRoute();
-// 予約日時取得
+// 予約日時
 const timeSlotId = route.params.timeSlotId;
+// 年月日
+const date = ref("");
+// 時間
+const time = ref("");
+// 予約者
+const userStatus = ref([]);
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
     middleware: "admin-auth", // 認証中のみアクセス可能にする
 });
+
+// 年月日フォーマット変更(例：2026年08月14日)
+const formatDate = (dateString) => {
+    // 空データ時のガード句（バグ防止）
+    if (!dateString) return "";
+    // 日付文字列をDateオブジェクトに変換
+    const d = new Date(dateString);
+
+    // 取得した日付から年・月・日を抽出して0埋め
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+
+    return `${yyyy}年${mm}月${dd}日`;
+};
+
+// 時間フォーマット変更(例：予約時間~予約時間+30分)
+const formatTime = (dateString) => {
+    // 空データ時のガード句（バグ防止）
+    if (!dateString) return "";
+
+    // 時間を取得
+    const h = dateString.substring(0, 2);
+    // 分を取得
+    const m = dateString.substring(3, 5);
+
+    // 本日の日付を取得
+    const t = new Date();
+    // 時間と分をセット(秒とミリ秒は0にリセット)
+    t.setHours(h, m, 0, 0);
+    // 現在の分に30分を足す（15:30+30分=16:00に自動繰り上げ）
+    t.setMinutes(t.getMinutes() + 30);
+    // 30分後の表記を取得
+    const finishTime = `${t.getHours().toString().padStart(2, "0")}:${t.getMinutes().toString().padStart(2, "0")}`;
+
+    return `${dateString}~${finishTime}`;
+};
+
+// 予約詳細の取得
+const getReservationDetail = async () => {
+    try {
+        const res = await adminApiFetch(
+            `http://localhost/api/admins/reservation/time-slots/${timeSlotId}`,
+            {
+                method: "GET",
+            },
+        );
+        // 予約日時を取得
+        date.value = res.data.date;
+        time.value = res.data.start_time.substring(0, 5);
+        // 予約者がいる場合、利用状況を取得
+        for (let i = 0; i < res.data.reservations.length; i++) {
+            userStatus.value.push({
+                name: res.data.reservations[i].name,
+                reservation_id: res.data.reservations[i].reservation_id,
+                status: res.data.reservations[i].status,
+            });
+        }
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
+// 初回実行
+getReservationDetail();
 </script>
 
 <style scoped>
