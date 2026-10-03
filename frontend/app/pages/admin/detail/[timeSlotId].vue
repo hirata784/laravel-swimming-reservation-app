@@ -31,7 +31,9 @@
                         利用前に戻す
                     </button>
                 </div>
-                <button class="return-btn">予約管理画面へ戻る</button>
+                <button class="return-btn" type="button" @click="reservations">
+                    予約管理画面へ戻る
+                </button>
             </div>
         </div>
     </div>
@@ -51,6 +53,16 @@ const date = ref("");
 const time = ref("");
 // 予約者
 const userStatus = ref([]);
+// 今日の日付を取得
+const today = new Date();
+// 今年
+const y = today.getFullYear();
+// 今月(1~9月は頭を0で埋める(例：01月))
+const m = (today.getMonth() + 1).toString().padStart(2, "0");
+// 日付
+const d = today.getDate().toString().padStart(2, "0");
+// 現在の年月日
+const currentDate = `${y}-${m}-${d}`;
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -157,6 +169,15 @@ const reservedStatus = async (id) => {
         console.error("予期せぬエラーが発生しました：", error);
         alert(`予期せぬエラーが発生しました： ${error}`);
     }
+};
+
+// 予約管理画面へ遷移
+const reservations = () => {
+    // 予約管理画面へ遷移
+    return navigateTo({
+        path: "/admin/reservations",
+        query: { date: currentDate },
+    });
 };
 
 // 初回実行
