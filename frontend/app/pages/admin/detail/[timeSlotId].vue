@@ -12,24 +12,28 @@
                     class="user-status"
                 >
                     <p class="user">{{ user.name }}</p>
-                    <p class="status">{{ user.status }}</p>
-                    <!-- 利用前の予約者のみボタンを表示 -->
-                    <button
-                        v-if="user.status === 'reserved'"
-                        type="button"
-                        @click="usedStatus(user.reservation_id)"
-                        class="update-btn"
-                    >
-                        利用しました
-                    </button>
-                    <button
-                        v-else-if="user.status === 'used'"
-                        type="button"
-                        @click="reservedStatus(user.reservation_id)"
-                        class="cancel-btn"
-                    >
-                        利用前に戻す
-                    </button>
+                    <!-- statusがreserved(利用前)の場合 -->
+                    <div v-if="user.status === 'reserved'" class="group">
+                        <p class="status">利用前</p>
+                        <button
+                            type="button"
+                            @click="usedStatus(user.reservation_id)"
+                            class="update-btn"
+                        >
+                            利用しました
+                        </button>
+                    </div>
+                    <!-- statusがused(利用済み)の場合 -->
+                    <div v-else-if="user.status === 'used'" class="group">
+                        <p class="status">利用済み</p>
+                        <button
+                            type="button"
+                            @click="reservedStatus(user.reservation_id)"
+                            class="cancel-btn"
+                        >
+                            利用前に戻す
+                        </button>
+                    </div>
                 </div>
                 <button class="return-btn" type="button" @click="reservations">
                     予約管理画面へ戻る
@@ -233,8 +237,16 @@ p {
     width: 30%;
     font-size: 20px;
 }
+
+.group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
 .status {
-    width: 30%;
+    width: 45%;
     font-size: 20px;
 }
 
@@ -244,7 +256,7 @@ p {
     color: #eef9ff;
     cursor: pointer;
     padding: 10px 0;
-    width: 30%;
+    width: 45%;
     margin: 5px 0;
     font-size: 20px;
 }
@@ -255,7 +267,7 @@ p {
     color: #eef9ff;
     cursor: pointer;
     padding: 10px 0;
-    width: 30%;
+    width: 45%;
     margin: 5px 0;
     font-size: 20px;
 }
