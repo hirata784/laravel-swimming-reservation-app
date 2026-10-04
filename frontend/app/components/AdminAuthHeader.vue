@@ -14,6 +14,16 @@
                     ログアウト
                 </button>
             </div>
+            <!-- 予約詳細画面 -->
+            <div v-else-if="route.name === 'admin-detail-timeSlotId'">
+                <button class="btn" type="button">会員管理</button>
+                <button class="btn" type="button" @click="reservations">
+                    予約管理
+                </button>
+                <button class="btn" type="button" @click="isLogout">
+                    ログアウト
+                </button>
+            </div>
         </nav>
     </div>
 </template>
@@ -26,6 +36,16 @@ import { computed } from "vue";
 const route = useRoute();
 // { token: トークン, fetchUser: データを取得する関数, logout: ログアウト関数 }
 const { token, fetchUser, logout } = useAdminAuth();
+// 今日の日付を取得
+const today = new Date();
+// 今年
+const year = today.getFullYear();
+// 今月(1~9月は頭を0で埋める(例：01月))
+const month = (today.getMonth() + 1).toString().padStart(2, "0");
+// 日付
+const date = today.getDate().toString().padStart(2, "0");
+// 現在の年月日
+const currentDate = `${year}-${month}-${date}`;
 // ログイン状態
 const isLoggedIn = computed(() => {
     return !!token.value;
@@ -50,6 +70,14 @@ onMounted(async () => {
 // ログアウト
 const isLogout = async () => {
     await logout();
+};
+
+// 予約管理画面へ遷移
+const reservations = () => {
+    return navigateTo({
+        path: "/admin/reservations",
+        query: { date: currentDate },
+    });
 };
 </script>
 
