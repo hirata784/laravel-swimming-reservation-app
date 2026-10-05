@@ -269,6 +269,7 @@ p {
 
 .reservation-content {
     padding: 80px 0 1px;
+    min-height: 80vh;
 }
 
 .title {
