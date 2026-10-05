@@ -6,6 +6,10 @@
                 <div class="week-pagination">
                     <p>{{ formatDate(date) }}{{ formatTime(time) }}</p>
                 </div>
+                <!-- 予約者がいない場合 -->
+                <p v-if="userStatus.length === 0">
+                    この時間枠に予約者はいません
+                </p>
                 <div
                     v-for="user in userStatus"
                     :key="user.reservation_id"
@@ -125,12 +129,14 @@ const getReservationDetail = async () => {
         date.value = res.data.date;
         time.value = res.data.start_time.substring(0, 5);
         // 予約者がいる場合、利用状況を取得
-        for (let i = 0; i < res.data.reservations.length; i++) {
-            userStatus.value.push({
-                name: res.data.reservations[i].name,
-                reservation_id: res.data.reservations[i].reservation_id,
-                status: res.data.reservations[i].status,
-            });
+        if (res.data.reservations) {
+            for (let i = 0; i < res.data.reservations.length; i++) {
+                userStatus.value.push({
+                    name: res.data.reservations[i].name,
+                    reservation_id: res.data.reservations[i].reservation_id,
+                    status: res.data.reservations[i].status,
+                });
+            }
         }
     } catch (error) {
         // エラー表示
