@@ -26,6 +26,7 @@ class AdminReservationController extends Controller
         // 指定した日から一週間分のデータを取得
         $timeSlots = TimeSlot::whereBetween('date', [$firstDate, $lastDate])->get();
 
+        $item = [];
         // 全てのid, 日時, 予約人数, 定員を取得
         foreach ($timeSlots as $index => $timeSlot) {
             // id

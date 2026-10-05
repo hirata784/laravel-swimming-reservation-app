@@ -12,34 +12,44 @@
                         次の週 →
                     </button>
                 </div>
-                <div v-for="i in 7">
-                    <div class="date-toggle">
-                        <!-- トグル表示 -->
-                        <button class="date" @click="toggle(i - 1)">
-                            {{ formatDate(dates[i - 1]) }}({{ days[i - 1] }})
-                            <span class="toggle">{{
-                                isOpen[i - 1] === true ? "-" : "+"
-                            }}</span>
-                        </button>
-                    </div>
-                    <div
-                        v-for="slot in getTimeSlotsByDate(dates[i - 1])"
-                        class="group"
-                    >
-                        <div v-if="isOpen[i - 1]" class="item-group">
-                            <p class="time">
-                                {{ slot.start_time }}
-                            </p>
-                            <p class="reservation-people">
-                                {{ slot.reserved_count }}/{{ slot.capacity }}人
-                            </p>
-                            <button
-                                class="detail-btn"
-                                type="button"
-                                @click="detail(slot.id)"
-                            >
-                                詳細
+                <!-- 予約枠がない場合 -->
+                <p v-if="timeSlots.length === 0">
+                    この期間に予約枠がありません
+                </p>
+                <div v-else>
+                    <div v-for="i in 7">
+                        <div class="date-toggle">
+                            <!-- トグル表示 -->
+                            <button class="date" @click="toggle(i - 1)">
+                                {{ formatDate(dates[i - 1]) }}({{
+                                    days[i - 1]
+                                }})
+                                <span class="toggle">{{
+                                    isOpen[i - 1] === true ? "-" : "+"
+                                }}</span>
                             </button>
+                        </div>
+                        <div
+                            v-for="slot in getTimeSlotsByDate(dates[i - 1])"
+                            class="group"
+                        >
+                            <div v-if="isOpen[i - 1]" class="item-group">
+                                <p class="time">
+                                    {{ slot.start_time }}
+                                </p>
+                                <p class="reservation-people">
+                                    {{ slot.reserved_count }}/{{
+                                        slot.capacity
+                                    }}人
+                                </p>
+                                <button
+                                    class="detail-btn"
+                                    type="button"
+                                    @click="detail(slot.id)"
+                                >
+                                    詳細
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
