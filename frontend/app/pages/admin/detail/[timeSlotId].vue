@@ -4,10 +4,10 @@
             <h2 class="title">予約詳細</h2>
             <div class="detail-form">
                 <div class="week-pagination">
-                    <p>{{ formatDate(date) }}{{ formatTime(time) }}</p>
+                    <p>{{ formatDate(date) }} {{ formatTime(time) }}</p>
                 </div>
                 <!-- 予約者がいない場合 -->
-                <p v-if="userStatus.length === 0">
+                <p class="message" v-if="userStatus.length === 0">
                     この時間枠に予約者はいません
                 </p>
                 <div
@@ -208,6 +208,7 @@ p {
 
 .detail-content {
     padding: 80px 0 1px;
+    min-height: 80vh;
 }
 
 .title {
@@ -230,6 +231,12 @@ p {
     display: flex;
     justify-content: space-between;
     font-size: 20px;
+}
+
+.message {
+    font-size: 18px;
+    color: #304654;
+    padding: 10px;
 }
 
 .user-status {
@@ -284,7 +291,7 @@ p {
     opacity: 0.5;
     color: #eef9ff;
     padding: 10px 20px;
-    margin: 0 20px 0;
+    margin: 30px 20px 0;
     font-size: 20px;
     cursor: pointer;
     width: 40%;
