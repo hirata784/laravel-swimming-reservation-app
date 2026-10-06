@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminReservationController;
+use App\Http\Controllers\AdminUserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -56,4 +57,5 @@ Route::group([
     Route::get('reservation/date/{firstDate}', [AdminReservationController::class, 'index']);
     Route::get('reservation/time-slots/{timeSlotId}', [AdminReservationController::class, 'show']);
     Route::put('reservation/{reservationId}', [AdminReservationController::class, 'update']);
+    Route::get('user', [AdminUserController::class, 'index']);
 });
