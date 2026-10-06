@@ -13,11 +13,15 @@ class AdminUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        // 検索ワード
+        $search = $request->search;
+        // ユーザー検索
+        $users = User::where('name', 'LIKE', "%{$search}%")->orWhere('email', 'LIKE', "%{$search}%")->get();
         $reservations = Reservation::all();
 
+        $item = [];
         // 全てのid, 名前, メールアドレス, 予約数を取得
         foreach ($users as $index => $user) {
             // id
