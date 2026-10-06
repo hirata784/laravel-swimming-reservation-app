@@ -58,4 +58,5 @@ Route::group([
     Route::get('reservation/time-slots/{timeSlotId}', [AdminReservationController::class, 'show']);
     Route::put('reservation/{reservationId}', [AdminReservationController::class, 'update']);
     Route::get('user', [AdminUserController::class, 'index']);
+    Route::get('user/{userId}', [AdminUserController::class, 'show']);
 });

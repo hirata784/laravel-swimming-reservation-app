@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Reservation;
+use App\Models\TimeSlot;
 
 class AdminUserController extends Controller
 {
@@ -40,17 +41,6 @@ class AdminUserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -58,29 +48,50 @@ class AdminUserController extends Controller
      */
     public function show($id)
     {
-        //
-    }
+        $user = User::find($id);
+        $reservations = Reservation::where('user_id', $id)->get();
+        $timeSlots = TimeSlot::all();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        // 基本情報
+        // id
+        $item['user']['id'] = $id;
+        // 名前
+        $item['user']['name'] = $user->name;
+        // メールアドレス
+        $item['user']['email'] = $user->email;
+        // 性別
+        $item['user']['gender'] = $user->gender;
+        // 電話番号
+        $item['user']['phone'] = $user->phone;
+        // 住所
+        $item['user']['address'] = $user->address;
+        // 登録日
+        $item['user']['created_at'] = $user->created_at;
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        // 利用状況
+        // 予約回数
+        $item['usage']['total_reservation'] = $reservations->count();
+        // 利用済み
+        $item['usage']['used'] = $reservations->where('status', 'used')->count();
+        // 利用前
+        $item['usage']['reserved'] = $reservations->where('status', 'reserved')->count();
+        // 来店なし
+        $item['usage']['no_show'] = $reservations->where('status', 'no_show')->count();
+
+        // ユーザーが予約0の場合のエラー対策
+        $item['reservations'] = [];
+        // 予約履歴
+        foreach ($reservations as $index => $reservation) {
+            // 日付
+            $item['reservations'][$index]['date'] =  $timeSlots->find($reservation->time_slot_id)->date;
+            // 開始時間
+            $item['reservations'][$index]['start_time'] =  $timeSlots->find($reservation->time_slot_id)->start_time;
+            // ステータス
+            $item['reservations'][$index]['status'] =  $reservation->status;
+        }
+
+        return response()->json([
+            'data' => $item
+        ], 200);
     }
 }
