@@ -98,6 +98,7 @@ class ReservationController extends Controller
             [
                 'user_id' => $user_id,
                 'time_slot_id' => $time_slot_id,
+                'status' => "reserved",
             ]
         );
 
