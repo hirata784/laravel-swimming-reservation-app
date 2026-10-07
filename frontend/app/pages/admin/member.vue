@@ -3,7 +3,7 @@
         <div class="member-content">
             <h2 class="title">会員管理</h2>
             <div class="num-search">
-                <p class="num">会員数：7名</p>
+                <p class="num">会員数：{{ users.length }}名</p>
                 <div class="search">
                     <input
                         class="search-txt"
@@ -22,12 +22,14 @@
                         <th>予約数</th>
                         <th>詳細</th>
                     </tr>
-                    <template v-for="i in 7" :key="i">
+                    <template v-for="user in users" :key="user.id">
                         <tr>
-                            <td class="id-col">{{ i }}</td>
-                            <td class="name-col">テスト</td>
-                            <td class="email-col">test.example.com</td>
-                            <td class="total-col">5</td>
+                            <td class="id-col">{{ user.id }}</td>
+                            <td class="name-col">{{ user.name }}</td>
+                            <td class="email-col">{{ user.email }}</td>
+                            <td class="total-col">
+                                {{ user.total_reservation }}
+                            </td>
                             <td class="detail-col">
                                 <button class="detail-btn">詳細</button>
                             </td>
@@ -38,6 +40,40 @@
         </div>
     </div>
 </template>
+
+<script setup>
+const users = ref([]);
+
+definePageMeta({
+    layout: "admin", // 管理者用のヘッダーを表示
+    middleware: "admin-auth", // 認証中のみアクセス可能にする
+});
+
+// 一般ユーザー情報の取得
+const getUsers = async () => {
+    try {
+        const res = await adminApiFetch("http://localhost/api/admins/user", {
+            method: "GET",
+        });
+        // APIから取得したユーザー情報を画面表示用に整形
+        for (let i = 0; i < res.data.length; i++) {
+            users.value.push({
+                id: res.data[i].id,
+                name: res.data[i].name,
+                email: res.data[i].email,
+                total_reservation: res.data[i].total_reservation,
+            });
+        }
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
+// 初回実行
+getUsers();
+</script>
 
 <style scoped>
 p {
