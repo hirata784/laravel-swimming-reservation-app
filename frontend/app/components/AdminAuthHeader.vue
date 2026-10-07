@@ -9,14 +9,27 @@
             </div>
             <!-- 予約管理画面 -->
             <div v-if="route.name === 'admin-reservations'">
-                <button class="btn" type="button">会員管理</button>
+                <button class="btn" type="button" @click="member">
+                    会員管理
+                </button>
                 <button class="btn" type="button" @click="isLogout">
                     ログアウト
                 </button>
             </div>
             <!-- 予約詳細画面 -->
             <div v-else-if="route.name === 'admin-detail-timeSlotId'">
-                <button class="btn" type="button">会員管理</button>
+                <button class="btn" type="button" @click="member">
+                    会員管理
+                </button>
+                <button class="btn" type="button" @click="reservations">
+                    予約管理
+                </button>
+                <button class="btn" type="button" @click="isLogout">
+                    ログアウト
+                </button>
+            </div>
+            <!-- 会員管理画面 -->
+            <div v-else-if="route.name === 'admin-member'">
                 <button class="btn" type="button" @click="reservations">
                     予約管理
                 </button>
@@ -78,6 +91,11 @@ const reservations = () => {
         path: "/admin/reservations",
         query: { date: currentDate },
     });
+};
+
+// 会員管理画面へ遷移
+const member = () => {
+    return navigateTo("/admin/member");
 };
 </script>
 
