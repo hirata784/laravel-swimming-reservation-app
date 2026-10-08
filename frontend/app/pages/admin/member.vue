@@ -32,7 +32,12 @@
                                 {{ user.total_reservation }}
                             </td>
                             <td class="detail-col">
-                                <button class="detail-btn">詳細</button>
+                                <button
+                                    class="detail-btn"
+                                    @click="userDetail(user.id)"
+                                >
+                                    詳細
+                                </button>
                             </td>
                         </tr>
                     </template>
@@ -109,6 +114,11 @@ const searchUser = async () => {
         console.error("予期せぬエラーが発生しました：", error);
         alert(`予期せぬエラーが発生しました： ${error}`);
     }
+};
+
+// usersテーブルのidを持たせて、会員詳細画面へ
+const userDetail = (id) => {
+    return navigateTo(`/admin/user/${id}`);
 };
 
 // 初回実行
