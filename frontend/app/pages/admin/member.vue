@@ -3,15 +3,16 @@
         <div class="member-content">
             <h2 class="title">会員管理</h2>
             <div class="num-search">
-                <p class="num">会員数：{{ users.length }}名</p>
-                <div class="search">
+                <p class="num">会員数：{{ totalUser }}名</p>
+                <form class="search" @submit.prevent="searchUser">
                     <input
+                        v-model="search"
                         class="search-txt"
                         type="text"
                         placeholder="名前・メールアドレスで検索"
                     />
-                    <button class="search-btn">検索</button>
-                </div>
+                    <button class="search-btn" type="submit">検索</button>
+                </form>
             </div>
             <table class="member-list">
                 <tbody>
@@ -42,7 +43,15 @@
 </template>
 
 <script setup>
+// インポート
+import { ref } from "vue";
+
+// 一般ユーザー
 const users = ref([]);
+// ユーザーの全体数
+const totalUser = ref("");
+// 検索ワード
+const search = ref("");
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -55,15 +64,46 @@ const getUsers = async () => {
         const res = await adminApiFetch("http://localhost/api/admins/user", {
             method: "GET",
         });
+
         // APIから取得したユーザー情報を画面表示用に整形
-        for (let i = 0; i < res.data.length; i++) {
+        for (let i = 0; i < res.data.user.length; i++) {
             users.value.push({
-                id: res.data[i].id,
-                name: res.data[i].name,
-                email: res.data[i].email,
-                total_reservation: res.data[i].total_reservation,
+                id: res.data.user[i].id,
+                name: res.data.user[i].name,
+                email: res.data.user[i].email,
+                total_reservation: res.data.user[i].total_reservation,
             });
         }
+        // ユーザーの全体数を取得
+        totalUser.value = res.data.total_user;
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
+// ユーザー検索
+const searchUser = async () => {
+    // 一度全て空にする
+    users.value = [];
+    try {
+        const res = await adminApiFetch("http://localhost/api/admins/user", {
+            method: "GET",
+            query: { search: search.value },
+        });
+
+        // APIから取得したユーザー情報を画面表示用に整形
+        for (let i = 0; i < res.data.user.length; i++) {
+            users.value.push({
+                id: res.data.user[i].id,
+                name: res.data.user[i].name,
+                email: res.data.user[i].email,
+                total_reservation: res.data.user[i].total_reservation,
+            });
+        }
+        // ユーザーの全体数を取得
+        totalUser.value = res.data.total_user;
     } catch (error) {
         // エラー表示
         console.error("予期せぬエラーが発生しました：", error);
@@ -134,7 +174,6 @@ p {
 
 .member-list {
     width: 90%;
-    height: 50vh;
     margin: 0 auto;
     text-align: center;
     border-collapse: collapse;
@@ -157,6 +196,7 @@ th:last-child {
 
 .id-col {
     width: 5%;
+    height: 65px;
 }
 
 .name-col {
@@ -180,7 +220,7 @@ th:last-child {
     background-color: #99b1ea;
     color: #eef9ff;
     width: 100%;
-    height: 100%;
+    height: 65px;
     font-size: 20px;
     cursor: pointer;
 }

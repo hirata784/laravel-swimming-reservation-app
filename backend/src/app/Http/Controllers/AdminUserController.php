@@ -23,17 +23,21 @@ class AdminUserController extends Controller
         $reservations = Reservation::all();
 
         $item = [];
+        $item['user'] = [];
         // 全てのid, 名前, メールアドレス, 予約数を取得
         foreach ($users as $index => $user) {
             // id
-            $item[$index]['id'] = $user->id;
+            $item['user'][$index]['id'] = $user->id;
             // 名前
-            $item[$index]['name'] = $user->name;
+            $item['user'][$index]['name'] = $user->name;
             // メールアドレス
-            $item[$index]['email'] = $user->email;
+            $item['user'][$index]['email'] = $user->email;
             // 予約数
-            $item[$index]['total_reservation'] = $reservations->where('user_id', $user->id)->count();
+            $item['user'][$index]['total_reservation'] = $reservations->where('user_id', $user->id)->count();
         }
+
+        // ユーザーの全体数を取得
+        $item['total_user'] = User::count();
 
         return response()->json([
             'data' => $item
