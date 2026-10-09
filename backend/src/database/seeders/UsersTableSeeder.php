@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -21,6 +22,8 @@ class UsersTableSeeder extends Seeder
             'gender' => '男性',
             'address' => '神奈川県ほげほげ市ほげほげ1-2',
             'phone' => '0801234567',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ];
         DB::table('users')->insert($param);
         $param = [
@@ -30,6 +33,8 @@ class UsersTableSeeder extends Seeder
             'gender' => '男性',
             'address' => '東京都ふがふが市ふがふが3-45',
             'phone' => '0902223333',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ];
         DB::table('users')->insert($param);
     }
