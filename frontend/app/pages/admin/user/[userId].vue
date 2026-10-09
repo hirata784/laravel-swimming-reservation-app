@@ -68,7 +68,31 @@
                                             {{ formatDate(reservation.date) }}
                                         </td>
                                         <td>{{ reservation.start_time }}</td>
-                                        <td>{{ reservation.status }}</td>
+                                        <!-- statusがreserved(利用前)の場合 -->
+                                        <td
+                                            v-if="
+                                                reservation.status ===
+                                                'reserved'
+                                            "
+                                        >
+                                            利用前
+                                        </td>
+                                        <!-- statusがused(利用済み)の場合 -->
+                                        <td
+                                            v-else-if="
+                                                reservation.status === 'used'
+                                            "
+                                        >
+                                            利用済み
+                                        </td>
+                                        <!-- statusがno_show(来店なし)の場合 -->
+                                        <td
+                                            v-else-if="
+                                                reservation.status === 'no_show'
+                                            "
+                                        >
+                                            来店なし
+                                        </td>
                                     </tr>
                                 </template>
                             </tbody>
