@@ -15,15 +15,15 @@
                     </div>
                     <div class="item-group">
                         <p class="label">性別</p>
-                        <p class="item">{{ gender }}</p>
+                        <p class="item">{{ gender || "未回答" }}</p>
                     </div>
                     <div class="item-group">
                         <p class="label">住所</p>
-                        <p class="item">{{ address }}</p>
+                        <p class="item">{{ address || "未回答" }}</p>
                     </div>
                     <div class="item-group">
                         <p class="label">電話番号</p>
-                        <p class="item">{{ phone }}</p>
+                        <p class="item">{{ phone || "未回答" }}</p>
                     </div>
                     <div class="item-group">
                         <p class="label">登録日</p>
