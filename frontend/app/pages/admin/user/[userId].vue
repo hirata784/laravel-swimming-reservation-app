@@ -52,7 +52,11 @@
                 <p class="section-title">【予約履歴】</p>
                 <div class="group">
                     <div class="item-group">
-                        <table class="member-list">
+                        <!-- 予約データがある場合 -->
+                        <table
+                            v-if="reservations.length !== 0"
+                            class="member-list"
+                        >
                             <tbody>
                                 <tr>
                                     <th>日付</th>
@@ -97,6 +101,10 @@
                                 </template>
                             </tbody>
                         </table>
+                        <!-- 予約データがない場合 -->
+                        <div v-else>
+                            <p class="item">予約履歴はありません。</p>
+                        </div>
                     </div>
                 </div>
             </div>
