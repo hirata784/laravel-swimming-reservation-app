@@ -27,7 +27,7 @@
                     </div>
                     <div class="item-group">
                         <p class="label">登録日</p>
-                        <p class="item">{{ created_at }}</p>
+                        <p class="item">{{ formatDate(created_at) }}</p>
                     </div>
                 </div>
                 <p class="section-title">【利用状況】</p>
@@ -64,7 +64,9 @@
                                     :key="reservation"
                                 >
                                     <tr>
-                                        <td>{{ reservation.date }}</td>
+                                        <td>
+                                            {{ formatDate(reservation.date) }}
+                                        </td>
                                         <td>{{ reservation.start_time }}</td>
                                         <td>{{ reservation.status }}</td>
                                     </tr>
@@ -112,6 +114,21 @@ definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
     middleware: "admin-auth", // 認証中のみアクセス可能にする
 });
+
+// 年月日フォーマット変更(例：2026年08月14日)
+const formatDate = (dateString) => {
+    // 空データ時のガード句（バグ防止）
+    if (!dateString) return "";
+    // 日付文字列をDateオブジェクトに変換
+    const d = new Date(dateString);
+
+    // 取得した日付から年・月・日を抽出して0埋め
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+
+    return `${yyyy}年${mm}月${dd}日`;
+};
 
 // 会員詳細の取得
 const getUserDetail = async () => {
