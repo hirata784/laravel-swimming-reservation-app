@@ -38,6 +38,10 @@
                             利用前に戻す
                         </button>
                     </div>
+                    <!-- statusがno_show(来店なし)の場合 -->
+                    <div v-else-if="user.status === 'no_show'" class="group">
+                        <p class="status">来店なし</p>
+                    </div>
                 </div>
                 <button class="return-btn" type="button" @click="reservations">
                     予約管理画面へ戻る
