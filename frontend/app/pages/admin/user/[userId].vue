@@ -107,6 +107,9 @@
                         </div>
                     </div>
                 </div>
+                <button class="return-btn" type="button" @click="member">
+                    会員管理画面へ戻る
+                </button>
             </div>
         </div>
     </div>
@@ -203,6 +206,11 @@ const getUserDetail = async () => {
     }
 };
 
+// 会員管理画面へ遷移
+const member = () => {
+    return navigateTo("/admin/member");
+};
+
 // 初回実行
 getUserDetail();
 </script>
@@ -293,5 +301,17 @@ td {
     border-bottom: 1px solid #304654;
     text-align: left;
     padding: 5px;
+}
+
+.return-btn {
+    border: none;
+    background-color: #666666;
+    opacity: 0.5;
+    color: #eef9ff;
+    padding: 10px 20px;
+    margin: 30px 20px 0;
+    font-size: 20px;
+    cursor: pointer;
+    width: 40%;
 }
 </style>
