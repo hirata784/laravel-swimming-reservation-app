@@ -19,7 +19,7 @@ class AdminUserController extends Controller
         // 検索ワード
         $search = $request->search;
         // ユーザー検索
-        $users = User::where('name', 'LIKE', "%{$search}%")->orWhere('email', 'LIKE', "%{$search}%")->get();
+        $users = User::where('name', 'LIKE', "%{$search}%")->orWhere('email', 'LIKE', "%{$search}%")->paginate(7);
         $reservations = Reservation::all();
 
         $item = [];
@@ -40,7 +40,17 @@ class AdminUserController extends Controller
         $item['total_user'] = User::count();
 
         return response()->json([
-            'data' => $item
+            'data' => $item,
+            'meta' => [
+                // 現在のページ番号
+                'current_page' => $users->currentPage(),
+                // 最後のページ番号
+                'last_page' => $users->lastPage(),
+                // 1ページあたりの件数
+                'per_page' => $users->perPage(),
+                // 検索条件に一致する会員の総件数
+                'total' => $users->total(),
+            ],
         ], 200);
     }
 

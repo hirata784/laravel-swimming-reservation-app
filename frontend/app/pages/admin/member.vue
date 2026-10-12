@@ -43,6 +43,20 @@
                     </template>
                 </tbody>
             </table>
+            <!-- ページネーションを表示 -->
+            <div class="paginate">
+                <div>
+                    <button class="page-btn" @click="prevPage"><</button>
+                </div>
+                <div v-for="page in lastPage" :key="page">
+                    <button class="page-btn" @click="numPage(page)">
+                        {{ page }}
+                    </button>
+                </div>
+                <div>
+                    <button class="page-btn" @click="nextPage">></button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -57,6 +71,11 @@ const users = ref([]);
 const totalUser = ref("");
 // 検索ワード
 const search = ref("");
+// ページネーション
+// 現在のページ番号
+const currentPage = ref(1);
+// 最終ページ番号
+const lastPage = ref(1);
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -81,6 +100,10 @@ const getUsers = async () => {
         }
         // ユーザーの全体数を取得
         totalUser.value = res.data.total_user;
+        // 現在のページ番号を取得
+        currentPage.value = res.meta.current_page;
+        // 最後のページ番号を取得
+        lastPage.value = res.meta.last_page;
     } catch (error) {
         // エラー表示
         console.error("予期せぬエラーが発生しました：", error);
@@ -119,6 +142,122 @@ const searchUser = async () => {
 // usersテーブルのidを持たせて、会員詳細画面へ
 const userDetail = (id) => {
     return navigateTo(`/admin/user/${id}`);
+};
+
+// ページネーション
+// 指定のページへ
+const numPage = async (num) => {
+    // 一度全て空にする
+    users.value = [];
+    try {
+        const res = await adminApiFetch(
+            `http://localhost/api/admins/user?page=${num}`,
+            {
+                method: "GET",
+            },
+        );
+
+        // APIから取得したユーザー情報を画面表示用に整形
+        for (let i = 0; i < res.data.user.length; i++) {
+            users.value.push({
+                id: res.data.user[i].id,
+                name: res.data.user[i].name,
+                email: res.data.user[i].email,
+                total_reservation: res.data.user[i].total_reservation,
+            });
+        }
+        // ユーザーの全体数を取得
+        totalUser.value = res.data.total_user;
+        // 現在のページ番号を取得
+        currentPage.value = res.meta.current_page;
+        // 最後のページ番号を取得
+        lastPage.value = res.meta.last_page;
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
+// 前のページへ
+const prevPage = async () => {
+    // 1ページ戻る
+    const num = currentPage.value - 1;
+    // iページ戻った値が1より小さい場合、処理しない
+    if (num < 1) {
+        return;
+    }
+
+    // 一度全て空にする
+    users.value = [];
+    try {
+        const res = await adminApiFetch(
+            `http://localhost/api/admins/user?page=${num}`,
+            {
+                method: "GET",
+            },
+        );
+
+        // APIから取得したユーザー情報を画面表示用に整形
+        for (let i = 0; i < res.data.user.length; i++) {
+            users.value.push({
+                id: res.data.user[i].id,
+                name: res.data.user[i].name,
+                email: res.data.user[i].email,
+                total_reservation: res.data.user[i].total_reservation,
+            });
+        }
+        // ユーザーの全体数を取得
+        totalUser.value = res.data.total_user;
+        // 現在のページ番号を取得
+        currentPage.value = res.meta.current_page;
+        // 最後のページ番号を取得
+        lastPage.value = res.meta.last_page;
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
+// 次のページへ
+const nextPage = async () => {
+    // 1ページ進む
+    const num = currentPage.value + 1;
+    // iページ進んだ値が最終ページ値より大きい場合、処理しない
+    if (num > lastPage.value) {
+        return;
+    }
+    // 一度全て空にする
+    users.value = [];
+    try {
+        const res = await adminApiFetch(
+            `http://localhost/api/admins/user?page=${num}`,
+            {
+                method: "GET",
+            },
+        );
+
+        // APIから取得したユーザー情報を画面表示用に整形
+        for (let i = 0; i < res.data.user.length; i++) {
+            users.value.push({
+                id: res.data.user[i].id,
+                name: res.data.user[i].name,
+                email: res.data.user[i].email,
+                total_reservation: res.data.user[i].total_reservation,
+            });
+        }
+        // ユーザーの全体数を取得
+        totalUser.value = res.data.total_user;
+        // 現在のページ番号を取得
+        currentPage.value = res.meta.current_page;
+        // 最後のページ番号を取得
+        lastPage.value = res.meta.last_page;
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
 };
 
 // 初回実行
@@ -233,5 +372,20 @@ th:last-child {
     height: 65px;
     font-size: 20px;
     cursor: pointer;
+}
+
+.paginate {
+    display: flex;
+    justify-content: flex-end;
+    width: 90%;
+    margin: 10px auto;
+}
+
+.page-btn {
+    padding: 15px;
+    font-size: 20px;
+    color: #eef9ff;
+    cursor: pointer;
+    background-color: #5276b8;
 }
 </style>
