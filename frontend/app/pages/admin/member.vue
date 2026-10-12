@@ -76,6 +76,8 @@ const search = ref("");
 const currentPage = ref(1);
 // 最終ページ番号
 const lastPage = ref(1);
+// 検索ワード(ページネーション用)
+const appliedSearch = ref("");
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -130,8 +132,14 @@ const searchUser = async () => {
                 total_reservation: res.data.user[i].total_reservation,
             });
         }
+        // 検索ワードを取得(ページネーション用)
+        appliedSearch.value = search.value;
         // ユーザーの全体数を取得
         totalUser.value = res.data.total_user;
+        // 現在のページ番号を取得
+        currentPage.value = res.meta.current_page;
+        // 最後のページ番号を取得
+        lastPage.value = res.meta.last_page;
     } catch (error) {
         // エラー表示
         console.error("予期せぬエラーが発生しました：", error);
@@ -154,6 +162,7 @@ const numPage = async (num) => {
             `http://localhost/api/admins/user?page=${num}`,
             {
                 method: "GET",
+                query: { search: appliedSearch.value },
             },
         );
 
@@ -195,6 +204,7 @@ const prevPage = async () => {
             `http://localhost/api/admins/user?page=${num}`,
             {
                 method: "GET",
+                query: { search: appliedSearch.value },
             },
         );
 
@@ -235,6 +245,7 @@ const nextPage = async () => {
             `http://localhost/api/admins/user?page=${num}`,
             {
                 method: "GET",
+                query: { search: appliedSearch.value },
             },
         );
 
