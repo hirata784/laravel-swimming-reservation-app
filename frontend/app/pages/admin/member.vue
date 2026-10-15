@@ -14,7 +14,8 @@
                     <button class="search-btn" type="submit">検索</button>
                 </form>
             </div>
-            <table class="member-list">
+            <!-- 会員がいる場合 -->
+            <table v-if="users.length !== 0" class="member-list">
                 <tbody>
                     <tr>
                         <th>id</th>
@@ -43,8 +44,16 @@
                     </template>
                 </tbody>
             </table>
-            <!-- ページネーションを表示 -->
-            <div class="paginate">
+            <!-- 検索結果が0件の場合 -->
+            <div v-else-if="users.length === 0 && appliedSearch !== ''">
+                <p>該当する会員は見つかりませんでした。</p>
+            </div>
+            <!-- 会員が一人もいない場合 -->
+            <div v-else>
+                <p>登録されている会員はいません。</p>
+            </div>
+            <!-- ページネーションを表示(会員がいる場合) -->
+            <div v-if="users.length !== 0" class="paginate">
                 <div>
                     <button class="page-btn" @click="prevPage"><</button>
                 </div>
@@ -68,7 +77,7 @@ import { ref } from "vue";
 // 一般ユーザー
 const users = ref([]);
 // ユーザーの全体数
-const totalUser = ref("");
+const totalUser = ref(0);
 // 検索ワード
 const search = ref("");
 // ページネーション
