@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UsersTableSeeder::class);
         User::factory()->count(8)->create();
         $this->call(TimeSlotsTableSeeder::class);
+        $this->call(RewardTimeSlotsTableSeeder::class);
         $this->call(ReservationsTableSeeder::class);
         $this->call(AdminsTableSeeder::class);
     }
