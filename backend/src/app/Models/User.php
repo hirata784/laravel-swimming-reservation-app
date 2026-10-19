@@ -52,6 +52,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Reservation::class);
     }
 
+    public function reward_tickets()
+    {
+        return $this->hasMany(RewardTicket::class);
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
