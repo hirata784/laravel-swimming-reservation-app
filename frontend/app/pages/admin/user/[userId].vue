@@ -107,6 +107,16 @@
                         </div>
                     </div>
                 </div>
+                <p class="section-title">【特典情報】</p>
+                <div class="group">
+                    <div class="item-group">
+                        <p class="label">未使用特典</p>
+                        <p class="item">1枚</p>
+                    </div>
+                    <div class="item-group">
+                        <button class="reward-btn">特典を利用する</button>
+                    </div>
+                </div>
                 <button class="return-btn" type="button" @click="member">
                     会員管理画面へ戻る
                 </button>
@@ -301,6 +311,17 @@ td {
     border-bottom: 1px solid #304654;
     text-align: left;
     padding: 5px;
+}
+
+.reward-btn {
+    border: none;
+    background-color: #99b1ea;
+    color: #eef9ff;
+    padding: 10px 20px;
+    margin: 0 auto;
+    font-size: 20px;
+    cursor: pointer;
+    width: 55%;
 }
 
 .return-btn {
