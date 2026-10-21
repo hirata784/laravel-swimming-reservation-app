@@ -16,11 +16,12 @@
                     ログアウト
                 </button>
             </div>
-            <!-- 予約詳細画面・会員詳細画面 -->
+            <!-- 予約詳細画面・会員詳細画面・特典利用画面 -->
             <div
                 v-else-if="
                     route.name === 'admin-detail-timeSlotId' ||
-                    route.name === 'admin-user-userId'
+                    route.name === 'admin-user-userId' ||
+                    route.name === 'admin-rewards-userId'
                 "
             >
                 <button class="btn" type="button" @click="member">
