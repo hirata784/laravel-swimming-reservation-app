@@ -114,7 +114,9 @@
                         <p class="item">1枚</p>
                     </div>
                     <div class="item-group">
-                        <button class="reward-btn">特典を利用する</button>
+                        <button class="reward-btn" @click="reward">
+                            特典を利用する
+                        </button>
                     </div>
                 </div>
                 <button class="return-btn" type="button" @click="member">
@@ -219,6 +221,11 @@ const getUserDetail = async () => {
 // 会員管理画面へ遷移
 const member = () => {
     return navigateTo("/admin/member");
+};
+
+// 特典利用画面へ遷移
+const reward = () => {
+    return navigateTo(`/admin/rewards/${userId}`);
 };
 
 // 初回実行
