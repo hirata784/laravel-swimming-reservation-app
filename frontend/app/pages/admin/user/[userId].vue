@@ -111,7 +111,7 @@
                 <div class="group">
                     <div class="item-group">
                         <p class="label">未使用特典</p>
-                        <p class="item">1枚</p>
+                        <p class="item">{{ rewards }}枚</p>
                     </div>
                     <div class="item-group">
                         <button class="reward-btn" @click="reward">
@@ -156,6 +156,9 @@ const reserved = ref("");
 const no_show = ref("");
 // 予約データ
 const reservations = ref([]);
+// 特典情報
+// 未使用特典
+const rewards = ref("");
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -211,6 +214,8 @@ const getUserDetail = async () => {
                 });
             }
         }
+        // 特典情報を取得
+        rewards.value = res.data.rewards;
     } catch (error) {
         // エラー表示
         console.error("予期せぬエラーが発生しました：", error);
