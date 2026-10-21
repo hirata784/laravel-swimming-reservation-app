@@ -7,11 +7,11 @@
                 <div class="group">
                     <div class="item-group">
                         <p class="label">名前</p>
-                        <p class="item">テスト</p>
+                        <p class="item">{{ name }}</p>
                     </div>
                     <div class="item-group">
                         <p class="label">未使用特典</p>
-                        <p class="item">1枚</p>
+                        <p class="item">{{ rewards }}枚</p>
                     </div>
                 </div>
                 <p class="section-title">【交換する商品を選択してください】</p>
@@ -84,11 +84,38 @@
 const route = useRoute();
 // ユーザーid取得
 const userId = route.params.userId;
+// ユーザー名
+const name = ref("");
+// 未使用特典数
+const rewards = ref("");
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
     middleware: "admin-auth", // 認証中のみアクセス可能にする
 });
+
+// 使用者情報の取得
+const getUserInformation = async () => {
+    try {
+        const res = await adminApiFetch(
+            `http://localhost/api/admins/user/${userId}/rewards`,
+            {
+                method: "GET",
+            },
+        );
+        // 基本詳細を取得
+        name.value = res.data.user.name;
+        // 特典情報を取得
+        rewards.value = res.data.rewards;
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
+// 初回実行
+getUserInformation();
 </script>
 
 <style scoped>
