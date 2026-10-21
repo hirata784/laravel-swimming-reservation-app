@@ -105,6 +105,10 @@ class AdminUserController extends Controller
             $item['reservations'][$index]['status'] =  $reservation->status;
         }
 
+        // 特典情報
+        // 未使用特典
+        $item['rewards'] = RewardTicket::where('user_id', $id)->whereNull('used_at')->count();
+
         return response()->json([
             'data' => $item
         ], 200);
@@ -131,10 +135,7 @@ class AdminUserController extends Controller
         // 名前
         $item['user']['name'] = $user->name;
         // 未使用特典数
-        $item['rewards'] =
-            RewardTicket::where('user_id', $id)
-            ->whereNull('used_at')
-            ->count();
+        $item['rewards'] = RewardTicket::where('user_id', $id)->whereNull('used_at')->count();
 
         return response()->json([
             'data' => $item
