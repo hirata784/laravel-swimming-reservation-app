@@ -59,4 +59,5 @@ Route::group([
     Route::put('reservation/{reservationId}', [AdminReservationController::class, 'update']);
     Route::get('user', [AdminUserController::class, 'index']);
     Route::get('user/{userId}', [AdminUserController::class, 'show']);
+    Route::get('user/{userId}/rewards', [AdminUserController::class, 'showRewards']);
 });

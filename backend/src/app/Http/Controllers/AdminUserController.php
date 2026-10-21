@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Reservation;
 use App\Models\TimeSlot;
+use App\Models\RewardTicket;
 
 class AdminUserController extends Controller
 {
@@ -103,6 +104,37 @@ class AdminUserController extends Controller
             // ステータス
             $item['reservations'][$index]['status'] =  $reservation->status;
         }
+
+        return response()->json([
+            'data' => $item
+        ], 200);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showRewards($id)
+    {
+        $user = User::find($id);
+        // 会員が存在しない場合は処理しない
+        if (!$user) {
+            return response()->json([
+                'message' => 'Not user'
+            ], 404);
+        }
+
+        // id
+        $item['user']['id'] = $id;
+        // 名前
+        $item['user']['name'] = $user->name;
+        // 未使用特典数
+        $item['rewards'] =
+            RewardTicket::where('user_id', $id)
+            ->whereNull('used_at')
+            ->count();
 
         return response()->json([
             'data' => $item
