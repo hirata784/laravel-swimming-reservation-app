@@ -2,18 +2,17 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
+        // 古い環境から引っ越してきたシーダーの実行ロジック
         $this->call(UsersTableSeeder::class);
         User::factory()->count(8)->create();
         $this->call(TimeSlotsTableSeeder::class);

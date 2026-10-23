@@ -10,53 +10,49 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminReservationController;
 use App\Http\Controllers\AdminUserController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
 */
 
-// 一般
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// 誰でもアクセスできる共通ルート
 Route::get('reservation', [ReservationController::class, 'index']);
 Route::apiResource('timeslot', TimeSlotController::class);
 
-Route::group([
-    'middleware' => ['auth:api'],
-    'prefix' => 'auth'
-], function ($router) {
-    // registerとloginは認証不要
-    Route::post('register', [AuthController::class, 'register'])->withoutMiddleware(['auth:api']);
-    Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh'])->withoutMiddleware(['auth:api']);
-    Route::get('me', [AuthController::class, 'me']);
-    Route::post('reservation', [ReservationController::class, 'store']);
-    Route::delete('reservation', [ReservationController::class, 'destroy']);
-    Route::put('profile', [UserController::class, 'updateProfile']);
-    Route::put('user', [UserController::class, 'update']);
-    Route::put('password', [PasswordController::class, 'update']);
+
+// 一般ユーザー用（prefix: auth）のルート設定
+Route::prefix('auth')->group(function () {
+    // 【認証不要】のルート
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    // 【JWT認証必須（auth:api）】のルート群
+    Route::middleware('auth:api')->group(function () {
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::get('me', [AuthController::class, 'me']);
+        Route::post('reservation', [ReservationController::class, 'store']);
+        Route::delete('reservation', [ReservationController::class, 'destroy']);
+        Route::put('profile', [UserController::class, 'updateProfile']);
+        Route::put('user', [UserController::class, 'update']);
+        Route::put('password', [PasswordController::class, 'update']);
+    });
 });
 
-// 管理者
-Route::group([
-    'middleware' => ['auth:admins'],
-    'prefix' => 'admins'
-], function ($router) {
-    // loginは認証不要
-    Route::post('login', [AdminController::class, 'login'])->withoutMiddleware(['auth:admins']);
-    Route::post('logout', [AdminController::class, 'logout']);
-    Route::get('me', [AdminController::class, 'me']);
-    Route::get('reservation/date/{firstDate}', [AdminReservationController::class, 'index']);
-    Route::get('reservation/time-slots/{timeSlotId}', [AdminReservationController::class, 'show']);
-    Route::put('reservation/{reservationId}', [AdminReservationController::class, 'update']);
-    Route::get('user', [AdminUserController::class, 'index']);
-    Route::get('user/{userId}', [AdminUserController::class, 'show']);
+
+// 管理者用（prefix: admins）のルート設定
+Route::prefix('admins')->group(function () {
+    // 【認証不要】のルート
+    Route::post('login', [AdminController::class, 'login']);
+    // 【管理者用JWT認証必須（auth:admins）】のルート群
+    Route::middleware('auth:admins')->group(function () {
+        Route::post('logout', [AdminController::class, 'logout']);
+        Route::get('me', [AdminController::class, 'me']);
+        Route::get('reservation/date/{firstDate}', [AdminReservationController::class, 'index']);
+        Route::get('reservation/time-slots/{timeSlotId}', [AdminReservationController::class, 'show']);
+        Route::put('reservation/{reservationId}', [AdminReservationController::class, 'update']);
+        Route::get('user', [AdminUserController::class, 'index']);
+        Route::get('user/{userId}', [AdminUserController::class, 'show']);
+    });
 });
