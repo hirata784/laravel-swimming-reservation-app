@@ -2,7 +2,7 @@
     <div class="rewards">
         <div class="rewards-content">
             <h2 class="title">特典利用</h2>
-            <div class="rewards-form">
+            <form class="rewards-form" @submit.prevent="exchange">
                 <p class="section-title">【使用者情報】</p>
                 <div class="group">
                     <div class="item-group">
@@ -18,10 +18,11 @@
                 <div class="group">
                     <div class="radio-group">
                         <input
+                            v-model="itemId"
                             type="radio"
                             id="sports-drink"
                             name="rewards"
-                            value="スポーツドリンク"
+                            value="1"
                         />
                         <label class="item" for="sports-drink"
                             >スポーツドリンク</label
@@ -29,19 +30,21 @@
                     </div>
                     <div class="radio-group">
                         <input
+                            v-model="itemId"
                             type="radio"
                             id="bath-additive"
                             name="rewards"
-                            value="入浴剤"
+                            value="2"
                         />
                         <label class="item" for="bath-additive">入浴剤</label>
                     </div>
                     <div class="radio-group">
                         <input
+                            v-model="itemId"
                             type="radio"
                             id="skincare-set"
                             name="rewards"
-                            value="スキンケアセット"
+                            value="3"
                         />
                         <label class="item" for="skincare-set"
                             >スキンケアセット</label
@@ -49,10 +52,11 @@
                     </div>
                     <div class="radio-group">
                         <input
+                            v-model="itemId"
                             type="radio"
                             id="amino-acid-jelly"
                             name="rewards"
-                            value="アミノ酸ゼリー"
+                            value="4"
                         />
                         <label class="item" for="amino-acid-jelly"
                             >アミノ酸ゼリー</label
@@ -60,10 +64,11 @@
                     </div>
                     <div class="radio-group">
                         <input
+                            v-model="itemId"
                             type="radio"
                             id="protein-bar"
                             name="rewards"
-                            value="プロテインバー"
+                            value="5"
                         />
                         <label class="item" for="protein-bar"
                             >プロテインバー</label
@@ -71,10 +76,12 @@
                     </div>
                 </div>
                 <div class="btn-area">
-                    <button class="exchange-btn">交換を確定する</button>
-                    <button class="return-btn">キャンセル</button>
+                    <button class="exchange-btn" type="submit">
+                        交換を確定する
+                    </button>
+                    <button class="return-btn" type="button">キャンセル</button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </template>
@@ -88,6 +95,8 @@ const userId = route.params.userId;
 const name = ref("");
 // 未使用特典数
 const rewards = ref("");
+// 選択した特典
+const itemId = ref(0);
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -107,6 +116,27 @@ const getUserInformation = async () => {
         name.value = res.data.user.name;
         // 特典情報を取得
         rewards.value = res.data.rewards;
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
+// 交換を確定する
+const exchange = async () => {
+    try {
+        const res = await adminApiFetch(
+            `http://localhost/api/admins/user/${userId}/rewards/update`,
+            {
+                method: "POST",
+                body: {
+                    item_id: itemId.value,
+                },
+            },
+        );
+        // 会員管理画面へ遷移する
+        return navigateTo("/admin/member");
     } catch (error) {
         // エラー表示
         console.error("予期せぬエラーが発生しました：", error);
