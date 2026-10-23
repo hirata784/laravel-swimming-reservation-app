@@ -79,7 +79,9 @@
                     <button class="exchange-btn" type="submit">
                         交換を確定する
                     </button>
-                    <button class="return-btn" type="button">キャンセル</button>
+                    <button class="cancel-btn" type="button" @click="cancel">
+                        キャンセル
+                    </button>
                 </div>
             </form>
         </div>
@@ -142,6 +144,12 @@ const exchange = async () => {
         console.error("予期せぬエラーが発生しました：", error);
         alert(`予期せぬエラーが発生しました： ${error}`);
     }
+};
+
+// キャンセル
+const cancel = () => {
+    // 会員詳細画面へ遷移する
+    return navigateTo(`/admin/user/${userId}`);
 };
 
 // 初回実行
@@ -248,7 +256,7 @@ p {
     width: 35%;
 }
 
-.return-btn {
+.cancel-btn {
     border: none;
     background-color: #666666;
     opacity: 0.5;
