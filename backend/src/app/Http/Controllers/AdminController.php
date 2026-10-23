@@ -9,11 +9,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AdminController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:admins', ['except' => ['login']]);
-    }
-
     public function login(AdminLoginRequest $request)
     {
         $token = $request->input('_admin_token');
