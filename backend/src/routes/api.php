@@ -10,6 +10,7 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminReservationController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AdminRewardController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -60,4 +61,5 @@ Route::group([
     Route::get('user', [AdminUserController::class, 'index']);
     Route::get('user/{userId}', [AdminUserController::class, 'show']);
     Route::get('user/{userId}/rewards', [AdminUserController::class, 'showRewards']);
+    Route::POST('user/{userId}/rewards/update', [AdminRewardController::class, 'exchange']);
 });
