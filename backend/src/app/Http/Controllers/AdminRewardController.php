@@ -38,6 +38,29 @@ class AdminRewardController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function availableItems()
+    {
+        $reward_items = RewardItem::where('is_active', true)->get();
+
+        $item = [];
+        $item['items'] = [];
+        foreach ($reward_items as $index => $reward_item) {
+            // id
+            $item['items'][$index]['id'] = $reward_item->id;
+            // 商品名
+            $item['items'][$index]['name'] = $reward_item->name;
+        }
+
+        return response()->json([
+            'data' => $item
+        ], 200);
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
