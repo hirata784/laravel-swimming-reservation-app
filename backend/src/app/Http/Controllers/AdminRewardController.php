@@ -21,12 +21,16 @@ class AdminRewardController extends Controller
         $reward_items = RewardItem::all();
         foreach ($reward_items as $index => $reward_item) {
             // id
-            $item[$index]['id'] = $reward_item->id;
+            $item['items'][$index]['id'] = $reward_item->id;
             // 商品名
-            $item[$index]['name'] = $reward_item->name;
+            $item['items'][$index]['name'] = $reward_item->name;
             // 商品の交換回数
-            $item[$index]['exchange_count'] = RewardRedemption::where('reward_item_id', $reward_item->id)->count();
+            $item['items'][$index]['exchange_count'] = RewardRedemption::where('reward_item_id', $reward_item->id)->count();
         }
+        // 登録商品数
+        $item['registered_count'] = $reward_items->count();
+        // 累計交換数
+        $item['total_exchange_count'] = RewardRedemption::count();
 
         return response()->json([
             'data' => $item
