@@ -33,7 +33,7 @@
                         </table>
                     </div>
                 </div>
-                <button class="return-btn" type="button">
+                <button class="return-btn" type="button" @click="reservations">
                     予約管理画面へ戻る
                 </button>
             </div>
@@ -48,6 +48,16 @@ const items = ref([]);
 const registered_count = ref(0);
 // 累計交換数
 const total_exchange_count = ref(0);
+// 今日の日付を取得
+const today = new Date();
+// 今年
+const y = today.getFullYear();
+// 今月(1~9月は頭を0で埋める(例：01月))
+const m = (today.getMonth() + 1).toString().padStart(2, "0");
+// 日付
+const d = today.getDate().toString().padStart(2, "0");
+// 現在の年月日
+const currentDate = `${y}-${m}-${d}`;
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -81,6 +91,14 @@ const getItems = async () => {
         console.error("予期せぬエラーが発生しました：", error);
         alert(`予期せぬエラーが発生しました： ${error}`);
     }
+};
+
+// 予約管理画面へ遷移する
+const reservations = () => {
+    return navigateTo({
+        path: "/admin/reservations",
+        query: { date: currentDate },
+    });
 };
 
 // 初回実行
