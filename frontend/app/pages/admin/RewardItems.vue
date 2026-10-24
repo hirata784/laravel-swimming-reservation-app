@@ -7,11 +7,11 @@
                 <div class="group">
                     <div class="item-group">
                         <p class="label">登録商品数</p>
-                        <p class="item">5つ</p>
+                        <p class="item">{{ registered_count }}つ</p>
                     </div>
                     <div class="item-group">
                         <p class="label">累計交換数</p>
-                        <p class="item">15回</p>
+                        <p class="item">{{ total_exchange_count }}回</p>
                     </div>
                 </div>
                 <p class="section-title">【商品別の交換実績】</p>
@@ -23,10 +23,10 @@
                                     <th>商品名</th>
                                     <th>交換回数</th>
                                 </tr>
-                                <template v-for="i in 5" :key="i">
+                                <template v-for="item in items" :key="item.id">
                                     <tr>
-                                        <td>テスト商品</td>
-                                        <td>{{ i }}</td>
+                                        <td>{{ item.name }}</td>
+                                        <td>{{ item.exchange_count }}</td>
                                     </tr>
                                 </template>
                             </tbody>
@@ -42,10 +42,49 @@
 </template>
 
 <script setup>
+// 商品交換数
+const items = ref([]);
+// 登録商品数
+const registered_count = ref(0);
+// 累計交換数
+const total_exchange_count = ref(0);
+
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
     middleware: "admin-auth", // 認証中のみアクセス可能にする
 });
+
+// 商品の交換数
+const getItems = async () => {
+    try {
+        const res = await adminApiFetch(
+            "http://localhost/api/admins/reward-items",
+            {
+                method: "GET",
+            },
+        );
+
+        // APIから取得した交換数の情報を画面表示用に整形
+        for (let i = 0; i < res.data.items.length; i++) {
+            items.value.push({
+                id: res.data.items[i].id,
+                name: res.data.items[i].name,
+                exchange_count: res.data.items[i].exchange_count,
+            });
+        }
+        // 登録商品数
+        registered_count.value = res.data.registered_count;
+        // 累計交換数
+        total_exchange_count.value = res.data.total_exchange_count;
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
+// 初回実行
+getItems();
 </script>
 
 <style scoped>
