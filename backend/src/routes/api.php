@@ -54,5 +54,6 @@ Route::prefix('admins')->group(function () {
         Route::get('user/{userId}', [AdminUserController::class, 'show']);
         Route::get('user/{userId}/rewards', [AdminUserController::class, 'showRewards']);
         Route::post('user/{userId}/rewards/update', [AdminRewardController::class, 'exchange']);
+        Route::get('reward-items', [AdminRewardController::class, 'index']);
     });
 });

@@ -12,6 +12,28 @@ use Illuminate\Support\Facades\DB;
 class AdminRewardController extends Controller
 {
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $reward_items = RewardItem::all();
+        foreach ($reward_items as $index => $reward_item) {
+            // id
+            $item[$index]['id'] = $reward_item->id;
+            // 商品名
+            $item[$index]['name'] = $reward_item->name;
+            // 商品の交換回数
+            $item[$index]['exchange_count'] = RewardRedemption::where('reward_item_id', $reward_item->id)->count();
+        }
+
+        return response()->json([
+            'data' => $item
+        ], 200);
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
