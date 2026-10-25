@@ -64,7 +64,12 @@ class AdminUserController extends Controller
     public function show($id)
     {
         $user = User::find($id);
-        $reservations = Reservation::where('user_id', $id)->get();
+        // reservationsとtime_slotsテーブルを結合して、日時が早い順に並び替える
+        $reservations = Reservation::join('time_slots', 'reservations.time_slot_id', '=', 'time_slots.id')
+            ->where('reservations.user_id', $id)
+            ->orderBy('time_slots.date', 'asc')
+            ->orderBy('time_slots.start_time', 'asc')
+            ->get();
         $timeSlots = TimeSlot::all();
 
         // 基本情報
