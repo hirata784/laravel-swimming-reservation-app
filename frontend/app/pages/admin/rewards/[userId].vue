@@ -16,63 +16,21 @@
                 </div>
                 <p class="section-title">【交換する商品を選択してください】</p>
                 <div class="group">
-                    <div class="radio-group">
+                    <div
+                        v-for="item in items"
+                        :key="item.id"
+                        class="radio-group"
+                    >
                         <input
                             v-model="itemId"
                             type="radio"
-                            id="sports-drink"
+                            :id="`reward-${item.id}`"
                             name="rewards"
-                            value="1"
+                            :value="item.id"
                         />
-                        <label class="item" for="sports-drink"
-                            >スポーツドリンク</label
-                        >
-                    </div>
-                    <div class="radio-group">
-                        <input
-                            v-model="itemId"
-                            type="radio"
-                            id="bath-additive"
-                            name="rewards"
-                            value="2"
-                        />
-                        <label class="item" for="bath-additive">入浴剤</label>
-                    </div>
-                    <div class="radio-group">
-                        <input
-                            v-model="itemId"
-                            type="radio"
-                            id="skincare-set"
-                            name="rewards"
-                            value="3"
-                        />
-                        <label class="item" for="skincare-set"
-                            >スキンケアセット</label
-                        >
-                    </div>
-                    <div class="radio-group">
-                        <input
-                            v-model="itemId"
-                            type="radio"
-                            id="amino-acid-jelly"
-                            name="rewards"
-                            value="4"
-                        />
-                        <label class="item" for="amino-acid-jelly"
-                            >アミノ酸ゼリー</label
-                        >
-                    </div>
-                    <div class="radio-group">
-                        <input
-                            v-model="itemId"
-                            type="radio"
-                            id="protein-bar"
-                            name="rewards"
-                            value="5"
-                        />
-                        <label class="item" for="protein-bar"
-                            >プロテインバー</label
-                        >
+                        <label class="item" :for="`reward-${item.id}`">{{
+                            item.name
+                        }}</label>
                     </div>
                 </div>
                 <div class="btn-area">
@@ -99,6 +57,8 @@ const name = ref("");
 const rewards = ref("");
 // 選択した特典
 const itemId = ref(0);
+// 商品一覧
+const items = ref([]);
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -146,6 +106,30 @@ const exchange = async () => {
     }
 };
 
+// 商品一覧を取得
+const getItems = async () => {
+    try {
+        const res = await adminApiFetch(
+            "http://localhost/api/admins/reward-items/available",
+            {
+                method: "GET",
+            },
+        );
+
+        // APIから取得した交換数の情報を画面表示用に整形
+        for (let i = 0; i < res.data.items.length; i++) {
+            items.value.push({
+                id: res.data.items[i].id,
+                name: res.data.items[i].name,
+            });
+        }
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
 // キャンセル
 const cancel = () => {
     // 会員詳細画面へ遷移する
@@ -154,6 +138,7 @@ const cancel = () => {
 
 // 初回実行
 getUserInformation();
+getItems();
 </script>
 
 <style scoped>
