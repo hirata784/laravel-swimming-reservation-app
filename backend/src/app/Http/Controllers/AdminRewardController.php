@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\RewardTicket;
 use App\Models\RewardItem;
 use App\Models\RewardRedemption;
+use App\Http\Requests\RewardRequest;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -66,7 +66,7 @@ class AdminRewardController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function exchange(Request $request, $id)
+    public function exchange(RewardRequest $request, $id)
     {
         $user_id = $id;
         // 未使用の特典を1枚取得する

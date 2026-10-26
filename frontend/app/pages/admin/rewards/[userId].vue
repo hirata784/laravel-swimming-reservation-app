@@ -34,6 +34,10 @@
                     </div>
                     <!-- vee-validateのバリデーション -->
                     <p class="error">{{ errors.itemId }}</p>
+                    <!-- FormRequestのバリデーション -->
+                    <p v-if="backErrors.itemId" class="error">
+                        {{ backErrors.itemId[0] }}
+                    </p>
                 </div>
                 <div class="btn-area">
                     <!-- バリデーションの表示中はclass変更 & クリック不可 -->
@@ -99,7 +103,10 @@ watch(itemId, () => {
 
 // バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
 const btnIsInvalid = computed(() => {
-    return Object.keys(errors.value).length > 0;
+    return (
+        Object.keys(errors.value).length > 0 ||
+        Object.keys(backErrors.value).length > 0
+    );
 });
 
 // 使用者情報の取得
@@ -137,9 +144,14 @@ const exchange = async () => {
         // 会員管理画面へ遷移する
         return navigateTo("/admin/member");
     } catch (error) {
-        // エラー表示
-        console.error("予期せぬエラーが発生しました：", error);
-        alert(`予期せぬエラーが発生しました： ${error}`);
+        // ステータスコード422の場合はエラーメッセージをセット
+        if (error.response && error.response.status === 422) {
+            backErrors.value = error.response._data.errors;
+        } else {
+            // その他のエラー
+            console.error("予期せぬエラーが発生しました：", error);
+            alert(`予期せぬエラーが発生しました： ${error}`);
+        }
     }
 };
 
