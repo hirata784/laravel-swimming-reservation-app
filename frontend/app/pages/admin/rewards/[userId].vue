@@ -2,7 +2,7 @@
     <div class="rewards">
         <div class="rewards-content">
             <h2 class="title">特典利用</h2>
-            <form class="rewards-form" @submit.prevent="exchange">
+            <form class="rewards-form" @submit.prevent="submitExchange">
                 <p class="section-title">【使用者情報】</p>
                 <div class="group">
                     <div class="item-group">
@@ -32,9 +32,19 @@
                             item.name
                         }}</label>
                     </div>
+                    <!-- vee-validateのバリデーション -->
+                    <p class="error">{{ errors.itemId }}</p>
                 </div>
                 <div class="btn-area">
-                    <button class="exchange-btn" type="submit">
+                    <!-- バリデーションの表示中はclass変更 & クリック不可 -->
+                    <button
+                        class="exchange-btn"
+                        type="submit"
+                        v-bind:class="{
+                            'is-disabled-btn': btnIsInvalid,
+                        }"
+                        :disabled="btnIsInvalid"
+                    >
                         交換を確定する
                     </button>
                     <button class="cancel-btn" type="button" @click="cancel">
@@ -47,6 +57,11 @@
 </template>
 
 <script setup>
+// インポート
+import { useForm, useField } from "vee-validate";
+import * as yup from "yup";
+import { watch } from "vue";
+
 // useRoute呼び出し
 const route = useRoute();
 // ユーザーid取得
@@ -55,14 +70,36 @@ const userId = route.params.userId;
 const name = ref("");
 // 未使用特典数
 const rewards = ref("");
-// 選択した特典
-const itemId = ref(0);
 // 商品一覧
 const items = ref([]);
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
     middleware: "admin-auth", // 認証中のみアクセス可能にする
+});
+
+// バリデーションのルールを設定
+const schema = yup.object({
+    itemId: yup.string().required("商品を選択してください"),
+});
+
+// クライアントエラーを格納するオブジェクト
+const { errors, handleSubmit } = useForm({
+    validationSchema: schema,
+});
+// サーバーエラーを格納するオブジェクト
+const backErrors = ref({});
+// 選択した特典
+const { value: itemId } = useField("itemId");
+
+// 入力したらFormRequestのバリデーションを削除する
+watch(itemId, () => {
+    backErrors.value = {};
+});
+
+// バリデーション表示の有無によって、ボタンのclassとdisabledを変更する
+const btnIsInvalid = computed(() => {
+    return Object.keys(errors.value).length > 0;
 });
 
 // 使用者情報の取得
@@ -105,6 +142,11 @@ const exchange = async () => {
         alert(`予期せぬエラーが発生しました： ${error}`);
     }
 };
+
+// バリデーション成功後に特典交換処理を実行する
+const submitExchange = handleSubmit(async () => {
+    await exchange();
+});
 
 // 商品一覧を取得
 const getItems = async () => {
@@ -222,6 +264,11 @@ p {
     margin-bottom: 0;
 }
 
+.error {
+    color: #da251d;
+    text-align: left;
+}
+
 .btn-area {
     display: flex;
     justify-content: center;
@@ -239,6 +286,12 @@ p {
     font-size: 20px;
     cursor: pointer;
     width: 35%;
+}
+
+.is-disabled-btn {
+    background-color: #666666;
+    opacity: 0.5;
+    cursor: auto;
 }
 
 .cancel-btn {
