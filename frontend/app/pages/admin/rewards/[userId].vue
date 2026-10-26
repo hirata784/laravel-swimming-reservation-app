@@ -142,7 +142,13 @@ const exchange = async () => {
             },
         );
         // 会員管理画面へ遷移する
-        return navigateTo("/admin/member");
+        return navigateTo({
+            path: "/admin/member",
+            query: {
+                message: "success",
+                name: name.value,
+            },
+        });
     } catch (error) {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {
