@@ -7,6 +7,7 @@ use App\Http\Controllers\TimeSlotController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\RewardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminReservationController;
 use App\Http\Controllers\AdminUserController;
@@ -36,6 +37,7 @@ Route::prefix('auth')->group(function () {
         Route::put('profile', [UserController::class, 'updateProfile']);
         Route::put('user', [UserController::class, 'update']);
         Route::put('password', [PasswordController::class, 'update']);
+        Route::get('rewards/count', [RewardController::class, 'count']);
     });
 });
 
