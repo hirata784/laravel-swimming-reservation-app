@@ -242,7 +242,11 @@
                 <div class="group">
                     <div class="item-group">
                         <p class="label">累計利用回数</p>
-                        <p class="item">{{ usedReservations.length }}回</p>
+                        <p class="item">{{ usedSum }}回</p>
+                    </div>
+                    <div class="item-group">
+                        <p class="label">特典所持数</p>
+                        <p class="item">{{ ticket }}枚</p>
                     </div>
                 </div>
             </div>
@@ -287,6 +291,10 @@ const open = ref(false);
 const message = ref("");
 // メッセージ表示用のタイマー
 let messageTimerId = null;
+// 累計利用回数
+const usedSum = ref(0);
+// 特典所持数
+const ticket = ref(0);
 
 // バリデーションのルールを設定
 const schema = yup.object({
@@ -527,6 +535,23 @@ const update = async () => {
     }
 };
 
+// 利用実績取得
+const getRewards = async () => {
+    try {
+        const res = await apiFetch("http://localhost/api/auth/rewards/count", {
+            method: "GET",
+        });
+        // 累計利用回数を取得
+        usedSum.value = res.data.used_sum;
+        // 特典所持数を取得
+        ticket.value = res.data.ticket;
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
 // キャンセル
 const informationCancel = () => {
     // 閲覧モードに変更
@@ -549,6 +574,7 @@ const handleClose = (msg) => {
 const init = async () => {
     await getUser();
     await makeReservations();
+    await getRewards();
 };
 
 init();
