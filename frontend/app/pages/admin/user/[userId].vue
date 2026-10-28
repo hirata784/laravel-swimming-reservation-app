@@ -107,6 +107,23 @@
                         </div>
                     </div>
                 </div>
+                <p class="section-title">【特典情報】</p>
+                <div class="group">
+                    <div class="item-group">
+                        <p class="label">未使用特典</p>
+                        <p class="item">{{ rewards }}枚</p>
+                    </div>
+                    <div class="item-group">
+                        <!-- 未使用特典を持っているユーザーのみ表示 -->
+                        <button
+                            v-if="rewards"
+                            class="reward-btn"
+                            @click="reward"
+                        >
+                            特典を利用する
+                        </button>
+                    </div>
+                </div>
                 <button class="return-btn" type="button" @click="member">
                     会員管理画面へ戻る
                 </button>
@@ -144,6 +161,9 @@ const reserved = ref("");
 const no_show = ref("");
 // 予約データ
 const reservations = ref([]);
+// 特典情報
+// 未使用特典
+const rewards = ref(0);
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -199,6 +219,8 @@ const getUserDetail = async () => {
                 });
             }
         }
+        // 特典情報を取得
+        rewards.value = res.data.rewards;
     } catch (error) {
         // エラー表示
         console.error("予期せぬエラーが発生しました：", error);
@@ -209,6 +231,11 @@ const getUserDetail = async () => {
 // 会員管理画面へ遷移
 const member = () => {
     return navigateTo("/admin/member");
+};
+
+// 特典利用画面へ遷移
+const reward = () => {
+    return navigateTo(`/admin/rewards/${userId}`);
 };
 
 // 初回実行
@@ -301,6 +328,17 @@ td {
     border-bottom: 1px solid #304654;
     text-align: left;
     padding: 5px;
+}
+
+.reward-btn {
+    border: none;
+    background-color: #99b1ea;
+    color: #eef9ff;
+    padding: 10px 20px;
+    margin: 0 auto;
+    font-size: 20px;
+    cursor: pointer;
+    width: 55%;
 }
 
 .return-btn {

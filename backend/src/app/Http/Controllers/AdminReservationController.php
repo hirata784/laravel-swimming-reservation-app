@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\TimeSlot;
 use App\Models\Reservation;
 use App\Models\User;
+use App\Models\RewardTicket;
 use Carbon\Carbon;
 
 class AdminReservationController extends Controller
@@ -114,12 +115,43 @@ class AdminReservationController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $reservation = Reservation::find($id);
+        // 予約データが存在しない場合は処理しない
+        if (!$reservation) {
+            return response()->json([
+                'message' => 'Not reservation'
+            ], 404);
+        }
+
+        // 利用状況を変更するユーザーidを取得
+        $user_id = $reservation->user_id;
         // 変更内容を取得
         $update = [
             'status' => $request->status
         ];
+        // 変更前の利用状況を取得
+        $beforeStatus = $reservation->status;
         // 利用状況を更新
-        Reservation::where('id', $id)->update($update);
+        $reservation->update($update);
+        // 更新したユーザーの「used」の合計数を取得
+        $earned_at_uses = Reservation::where('user_id', $user_id)->where('status', '=', 'used')->count();
+        // 「used」の合計数が、5で割り切れるかつ5以上
+        if ($earned_at_uses % 5 === 0 && $earned_at_uses >= 5) {
+            // かつ変更前の利用状況が「used」ではない
+            if ($beforeStatus !== 'used') {
+                // かつ$user_id(利用状況を変更したユーザー)の$earned_at_uses(特典獲得時の利用済み回数)がreward_ticketsテーブルにない
+                $exist = RewardTicket::where('user_id', $user_id)->where('earned_at_uses', $earned_at_uses)->exists();
+                if (!$exist) {
+                    // 特典を追加
+                    RewardTicket::create(
+                        [
+                            'user_id' => $user_id,
+                            'earned_at_uses' => $earned_at_uses,
+                        ]
+                    );
+                }
+            }
+        }
         return response()->json([
             'message' => 'Updated successfully',
         ], 200);

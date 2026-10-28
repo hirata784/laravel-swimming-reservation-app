@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Reservation;
 use App\Models\TimeSlot;
+use App\Models\RewardTicket;
 
 class AdminUserController extends Controller
 {
@@ -63,7 +64,12 @@ class AdminUserController extends Controller
     public function show($id)
     {
         $user = User::find($id);
-        $reservations = Reservation::where('user_id', $id)->get();
+        // reservationsとtime_slotsテーブルを結合して、日時が早い順に並び替える
+        $reservations = Reservation::join('time_slots', 'reservations.time_slot_id', '=', 'time_slots.id')
+            ->where('reservations.user_id', $id)
+            ->orderBy('time_slots.date', 'asc')
+            ->orderBy('time_slots.start_time', 'asc')
+            ->get();
         $timeSlots = TimeSlot::all();
 
         // 基本情報
@@ -103,6 +109,38 @@ class AdminUserController extends Controller
             // ステータス
             $item['reservations'][$index]['status'] =  $reservation->status;
         }
+
+        // 特典情報
+        // 未使用特典
+        $item['rewards'] = RewardTicket::where('user_id', $id)->whereNull('used_at')->count();
+
+        return response()->json([
+            'data' => $item
+        ], 200);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showRewards($id)
+    {
+        $user = User::find($id);
+        // 会員が存在しない場合は処理しない
+        if (!$user) {
+            return response()->json([
+                'message' => 'Not user'
+            ], 404);
+        }
+
+        // id
+        $item['user']['id'] = $id;
+        // 名前
+        $item['user']['name'] = $user->name;
+        // 未使用特典数
+        $item['rewards'] = RewardTicket::where('user_id', $id)->whereNull('used_at')->count();
 
         return response()->json([
             'data' => $item

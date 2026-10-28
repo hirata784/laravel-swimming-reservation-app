@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware(() => {
     // トークンを取得
-    const token = useCookie("token");
+    const token = useCookie("admin_token");
     // 今日の日付を取得
     const today = new Date();
     // 今年

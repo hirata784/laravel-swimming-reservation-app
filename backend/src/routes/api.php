@@ -1,16 +1,16 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TimeSlotController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\RewardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminReservationController;
 use App\Http\Controllers\AdminUserController;
-
+use App\Http\Controllers\AdminRewardController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,7 +20,6 @@ use App\Http\Controllers\AdminUserController;
 // 誰でもアクセスできる共通ルート
 Route::get('reservation', [ReservationController::class, 'index']);
 Route::apiResource('timeslot', TimeSlotController::class);
-
 
 // 一般ユーザー用（prefix: auth）のルート設定
 Route::prefix('auth')->group(function () {
@@ -37,9 +36,9 @@ Route::prefix('auth')->group(function () {
         Route::put('profile', [UserController::class, 'updateProfile']);
         Route::put('user', [UserController::class, 'update']);
         Route::put('password', [PasswordController::class, 'update']);
+        Route::get('rewards/count', [RewardController::class, 'count']);
     });
 });
-
 
 // 管理者用（prefix: admins）のルート設定
 Route::prefix('admins')->group(function () {
@@ -54,5 +53,9 @@ Route::prefix('admins')->group(function () {
         Route::put('reservation/{reservationId}', [AdminReservationController::class, 'update']);
         Route::get('user', [AdminUserController::class, 'index']);
         Route::get('user/{userId}', [AdminUserController::class, 'show']);
+        Route::get('user/{userId}/rewards', [AdminUserController::class, 'showRewards']);
+        Route::post('user/{userId}/rewards/update', [AdminRewardController::class, 'exchange']);
+        Route::get('reward-items', [AdminRewardController::class, 'index']);
+        Route::get('reward-items/available', [AdminRewardController::class, 'availableItems']);
     });
 });

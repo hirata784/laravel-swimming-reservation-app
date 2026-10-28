@@ -1,7 +1,7 @@
 export const useAdminAuth = () => {
-    const cookieToken = useCookie("token");
-    const token = useState("token", () => cookieToken.value || null);
-    const user = useState("user", () => null);
+    const cookieToken = useCookie("admin_token");
+    const token = useState("admin_token", () => cookieToken.value || null);
+    const user = useState("admin_user", () => null);
 
     watch(token, (newVal) => {
         cookieToken.value = newVal;

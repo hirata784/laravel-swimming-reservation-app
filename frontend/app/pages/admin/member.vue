@@ -1,6 +1,7 @@
 <template>
     <div class="member">
         <div class="member-content">
+            <p v-if="message" class="header-success-message">{{ message }}</p>
             <h2 class="title">会員管理</h2>
             <div class="num-search">
                 <p class="num">会員数：{{ totalUser }}名</p>
@@ -87,6 +88,32 @@ const currentPage = ref(1);
 const lastPage = ref(1);
 // 検索ワード(ページネーション用)
 const appliedSearch = ref("");
+// useRoute呼び出し
+const route = useRoute();
+const messageKey = route.query.message;
+const name = route.query.name;
+// 画面リロード時にメッセージが再表示されるのを防ぐため、URLを書き換える目的で使用
+const router = useRouter();
+// キーに対応する表示用メッセージのマッピング
+const messageMap = {
+    success: name + "さんの特典交換が完了しました",
+};
+const message = ref(messageMap[messageKey] || "");
+// 交換成功メッセージのタイマー
+let messageTimerId = null;
+
+// 画面構成後に処理
+onMounted(async () => {
+    // 3秒後に予約メッセージが非表示になる
+    if (message.value) {
+        messageTimerId = setTimeout(() => {
+            message.value = "";
+            router.replace({
+                query: { ...route.query, message: undefined, name: undefined },
+            });
+        }, 3000);
+    }
+});
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示
@@ -299,6 +326,18 @@ p {
 
 .member-content {
     padding-top: 80px;
+}
+
+.header-success-message {
+    background-color: #55c6a9;
+    color: #304654;
+    padding: 10px 20px;
+    text-align: left;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .title {
