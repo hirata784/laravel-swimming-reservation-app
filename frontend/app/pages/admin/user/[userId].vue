@@ -114,7 +114,12 @@
                         <p class="item">{{ rewards }}枚</p>
                     </div>
                     <div class="item-group">
-                        <button class="reward-btn" @click="reward">
+                        <!-- 未使用特典を持っているユーザーのみ表示 -->
+                        <button
+                            v-if="rewards"
+                            class="reward-btn"
+                            @click="reward"
+                        >
                             特典を利用する
                         </button>
                     </div>
@@ -158,7 +163,7 @@ const no_show = ref("");
 const reservations = ref([]);
 // 特典情報
 // 未使用特典
-const rewards = ref("");
+const rewards = ref(0);
 
 definePageMeta({
     layout: "admin", // 管理者用のヘッダーを表示

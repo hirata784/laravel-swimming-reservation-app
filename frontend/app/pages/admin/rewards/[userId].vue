@@ -15,6 +15,9 @@
                     </div>
                 </div>
                 <p class="section-title">【交換する商品を選択してください】</p>
+                <p v-if="!rewards" class="error">
+                    特典を所持していないため、交換できません！！
+                </p>
                 <div class="group">
                     <div
                         v-for="item in items"
@@ -41,7 +44,9 @@
                 </div>
                 <div class="btn-area">
                     <!-- バリデーションの表示中はclass変更 & クリック不可 -->
+                    <!-- 未使用特典を持っているユーザーのみ表示 -->
                     <button
+                        v-if="rewards"
                         class="exchange-btn"
                         type="submit"
                         v-bind:class="{
@@ -73,7 +78,7 @@ const userId = route.params.userId;
 // ユーザー名
 const name = ref("");
 // 未使用特典数
-const rewards = ref("");
+const rewards = ref(0);
 // 商品一覧
 const items = ref([]);
 
