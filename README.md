@@ -65,6 +65,10 @@ cp .env.example .env
 4. .envに以下の環境変数を変更します。
 
 ```properties
+APP_FAKER_LOCALE=ja_JP
+```
+
+```properties
 DB_CONNECTION=mysql
 DB_HOST=mysql
 DB_PORT=3306
