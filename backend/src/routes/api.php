@@ -35,6 +35,7 @@ Route::prefix('auth')->group(function () {
         Route::delete('reservation', [ReservationController::class, 'destroy']);
         Route::put('profile', [UserController::class, 'updateProfile']);
         Route::put('user', [UserController::class, 'update']);
+        Route::post('profile/skip', [UserController::class, 'skipProfile']);
         Route::put('password', [PasswordController::class, 'update']);
         Route::get('rewards/count', [RewardController::class, 'count']);
     });

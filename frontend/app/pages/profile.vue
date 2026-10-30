@@ -53,10 +53,10 @@
                 >
                     登録する
                 </button>
-                <div class="profile-link">
-                    <NuxtLink class="no-underline" to="/list"
-                        >設定せず一覧画面へ</NuxtLink
-                    >
+                <div class="no-profile">
+                    <button class="no-btn" type="button" @click="skipProfile">
+                        設定せず一覧画面へ
+                    </button>
                 </div>
             </form>
         </div>
@@ -124,6 +124,28 @@ const addProfile = async () => {
                 address: address.value,
                 phone: phone.value,
             },
+        });
+        // 予約一覧画面へ遷移する
+        return navigateTo("/list");
+    } catch (error) {
+        {
+            // ステータスコード422の場合はエラーメッセージをセット
+            if (error.response && error.response.status === 422) {
+                backErrors.value = error.response._data.errors;
+            } else {
+                // その他のエラー
+                console.error("予期せぬエラーが発生しました：", error);
+                alert(`予期せぬエラーが発生しました： ${error}`);
+            }
+        }
+    }
+};
+
+// 設定せず一覧画面へ
+const skipProfile = async() => {
+    try {
+        await apiFetch("http://localhost/api/auth/profile/skip", {
+            method: "POST",
         });
         // 予約一覧画面へ遷移する
         return navigateTo("/list");
@@ -223,11 +245,15 @@ p {
     cursor: auto;
 }
 
-.profile-link {
+.no-profile {
     margin-bottom: 15px;
 }
 
-.no-underline {
-    text-decoration: none;
+.no-btn {
+    border: none;
+    background-color: #eef9ff;
+    font-size: 16px;
+    color: #551a8b;
+    cursor: pointer;
 }
 </style>

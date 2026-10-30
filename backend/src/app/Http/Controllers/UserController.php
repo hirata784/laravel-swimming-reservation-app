@@ -31,9 +31,7 @@ class UserController extends Controller
         User::where('id', $user_id)->update($store);
 
         // 会員登録完了メールを送信
-        $user = User::find($user_id);
-        $email = $user->email;
-        Mail::to($email)->send(new RegistrationCompleted($user));
+        $this->sendRegistrationCompletedMail($user_id);
 
         return response()->json([
             'message' => 'Updated successfully',
@@ -64,5 +62,24 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Updated successfully',
         ], 200);
+    }
+
+    public function skipProfile()
+    {
+        // 認証中のユーザーidを取得
+        $user_id = Auth::id();
+        // 会員登録完了メールを送信
+        $this->sendRegistrationCompletedMail($user_id);
+
+        return response()->json([
+            'message' => 'Email sent successfully',
+        ], 200);
+    }
+
+    public function sendRegistrationCompletedMail(int $id)
+    {
+        $user = User::find($id);
+        $email = $user->email;
+        Mail::to($email)->send(new RegistrationCompleted($user));
     }
 }
