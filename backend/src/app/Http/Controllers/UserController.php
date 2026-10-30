@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Http\Requests\MypageRequest;
 use App\Http\Requests\ProfileRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RegistrationCompleted;
 
 class UserController extends Controller
 {
@@ -27,6 +29,11 @@ class UserController extends Controller
         ];
         // ユーザーの情報を更新
         User::where('id', $user_id)->update($store);
+
+        // 会員登録完了メールを送信
+        $email = User::find($user_id)->email;
+        Mail::to($email)->send(new RegistrationCompleted());
+
         return response()->json([
             'message' => 'Updated successfully',
         ], 200);
