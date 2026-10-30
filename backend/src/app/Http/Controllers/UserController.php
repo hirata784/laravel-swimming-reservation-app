@@ -31,8 +31,9 @@ class UserController extends Controller
         User::where('id', $user_id)->update($store);
 
         // 会員登録完了メールを送信
-        $email = User::find($user_id)->email;
-        Mail::to($email)->send(new RegistrationCompleted());
+        $user = User::find($user_id);
+        $email = $user->email;
+        Mail::to($email)->send(new RegistrationCompleted($user));
 
         return response()->json([
             'message' => 'Updated successfully',

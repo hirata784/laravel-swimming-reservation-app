@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\User;
 
 class RegistrationCompleted extends Mailable
 {
@@ -17,10 +18,9 @@ class RegistrationCompleted extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        protected User $user,
+    ) {}
 
     /**
      * Get the message envelope.
@@ -39,6 +39,9 @@ class RegistrationCompleted extends Mailable
     {
         return new Content(
             markdown: 'emails.registration.completed',
+            with: [
+                'user' => $this->user,
+            ],
         );
     }
 
