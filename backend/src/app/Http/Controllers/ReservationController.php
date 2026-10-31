@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\TimeSlot;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservationCompleted;
 
 class ReservationController extends Controller
 {
@@ -101,6 +104,11 @@ class ReservationController extends Controller
                 'status' => "reserved",
             ]
         );
+
+        // 予約完了メールを送信
+        $user = User::find($user_id);
+        $email = $user->email;
+        Mail::to($email)->send(new ReservationCompleted());
 
         return response()->json([
             'data' => $item
