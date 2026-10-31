@@ -11,19 +11,21 @@
     --------------------------------------------------
     ■ ご予約内容の確認
     --------------------------------------------------
-    日時：{{ $reservation->timeslot->date }} {{ $reservation->timeslot->start_time }} ～ {終了時間}
+    日時：{{ \Carbon\Carbon::parse($reservation->timeslot->date)->isoFormat('YYYY年M月D日(ddd)') }}
+    {{ \Carbon\Carbon::parse($reservation->timeslot->start_time)->format('H:i') }} ～ {{ \Carbon\Carbon::parse($reservation->timeslot->start_time)->addMinutes(30)->format('H:i') }}
 
     ■ ご予約者様情報
     お名前：{{ $reservation->user->name }} 様
     メールアドレス：{{ $reservation->user->email }}
     --------------------------------------------------
 
-    ※ご予約の確認やキャンセルは、会員専用ページよりお手続きいただけます。
+    ※ご予約内容の確認やキャンセルは、予約一覧画面よりお手続きいただけます。
 
-    ▼ マイページはこちら
-    http://localhost:3000/mypage
+    ▼ 予約一覧はこちら
+    http://localhost:3000/list
 
-    ※ご利用にはログインが必要です。ログインがお済みでない場合は、ログイン画面が表示されます。
+    ※予約のキャンセルにはログインが必要です。
+    ログアウト状態の場合は、ログイン画面よりログインしてください。
 
     ご不明な点やご質問がございましたら、お気軽にお問い合わせ窓口までご連絡ください。
     当日のご参加を心よりお待ちしております。
