@@ -106,9 +106,10 @@ class ReservationController extends Controller
         );
 
         // 予約完了メールを送信
-        $user = User::find($user_id);
+        $mailReservation = $item->load('user', 'timeslot');
+        $user = $item->user;
         $email = $user->email;
-        Mail::to($email)->send(new ReservationCompleted());
+        Mail::to($email)->send(new ReservationCompleted($mailReservation));
 
         return response()->json([
             'data' => $item

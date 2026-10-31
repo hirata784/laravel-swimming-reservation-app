@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Reservation;
 
 class ReservationCompleted extends Mailable
 {
@@ -17,10 +18,9 @@ class ReservationCompleted extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        protected Reservation $reservation,
+    ) {}
 
     /**
      * Get the message envelope.
@@ -39,6 +39,9 @@ class ReservationCompleted extends Mailable
     {
         return new Content(
             markdown: 'emails.reservation.completed',
+            with: [
+                'reservation' => $this->reservation,
+            ],
         );
     }
 

@@ -18,6 +18,6 @@ class Reservation extends Model
 
     public function timeslot()
     {
-        return $this->belongsTo(TimeSlot::class);
+        return $this->belongsTo(TimeSlot::class, 'time_slot_id', 'id');
     }
 }
