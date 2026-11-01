@@ -139,9 +139,10 @@ class ReservationController extends Controller
 
         if ($item) {
             // 予約キャンセルメールを送信
-            $user = User::find($user_id);
+            $mailCancel = $reservation->load('user', 'timeslot');
+            $user = $reservation->user;
             $email = $user->email;
-            Mail::to($email)->send(new ReservationCanceled());
+            Mail::to($email)->send(new ReservationCanceled($mailCancel));
 
             return response()->json([
                 'message' => 'Deleted successfully',
