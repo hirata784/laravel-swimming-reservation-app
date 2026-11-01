@@ -12,7 +12,8 @@
     --------------------------------------------------
     ■ キャンセルされたご予約内容
     --------------------------------------------------
-    日時：{{ $reservation->timeslot->date }} {{ $reservation->timeslot->start_time }} ～ {終了時間}
+    日時：{{ \Carbon\Carbon::parse($reservation->timeslot->date)->isoFormat('YYYY年M月D日(ddd)') }}
+    {{ \Carbon\Carbon::parse($reservation->timeslot->start_time)->format('H:i') }} ～ {{ \Carbon\Carbon::parse($reservation->timeslot->start_time)->addMinutes(30)->format('H:i') }}
 
     ■ ご予約者様情報
     お名前：{{ $reservation->user->name }} 様
