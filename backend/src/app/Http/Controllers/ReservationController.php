@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationCompleted;
+use App\Mail\ReservationCanceled;
 
 class ReservationController extends Controller
 {
@@ -137,6 +138,11 @@ class ReservationController extends Controller
         $item = Reservation::where('id', $reservation_id)->delete();
 
         if ($item) {
+            // 予約キャンセルメールを送信
+            $user = User::find($user_id);
+            $email = $user->email;
+            Mail::to($email)->send(new ReservationCanceled());
+
             return response()->json([
                 'message' => 'Deleted successfully',
             ], 200);
