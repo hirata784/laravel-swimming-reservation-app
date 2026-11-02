@@ -8,6 +8,8 @@ use App\Models\Reservation;
 use App\Models\User;
 use App\Models\RewardTicket;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RewardCompleted;
 
 class AdminReservationController extends Controller
 {
@@ -149,6 +151,10 @@ class AdminReservationController extends Controller
                             'earned_at_uses' => $earned_at_uses,
                         ]
                     );
+                    // 特典獲得メールを送信
+                    $user = User::find($user_id);
+                    $email = $user->email;
+                    Mail::to($email)->send(new RewardCompleted());
                 }
             }
         }
