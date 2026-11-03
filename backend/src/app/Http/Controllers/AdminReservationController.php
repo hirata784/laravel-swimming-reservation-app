@@ -7,6 +7,7 @@ use App\Models\TimeSlot;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Models\RewardTicket;
+use App\Models\RewardItem;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RewardCompleted;
@@ -154,7 +155,8 @@ class AdminReservationController extends Controller
                     // 特典獲得メールを送信
                     $user = User::find($user_id);
                     $email = $user->email;
-                    Mail::to($email)->send(new RewardCompleted());
+                    $rewardItems = RewardItem::where('is_active', true)->get();
+                    Mail::to($email)->send(new RewardCompleted($user, $rewardItems, $earned_at_uses));
                 }
             }
         }

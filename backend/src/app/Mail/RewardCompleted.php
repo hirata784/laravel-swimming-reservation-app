@@ -9,6 +9,8 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Database\Eloquent\Collection;
+use App\Models\User;
 
 class RewardCompleted extends Mailable
 {
@@ -17,10 +19,11 @@ class RewardCompleted extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        protected User $user,
+        protected Collection $rewardItems,
+        protected int $earned_at_uses,
+    ) {}
 
     /**
      * Get the message envelope.
@@ -28,7 +31,7 @@ class RewardCompleted extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '【▼●▲水泳クラブ】プール5回利用達成!特典付与のお知らせ',
+            subject: '【▼●▲水泳クラブ】プール' . $this->earned_at_uses . '回利用達成!特典付与のお知らせ',
         );
     }
 
@@ -39,6 +42,11 @@ class RewardCompleted extends Mailable
     {
         return new Content(
             markdown: 'emails.reward',
+            with: [
+                'user' => $this->user,
+                'rewardItems' => $this->rewardItems,
+                'earned_at_uses' => $this->earned_at_uses,
+            ],
         );
     }
 
