@@ -151,8 +151,8 @@ const addRegister = async () => {
 
         await fetchUser();
 
-        // プロフィール設定画面へ遷移する
-        return navigateTo("/profile");
+        // メール認証待ち画面へ遷移する
+        return navigateTo("/email/verify");
     } catch (error) {
         // ステータスコード422の場合はエラーメッセージをセット
         if (error.response && error.response.status === 422) {
