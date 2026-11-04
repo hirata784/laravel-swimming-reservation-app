@@ -11,6 +11,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminReservationController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminRewardController;
+use App\Models\User;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,6 +28,21 @@ Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
     Route::post('refresh', [AuthController::class, 'refresh']);
+    // メール認証
+    Route::get('/email/verify/{id}/{hash}', function ($id, $hash) {
+        // ユーザーを取得
+        $user = User::findOrFail($id);
+        // メールアドレスのハッシュを確認
+        if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            abort(403);
+        }
+        // 未認証の場合、認証済みにする
+        if (! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
+        // 認証完了画面へ遷移
+        return redirect('http://localhost:3000/email/verified');
+    })->middleware(['signed'])->name('verification.verify');
     // 【JWT認証必須（auth:api）】のルート群
     Route::middleware('auth:api')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);

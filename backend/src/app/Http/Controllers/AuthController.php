@@ -16,11 +16,15 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request)
     {
-        User::create([
+        // ユーザーの作成
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        // メール確認通知の送信
+        $user->sendEmailVerificationNotification();
 
         return response()->json(['message' => 'Successfully user created']);
     }
