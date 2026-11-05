@@ -47,13 +47,15 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
-        Route::post('reservation', [ReservationController::class, 'store']);
-        Route::delete('reservation', [ReservationController::class, 'destroy']);
-        Route::put('profile', [UserController::class, 'updateProfile']);
-        Route::put('user', [UserController::class, 'update']);
-        Route::post('profile/skip', [UserController::class, 'skipProfile']);
-        Route::put('password', [PasswordController::class, 'update']);
-        Route::get('rewards/count', [RewardController::class, 'count']);
+        Route::middleware('verified')->group(function () {
+            Route::post('reservation', [ReservationController::class, 'store']);
+            Route::delete('reservation', [ReservationController::class, 'destroy']);
+            Route::put('profile', [UserController::class, 'updateProfile']);
+            Route::put('user', [UserController::class, 'update']);
+            Route::post('profile/skip', [UserController::class, 'skipProfile']);
+            Route::put('password', [PasswordController::class, 'update']);
+            Route::get('rewards/count', [RewardController::class, 'count']);
+        });
     });
 });
 
