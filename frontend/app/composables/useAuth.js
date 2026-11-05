@@ -45,10 +45,31 @@ export const useAuth = () => {
         }
     };
 
+    // 認証メール再送
+    const resending = async () => {
+        try {
+            await $fetch(
+                "http://localhost/api/auth/email/verification-notification",
+                {
+                    method: "POST",
+                    headers: {
+                        // JWT等を使用している場合はここでAuthorizationヘッダーを渡す
+                        Authorization: `Bearer ${token.value}`,
+                    },
+                },
+            );
+        } catch (error) {
+            // エラー表示
+            console.error("予期せぬエラーが発生しました：", error);
+            alert(`予期せぬエラーが発生しました： ${error}`);
+        }
+    };
+
     return {
         user,
         token,
         fetchUser,
         logout,
+        resending,
     };
 };

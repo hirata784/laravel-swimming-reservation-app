@@ -11,6 +11,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminReservationController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminRewardController;
+use Illuminate\Http\Request;
 use App\Models\User;
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,13 @@ Route::prefix('auth')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
         Route::get('me', [AuthController::class, 'me']);
+        // 認証メール再送信
+        Route::post('/email/verification-notification', function (Request $request) {
+            $request->user()->sendEmailVerificationNotification();
+            return response()->json([
+                'message' => 'Verification link sent!'
+            ]);
+        })->middleware('throttle:6,1')->name('verification.send');
         Route::middleware('verified')->group(function () {
             Route::post('reservation', [ReservationController::class, 'store']);
             Route::delete('reservation', [ReservationController::class, 'destroy']);
