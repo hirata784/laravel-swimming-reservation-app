@@ -58,10 +58,15 @@ export const useAuth = () => {
                     },
                 },
             );
+
+            // 再送メッセージを表示する
+            return true;
         } catch (error) {
             // エラー表示
             console.error("予期せぬエラーが発生しました：", error);
             alert(`予期せぬエラーが発生しました： ${error}`);
+            // 再送メッセージを表示しない
+            return false;
         }
     };
 
