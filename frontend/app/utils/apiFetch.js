@@ -9,6 +9,8 @@ export const apiFetch = async (url, options = {}) => {
             // 呼び出し元から渡された設定（method, bodyなど）を展開
             ...options,
             headers: {
+                // JSON形式でレスポンスを返す
+                Accept: "application/json",
                 Authorization: `Bearer ${token.value}`,
                 // 呼び出し元でheadersが指定されていればそれもマージ
                 // （未定義対策で || {} をつけている）

@@ -13,6 +13,10 @@ export const useAuth = () => {
         try {
             const res = await apiFetch("http://localhost/api/auth/me");
             user.value = res;
+            // 認証していない場合は、メール認証待ち画面へ遷移
+            if (res.email_verified_at === null) {
+                return navigateTo("/email/verify");
+            }
         } catch (error) {
             // エラー表示
             console.error("予期せぬエラーが発生しました：", error);

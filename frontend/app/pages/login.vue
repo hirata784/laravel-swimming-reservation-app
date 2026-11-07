@@ -143,7 +143,7 @@ const isLogin = async () => {
                 query: { mode: route.query.mode },
             });
         } else {
-            // 予約一覧画面へ移動
+            // 認証済みの場合は、予約一覧画面へ遷移
             return navigateTo("/list");
         }
     } catch (error) {
