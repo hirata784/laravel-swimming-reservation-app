@@ -349,6 +349,10 @@ definePageMeta({
 // ログインユーザー取得
 const getUser = async () => {
     await fetchUser();
+    // 認証済みの場合だけ利用実績を取得する
+    if (user.value.email_verified_at !== null) {
+        await getRewards();
+    }
 };
 
 // 予約データの作成
@@ -574,7 +578,6 @@ const handleClose = (msg) => {
 const init = async () => {
     await getUser();
     await makeReservations();
-    await getRewards();
 };
 
 init();
