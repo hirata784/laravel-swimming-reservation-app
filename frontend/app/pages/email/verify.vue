@@ -25,6 +25,11 @@ const message = ref("");
 // メッセージ表示用のタイマー
 let messageTimerId = null;
 
+// 認証中のみアクセス可能にする
+definePageMeta({
+    middleware: "auth",
+});
+
 // 認証メール再送
 const isResending = async () => {
     // タイマーをリセットする

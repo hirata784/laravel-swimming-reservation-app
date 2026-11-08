@@ -10,6 +10,11 @@
 </template>
 
 <script setup>
+// 認証中のみアクセス可能にする
+definePageMeta({
+    middleware: "auth",
+});
+
 const profile = () => {
     // プロフィール設定画面へ遷移する
     return navigateTo("/profile");
