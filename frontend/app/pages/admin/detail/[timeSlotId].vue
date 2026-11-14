@@ -16,31 +16,61 @@
                     class="user-status"
                 >
                     <p class="user">{{ user.name }}</p>
-                    <!-- statusがreserved(利用前)の場合 -->
-                    <div v-if="user.status === 'reserved'" class="group">
-                        <p class="status">利用前</p>
-                        <button
-                            type="button"
-                            @click="usedStatus(user.reservation_id)"
-                            class="update-btn"
-                        >
-                            利用しました
-                        </button>
+                    <!-- 「現在日時 > 予約日時」の場合 -->
+                    <div
+                        v-if="!isGracePeriodPassed"
+                        class="reservation-actions"
+                    >
+                        <!-- statusがreserved(利用前)の場合 -->
+                        <div v-if="user.status === 'reserved'" class="group">
+                            <p class="status">利用前</p>
+                            <button
+                                type="button"
+                                @click="usedStatus(user.reservation_id)"
+                                class="used-btn"
+                            >
+                                利用しました
+                            </button>
+                        </div>
+                        <!-- statusがused(利用済み)の場合 -->
+                        <div v-else-if="user.status === 'used'" class="group">
+                            <p class="status">利用済み</p>
+                            <button
+                                type="button"
+                                @click="reservedStatus(user.reservation_id)"
+                                class="reserved-btn"
+                            >
+                                利用前に戻す
+                            </button>
+                        </div>
                     </div>
-                    <!-- statusがused(利用済み)の場合 -->
-                    <div v-else-if="user.status === 'used'" class="group">
-                        <p class="status">利用済み</p>
-                        <button
-                            type="button"
-                            @click="reservedStatus(user.reservation_id)"
-                            class="cancel-btn"
+                    <!-- 「現在日時 > 予約日時」の場合 -->
+                    <div v-else class="reservation-actions">
+                        <!-- statusがused(利用済み)の場合 -->
+                        <div v-if="user.status === 'used'" class="group">
+                            <p class="status">利用済み</p>
+                            <button
+                                type="button"
+                                @click="noShow(user.reservation_id)"
+                                class="no-show-btn"
+                            >
+                                来店なしに修正
+                            </button>
+                        </div>
+                        <!-- statusがno_show(来店なし)の場合 -->
+                        <div
+                            v-else-if="user.status === 'no_show'"
+                            class="group"
                         >
-                            利用前に戻す
-                        </button>
-                    </div>
-                    <!-- statusがno_show(来店なし)の場合 -->
-                    <div v-else-if="user.status === 'no_show'" class="group">
-                        <p class="status">来店なし</p>
+                            <p class="status">来店なし</p>
+                            <button
+                                type="button"
+                                @click="usedStatus(user.reservation_id)"
+                                class="used-btn"
+                            >
+                                利用済みに修正
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <button class="return-btn" type="button" @click="reservations">
@@ -118,6 +148,27 @@ const formatTime = (dateString) => {
     return `${dateString}~${finishTime}`;
 };
 
+// ボタン表示判定
+// true：利用済みor来店なし、false：利用前or利用済み ボタンを表示
+const isGracePeriodPassed = computed(() => {
+    // 「現在の年月日 > 予約年月日」ならtrue
+    if (currentDate > date.value) {
+        return true;
+        // 「現在の年月日 = 予約年月日」なら時間を比較
+    } else if (currentDate === date.value) {
+        // 現在時刻を数値に変換
+        const totalCurrentMinutes = today.getHours() * 60 + today.getMinutes();
+        // 予約時刻を数値に変換
+        const [hours, minutes] = time.value.split(":").map(Number);
+        const totalReservationMinutes = hours * 60 + minutes;
+        // 「現在時間 - 予約時間 >= 15」ならtrue
+        if (totalCurrentMinutes - totalReservationMinutes >= 15) {
+            return true;
+        }
+    }
+    return false;
+});
+
 // 予約詳細の取得
 const getReservationDetail = async () => {
     // 初期化
@@ -174,6 +225,24 @@ const reservedStatus = async (id) => {
             method: "PUT",
             body: {
                 status: "reserved",
+            },
+        });
+        // 画面に変更を即反映する
+        await getReservationDetail();
+    } catch (error) {
+        // エラー表示
+        console.error("予期せぬエラーが発生しました：", error);
+        alert(`予期せぬエラーが発生しました： ${error}`);
+    }
+};
+
+// 来店なしに修正
+const noShow = async (id) => {
+    try {
+        await adminApiFetch(`http://localhost/api/admins/reservation/${id}`, {
+            method: "PUT",
+            body: {
+                status: "no_show",
             },
         });
         // 画面に変更を即反映する
@@ -255,6 +324,10 @@ p {
     font-size: 20px;
 }
 
+.reservation-actions {
+    width: 100%;
+}
+
 .group {
     display: flex;
     flex-direction: row;
@@ -267,7 +340,7 @@ p {
     font-size: 20px;
 }
 
-.update-btn {
+.used-btn {
     border: none;
     background-color: #99b1ea;
     color: #eef9ff;
@@ -278,9 +351,20 @@ p {
     font-size: 20px;
 }
 
-.cancel-btn {
+.reserved-btn {
     border: none;
     background-color: #da251d;
+    color: #eef9ff;
+    cursor: pointer;
+    padding: 10px 0;
+    width: 45%;
+    margin: 5px 0;
+    font-size: 20px;
+}
+
+.no-show-btn {
+    border: none;
+    background-color: #55c6a9;
     color: #eef9ff;
     cursor: pointer;
     padding: 10px 0;
