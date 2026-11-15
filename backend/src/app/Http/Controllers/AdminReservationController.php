@@ -91,6 +91,29 @@ class AdminReservationController extends Controller
         $reservations = Reservation::where('time_slot_id', $id)->get();
         $timeSlot = TimeSlot::find($id);
 
+        // 予約開始時刻から15分経過チェック
+        // 現在日時を取得
+        $now = Carbon::now();
+        // 予約日と開始時刻を組み合わせて日時を作る
+        $reservationDateTime =  Carbon::parse($timeSlot->date . ' ' . $timeSlot->start_time);
+        // その日時に15分を加える
+        $limitDateTime =  $reservationDateTime->copy()->addMinutes(15);
+        // 「現在日時 >= 予約日時」なら変更
+        if ($now >= $limitDateTime) {
+            // 変更内容を取得
+            $update = [
+                'status' => "no_show",
+            ];
+            foreach ($reservations as $reservation) {
+                // 利用状況がreservedのとき処理
+                if ($reservation->status === "reserved") {
+                    $reservation->update($update);
+                }
+            }
+            // 予約データを再取得
+            $reservations = Reservation::where('time_slot_id', $id)->get();
+        }
+
         // 日にち
         $item['date'] = $timeSlot->date;
         // 時間
