@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Fillable(['reward_ticket_id', 'reward_item_id'])]
 class RewardRedemption extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['reward_ticket_id', 'reward_item_id'];
 
     public function reward_ticket()
     {
