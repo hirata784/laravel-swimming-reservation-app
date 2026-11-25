@@ -34,7 +34,7 @@ class AuthController extends Controller
         $token = $request->input('_api_token');
 
         /** @var User $user */
-        $user = auth()->user();
+        $user = Auth::guard('api')->user();
 
         // リフレッシュトークンを作成
         $refreshToken = Str::random(60);
@@ -58,7 +58,7 @@ class AuthController extends Controller
     public function logout()
     {
         /** @var User $user */
-        $user = auth()->user();
+        $user = Auth::guard('api')->user();
 
         // データベースのリフレッシュトークンを削除
         if ($user) {
@@ -85,7 +85,9 @@ class AuthController extends Controller
         }
 
         // 新しいaccess_tokenを発行
-        $newAccessToken = auth()->login($user);
+        /** @var \Tymon\JWTAuth\JWTGuard $guard */
+        $guard = Auth::guard('api');
+        $newAccessToken = $guard->login($user);
 
         return response()->json([
             'access_token' => $newAccessToken,
