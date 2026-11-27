@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class MypageRequest extends FormRequest
 {
@@ -25,7 +26,7 @@ class MypageRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:20'],
-            'email' => ['required', 'email', 'unique:users,email,' . auth()->user()->email . ',email'],
+            'email' => ['required', 'email', 'unique:users,email,' . Auth::guard('api')->user()->email . ',email'],
             'address' => ['nullable', 'max:255'],
             'phone' => [
                 'nullable',
